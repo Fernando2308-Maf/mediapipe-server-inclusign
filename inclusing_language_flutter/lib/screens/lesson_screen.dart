@@ -131,7 +131,7 @@ class _LessonScreenState extends State<LessonScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.cardBackground,
         title: Text(
-          percentage >= 60 ? '¡Felicitaciones! 🎉' : 'Intenta de nuevo',
+          percentage == 100 ? '¡Perfecto! 🎉' : 'Intenta de nuevo',
           style: const TextStyle(color: AppColors.textPrimary),
         ),
         content: Column(
@@ -140,7 +140,7 @@ class _LessonScreenState extends State<LessonScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: percentage >= 60 ? AppColors.success : AppColors.error,
+                color: percentage == 100 ? AppColors.success : AppColors.error,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
@@ -154,9 +154,9 @@ class _LessonScreenState extends State<LessonScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              percentage >= 60
-                  ? 'Has completado la lección exitosamente'
-                  : 'Necesitas al menos 60% para aprobar',
+              percentage == 100
+                  ? '¡Has completado la lección con 3/3 correctas!'
+                  : 'Necesitas responder todas las preguntas correctamente (3/3)',
               style: const TextStyle(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -186,21 +186,50 @@ class _LessonScreenState extends State<LessonScreen> {
             },
             child: const Text('Volver al Inicio', style: TextStyle(color: AppColors.primary)),
           ),
-          if (percentage >= 60)
+          if (percentage < 100)
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Recargar la lección para reintentar
+                setState(() {
+                  _currentExerciseIndex = 0;
+                  _score = 0;
+                  _resetExerciseState();
+                });
+              },
+              child: const Text('Reintentar Lección', style: TextStyle(color: AppColors.error)),
+            ),
+          if (percentage == 100)
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                final nextLesson = await _lessonService.getNextIncompleteLesson();
+                Navigator.of(context).pop(); // Cerrar diálogo
+
+                // Obtener todas las lecciones de la categoría actual
+                final currentCategory = _currentLesson!.category;
+                final allLessons = await _lessonService.getAllLessons(category: currentCategory);
+
+                // Buscar la siguiente lección en orden (por ID)
+                Lesson? nextLesson;
+                for (int i = 0; i < allLessons.length; i++) {
+                  if (allLessons[i].id == _currentLesson!.id && i + 1 < allLessons.length) {
+                    nextLesson = allLessons[i + 1];
+                    break;
+                  }
+                }
+
                 if (nextLesson != null && mounted) {
-                  Navigator.of(context).push(
+                  // Reemplazar la pantalla actual con la siguiente lección
+                  Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (_) => LessonScreen(lessonId: nextLesson.id),
+                      builder: (_) => LessonScreen(lessonId: nextLesson!.id),
                     ),
                   );
+                } else {
+                  // No hay más lecciones en esta categoría, regresar al home
+                  Navigator.of(context).pop();
                 }
               },
-              child: const Text('Siguiente Lección', style: TextStyle(color: AppColors.success)),
+              child: const Text('Continuar', style: TextStyle(color: AppColors.success)),
             ),
         ],
       ),

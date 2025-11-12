@@ -6,6 +6,7 @@ import '../services/lesson_service.dart';
 import '../utils/colors.dart';
 import 'profile_screen.dart';
 import 'lesson_screen.dart';
+import 'dictionary_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // Lesson data
   int _completedLessonsCount = 0;
   int _totalLessons = 27;
+  int _completedNumbersCount = 0;
+  int _totalNumbers = 10;
+  int _completedGesturesCount = 0;
+  int _totalGestures = 21;
   Lesson? _nextLesson;
   bool _loadingLessons = true;
 
@@ -35,6 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserData() async {
     try {
+      // Forzar actualización del perfil desde el backend
+      await _authService.refreshUserProfile();
+
       final user = await _authService.getCurrentUser();
       setState(() => _currentUser = user);
 
@@ -50,11 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadLessonsData() async {
     try {
-      final completedCount = await _lessonService.getCompletedLessonsCount();
+      final completedAlphabetCount = await _lessonService.getCompletedLessonsCountByCategory('Alphabet');
+      final completedNumbersCount = await _lessonService.getCompletedLessonsCountByCategory('Numbers');
+      final completedGesturesCount = await _lessonService.getCompletedLessonsCountByCategory('Gestures');
       final nextLesson = await _lessonService.getNextIncompleteLesson();
 
       setState(() {
-        _completedLessonsCount = completedCount;
+        _completedLessonsCount = completedAlphabetCount;
+        _completedNumbersCount = completedNumbersCount;
+        _completedGesturesCount = completedGesturesCount;
         _nextLesson = nextLesson;
         _loadingLessons = false;
       });
@@ -341,7 +353,10 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(
               builder: (_) => LessonScreen(lessonId: _nextLesson!.id),
             ),
-          ).then((_) => _loadLessonsData()); // Reload data when coming back
+          ).then((_) {
+            _loadUserData(); // Reload user data to update experience
+            _loadLessonsData(); // Reload lessons data
+          });
         }
       },
       child: Container(
@@ -431,6 +446,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final percentage = (progress * 100).round();
     final progressText = '$_completedLessonsCount de $_totalLessons completadas • $percentage%';
 
+    final numbersProgress = _totalNumbers > 0 ? _completedNumbersCount / _totalNumbers : 0.0;
+    final numbersPercentage = (numbersProgress * 100).round();
+    final numbersProgressText = '$_completedNumbersCount de $_totalNumbers completadas • $numbersPercentage%';
+
+    final gesturesProgress = _totalGestures > 0 ? _completedGesturesCount / _totalGestures : 0.0;
+    final gesturesPercentage = (gesturesProgress * 100).round();
+    final gesturesProgressText = '$_completedGesturesCount de $_totalGestures completadas • $gesturesPercentage%';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -456,25 +479,54 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 15),
-        _buildLessonCard(
-          '🔢',
-          'Números en Señas',
-          '15 lecciones • Básico',
-          0.0,
-          'Completa el alfabeto para desbloquear',
-          AppColors.info,
-          true,
+        GestureDetector(
+          onTap: _completedLessonsCount >= 15 ? _showNumberLessons : null,
+          child: _buildLessonCard(
+            '🔢',
+            'Números en Señas',
+            '$_totalNumbers lecciones • Básico',
+            _completedLessonsCount >= 15 ? numbersProgress : 0.0,
+            _loadingLessons
+                ? 'Cargando...'
+                : _completedLessonsCount >= 15
+                    ? numbersProgressText
+                    : 'Completa 15 lecciones del alfabeto ($_completedLessonsCount/15)',
+            AppColors.info,
+            _completedLessonsCount < 15,
+          ),
         ),
         const SizedBox(height: 15),
-        _buildLessonCard(
-          '💬',
-          'Palabras Básicas',
-          '20 lecciones • Intermedio',
-          0.0,
-          'Desbloquea completando números',
-          AppColors.purple,
-          true,
-          dimmed: true,
+        GestureDetector(
+          onTap: _completedNumbersCount >= 5 ? _showGestureLessons : null,
+          child: _buildLessonCard(
+            '👋',
+            'Gestos Básicos',
+            '$_totalGestures lecciones • Intermedio',
+            _completedNumbersCount >= 5 ? gesturesProgress : 0.0,
+            _loadingLessons
+                ? 'Cargando...'
+                : _completedNumbersCount >= 5
+                    ? gesturesProgressText
+                    : 'Completa 5 lecciones de números ($_completedNumbersCount/5)',
+            AppColors.accent,
+            _completedNumbersCount < 5,
+          ),
+        ),
+        const SizedBox(height: 15),
+        GestureDetector(
+          onTap: _completedGesturesCount >= 10 ? _showWordLessons : null,
+          child: _buildLessonCard(
+            '💬',
+            'Palabras Básicas',
+            '20 lecciones • Avanzado',
+            0.0,
+            _completedGesturesCount >= 10
+                ? '¡Desbloqueado! Comienza a aprender'
+                : 'Completa 10 lecciones de gestos ($_completedGesturesCount/10)',
+            AppColors.purple,
+            _completedGesturesCount < 10,
+            dimmed: _completedGesturesCount < 10,
+          ),
         ),
       ],
     );
@@ -549,7 +601,186 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-    ).then((_) => _loadLessonsData()); // Reload when modal closes
+    ).then((_) {
+      _loadUserData(); // Reload user data to update experience
+      _loadLessonsData(); // Reload when modal closes
+    });
+  }
+
+  void _showNumberLessons() async {
+    final lessons = await _lessonService.getAllLessons(category: 'Numbers');
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Row(
+                      children: [
+                        Text('🔢', style: TextStyle(fontSize: 28)),
+                        SizedBox(width: 12),
+                        Text(
+                          'Números en Señas',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  itemCount: lessons.length,
+                  itemBuilder: (context, index) {
+                    final lesson = lessons[index];
+                    return _buildLessonListItem(lesson, index);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).then((_) {
+      _loadUserData(); // Reload user data to update experience
+      _loadLessonsData(); // Reload when modal closes
+    });
+  }
+
+  void _showGestureLessons() async {
+    final lessons = await _lessonService.getAllLessons(category: 'Gestures');
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Row(
+                      children: [
+                        Text('👋', style: TextStyle(fontSize: 28)),
+                        SizedBox(width: 12),
+                        Text(
+                          'Gestos Básicos',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  itemCount: lessons.length,
+                  itemBuilder: (context, index) {
+                    final lesson = lessons[index];
+                    return _buildLessonListItem(lesson, index);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).then((_) {
+      _loadUserData(); // Reload user data to update experience
+      _loadLessonsData(); // Reload when modal closes
+    });
+  }
+
+  void _showWordLessons() {
+    // TODO: Implementar lecciones de palabras
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.cardBackground,
+        title: const Text(
+          '💬 Palabras Básicas',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
+        content: const Text(
+          '¡Felicidades por desbloquear esta sección!\n\n'
+          'Las lecciones de palabras básicas estarán disponibles próximamente. '
+          'Continúa practicando el alfabeto, números y gestos mientras tanto.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Entendido', style: TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildLessonListItem(Lesson lesson, int index) {
@@ -604,7 +835,10 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(
               builder: (_) => LessonScreen(lessonId: lesson.id),
             ),
-          ).then((_) => _loadLessonsData());
+          ).then((_) {
+            _loadUserData(); // Reload user data to update experience
+            _loadLessonsData(); // Reload lessons data
+          });
         },
       ),
     );
@@ -733,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(0, '🏠', 'Inicio', true),
-          _buildNavItem(1, '📚', 'Lecciones', false),
+          _buildNavItem(1, '📖', 'Diccionario', false),
           _buildNavItem(2, '📊', 'Progreso', false),
           _buildNavItem(3, '👤', 'Perfil', false),
         ],
@@ -744,7 +978,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNavItem(int index, String emoji, String label, bool selected) {
     return GestureDetector(
       onTap: () {
-        if (index == 3) {
+        if (index == 1) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const DictionaryScreen()),
+          );
+        } else if (index == 3) {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const ProfileScreen()),
           );

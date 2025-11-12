@@ -9,7 +9,9 @@ import 'media_display_stub.dart'
     if (dart.library.html) 'media_display_web.dart'
     if (dart.library.io) 'media_display_io.dart';
 
-/// Widget para mostrar tanto imágenes como videos desde base64
+/// Widget para mostrar imágenes (incluidos GIFs animados) y videos desde base64
+/// Los GIFs se muestran como imágenes animadas usando Image.memory()
+/// Los videos MP4/MOV/AVI se muestran usando VideoPlayer
 class MediaDisplay extends StatefulWidget {
   final String base64Content;
   final double width;
@@ -67,6 +69,15 @@ class _MediaDisplayState extends State<MediaDisplay> {
 
   bool _isVideoContent(Uint8List bytes) {
     if (bytes.length < 12) return false;
+
+    // GIF: comienza con 'GIF87a' o 'GIF89a' - NO es video, es imagen animada
+    if (bytes.length >= 6) {
+      final gifSignature = String.fromCharCodes(bytes.sublist(0, 3));
+      if (gifSignature == 'GIF') {
+        print('✅ GIF detectado - será mostrado como imagen animada');
+        return false; // GIFs se manejan como imágenes en Flutter
+      }
+    }
 
     // Verificar magic numbers de formatos de video comunes
     // MP4: starts with 'ftyp' at bytes 4-7

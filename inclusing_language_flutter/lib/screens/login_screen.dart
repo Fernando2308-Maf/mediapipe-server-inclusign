@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/auth_models.dart';
 import '../services/auth_service.dart';
 import '../utils/colors.dart';
+import '../data/lesson_data.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
 
@@ -27,6 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _checkIfLoggedIn() async {
     if (await _authService.isUserLoggedIn()) {
+      // 🚀 Iniciar precarga de GIFs en background (abecedario + gestos)
+      LessonData.initializeAllData();
+
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -63,6 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result.isSuccess && result.userProfile != null) {
       if (mounted) {
+        // 🚀 Iniciar precarga de GIFs en background (abecedario + gestos)
+        LessonData.initializeAllData();
+
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -124,7 +131,66 @@ class _LoginScreenState extends State<LoginScreen> {
         _showAlert('Error', 'Contraseña incorrecta. Por favor verifica e intenta de nuevo.');
         _passwordController.clear();
       } else {
-        _showAlert('Error', result.errorMessage);
+        // Detectar error de conexión
+        final isConnectionError = result.errorMessage.contains('Error de conexión:') ||
+            result.errorMessage.contains('failed to fetch') ||
+            result.errorMessage.contains('ClientException') ||
+            result.errorMessage.contains('SocketException');
+
+        if (isConnectionError && mounted) {
+          // Ofrecer modo invitado cuando no hay conexión al servidor
+          final shouldContinueAsGuest = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: AppColors.cardBackground,
+              title: const Row(
+                children: [
+                  Icon(Icons.wifi_off, color: AppColors.error, size: 28),
+                  SizedBox(width: 10),
+                  Text(
+                    'Sin conexión',
+                    style: TextStyle(color: AppColors.textPrimary),
+                  ),
+                ],
+              ),
+              content: const Text(
+                'No se puede conectar con el servidor. ¿Deseas continuar como invitado?\n\n'
+                'En modo invitado podrás:\n'
+                '✓ Explorar el diccionario de señas\n'
+                '✓ Practicar lecciones básicas\n'
+                '✗ No se guardará tu progreso',
+                style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Continuar como Invitado', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldContinueAsGuest == true && mounted) {
+            // Iniciar sesión como invitado
+            await _authService.loginAsGuest();
+            LessonData.initializeAllData();
+
+            if (mounted) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            }
+          }
+        } else {
+          _showAlert('Error', result.errorMessage);
+        }
       }
     }
   }
@@ -448,6 +514,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (confirm == true) {
           await _authService.loginAsGuest();
+
+          // 🚀 Iniciar precarga de GIFs en background (abecedario + gestos)
+          LessonData.initializeAllData();
+
           if (mounted) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (_) => const HomeScreen()),

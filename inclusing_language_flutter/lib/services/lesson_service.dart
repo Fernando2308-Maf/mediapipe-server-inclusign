@@ -43,9 +43,10 @@ class LessonService {
     required String usuarioID,
     required int nivel,
     required bool exito,
+    int experienciaGanada = 0,
   }) async {
     final resultado = exito ? 'exito' : 'fallo';
-    return await _apiService.completarNivel(usuarioID, nivel, resultado);
+    return await _apiService.completarNivel(usuarioID, nivel, resultado, experienciaGanada: experienciaGanada);
   }
 
   /// Registrar un intento
@@ -243,54 +244,72 @@ class LessonService {
       return false;
     }
 
-    // Determinar si fue exitoso (score >= 60%)
+    // Determinar si fue exitoso (100% = todas las preguntas correctas)
     final percentage = (score / totalPoints * 100).round();
-    final exito = percentage >= 60;
-    print('📊 [LessonService] Porcentaje: $percentage% - Éxito: $exito');
+    final exito = score == totalPoints; // Requiere 100% (3/3 correctas)
+    print('📊 [LessonService] Porcentaje: $percentage% - Éxito: $exito - Score: $score/$totalPoints');
 
     // Registrar el intento
     print('📝 [LessonService] Registrando intento...');
-    final intentoRegistrado = await registrarIntento(
-      usuarioID: usuarioID,
-      nivel: lessonId,
-      exito: exito,
-    );
-    print('✓ [LessonService] Intento registrado: $intentoRegistrado');
+    try {
+      final intentoRegistrado = await registrarIntento(
+        usuarioID: usuarioID,
+        nivel: lessonId,
+        exito: exito,
+      );
+      print('✓ [LessonService] Intento registrado: $intentoRegistrado');
+    } catch (e) {
+      print('❌ [LessonService] Error registrando intento: $e');
+    }
 
-    // Si fue exitoso, completar el nivel
-    if (exito) {
-      print('🏆 [LessonService] Completando nivel...');
+    // Acumular experiencia siempre (incluso si no fue exitoso)
+    print('💫 [LessonService] Llamando a completarNivel con experiencia: $score XP');
+    try {
       final nivelCompletado = await completarNivel(
         usuarioID: usuarioID,
         nivel: lessonId,
-        exito: true,
-        experienciaGanada: score, // Enviar la experiencia ganada
+        exito: exito, // Solo marca como completado si fue 100%
+        experienciaGanada: score, // Siempre envía la experiencia ganada
       );
-      print('✓ [LessonService] Nivel completado: $nivelCompletado');
-
-      // Actualizar el perfil del usuario con la nueva experiencia
-      if (nivelCompletado) {
-        print('🔄 [LessonService] Actualizando perfil del usuario...');
-        await AuthService().refreshUserProfile();
-        print('✓ [LessonService] Perfil actualizado');
-      }
-
-      return nivelCompletado;
+      print('✓ [LessonService] completarNivel ejecutado: $nivelCompletado');
+    } catch (e) {
+      print('❌ [LessonService] Error en completarNivel: $e');
     }
 
-    return intentoRegistrado; // Intento registrado aunque no haya sido exitoso
+    // Actualizar el perfil del usuario con la nueva experiencia
+    print('🔄 [LessonService] Actualizando perfil del usuario...');
+    try {
+      await AuthService().refreshUserProfile();
+      print('✓ [LessonService] Perfil actualizado');
+    } catch (e) {
+      print('❌ [LessonService] Error actualizando perfil: $e');
+    }
+
+    return exito; // Retorna true solo si fue 100% exitoso
   }
 
-  /// Obtener siguiente lección incompleta
+  /// Obtener siguiente lección incompleta (busca en todas las categorías)
   Future<Lesson?> getNextIncompleteLesson() async {
-    final lessons = await getAllLessons();
-    for (final lesson in lessons) {
+    // Obtener lecciones del alfabeto
+    final alphabetLessons = await getAllLessons(category: 'Alphabet');
+
+    // Buscar primera lección incompleta del alfabeto
+    for (final lesson in alphabetLessons) {
       if (!lesson.isCompleted) {
         return lesson;
       }
     }
-    // Si todas están completadas, retornar la primera
-    return lessons.isNotEmpty ? lessons.first : null;
+
+    // Si todas las del alfabeto están completadas, buscar en números
+    final numberLessons = await getAllLessons(category: 'Numbers');
+    for (final lesson in numberLessons) {
+      if (!lesson.isCompleted) {
+        return lesson;
+      }
+    }
+
+    // Si todas están completadas, retornar null (no hay más lecciones)
+    return null;
   }
 
   /// Obtener progreso de lecciones (porcentaje completado)
@@ -312,5 +331,27 @@ class LessonService {
     if (usuarioID == null) return 0;
 
     return await getCompletedNivelesCount(usuarioID);
+  }
+
+  /// Obtener cantidad de lecciones completadas por categoría
+  Future<int> getCompletedLessonsCountByCategory(String category) async {
+    final usuarioID = await getUsuarioID();
+    if (usuarioID == null) return 0;
+
+    final progresion = await getProgresionUsuario(usuarioID);
+    if (progresion == null) return 0;
+
+    // Obtener todas las lecciones de la categoría
+    final allLessons = await LessonData.getLessonsByCategory(category);
+
+    // Contar cuántas de esas lecciones están en nivelesCompletados
+    int count = 0;
+    for (final lesson in allLessons) {
+      if (progresion.nivelesCompletados.contains(lesson.id)) {
+        count++;
+      }
+    }
+
+    return count;
   }
 }

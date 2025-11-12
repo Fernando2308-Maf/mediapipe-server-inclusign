@@ -1,6 +1,6 @@
 class AppConstants {
   // API Configuration
-  // Production (Railway): 'https://inclusing-production.up.railway.app/api'
+  // Production (Railway): 'https://inclusing-lenguage-api-production.up.railway.app/api'
   // Windows/Web: 'http://localhost:5246/api'
   // Android Emulator: 'http://10.0.2.2:5246/api'
   static const String baseUrl = 'http://localhost:5246/api';
@@ -22,8 +22,9 @@ class AppConstants {
   static const int defaultExperiencePerLesson = 10;
   static const int minPasswordLength = 6;
 
-  // Timeout
-  static const Duration requestTimeout = Duration(seconds: 120);
+  // Timeout - Aumentado significativamente debido a ALTA latencia de MongoDB Atlas
+  // MongoDB Atlas está tardando 1-3 minutos en responder
+  static const Duration requestTimeout = Duration(minutes: 3);
 
   // Guest User
   static const String guestEmail = 'guest@inclusign.com';

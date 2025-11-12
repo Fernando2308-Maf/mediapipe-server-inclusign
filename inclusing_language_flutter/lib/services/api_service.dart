@@ -358,4 +358,35 @@ class ApiService {
       return null;
     }
   }
+
+  // Gestos endpoints (colección: gestos)
+  Future<List<Map<String, dynamic>>> getGestos() async {
+    try {
+      final response = await _makeRequest('GET', '/gestos');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> json = jsonDecode(response.body);
+        return json.map((item) => item as Map<String, dynamic>).toList();
+      }
+      return [];
+    } catch (e) {
+      _log('Error getting gestos: $e');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getGestoByNombre(String nombre) async {
+    try {
+      final response = await _makeRequest('GET', '/gestos/$nombre');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        return json;
+      }
+      return null;
+    } catch (e) {
+      _log('Error getting gesto by nombre: $e');
+      return null;
+    }
+  }
 }
