@@ -437,6 +437,106 @@ class LessonData {
     },
   ];
 
+  /// Datos de la lección avanzada: Constructor de Frases (Lección 59)
+  static final Map<String, dynamic> _phraseBuilderData = {
+    'title': 'Palabras Básicas',
+    'description': 'Identifica el gesto correcto para cada situación',
+    'emoji': '💬',
+    'difficulty': 'intermediate',
+    'situations': [
+      {
+        'correctGesture': 'BUENOS DIAS',
+        'questions': [
+          {'question': '📖 Es por la mañana y ves a alguien.\n\n¿Qué gesto usas para saludar?', 'points': 5},
+          {'question': '🎯 Llegas a tu trabajo temprano.\n\n¿Cómo saludas a tus compañeros?', 'points': 10},
+          {'question': '🔥 Son las 8:00 AM y entras a clase.\n\n¿Qué gesto haces al profesor?', 'points': 10},
+        ],
+        'explanation': 'En la mañana se usa BUENOS DIAS para saludar.'
+      },
+      {
+        'correctGesture': 'GRACIAS',
+        'questions': [
+          {'question': '📖 Alguien te ayudó con algo.\n\n¿Cómo le respondes?', 'points': 5},
+          {'question': '🎯 Un amigo te prestó su lápiz.\n\n¿Qué le dices?', 'points': 10},
+          {'question': '🔥 Te abrieron la puerta.\n\n¿Qué gesto haces?', 'points': 10},
+        ],
+        'explanation': 'Cuando alguien te ayuda, debes decir GRACIAS para agradecer.'
+      },
+      {
+        'correctGesture': 'HOLA',
+        'questions': [
+          {'question': '📖 Ves a alguien por primera vez.\n\n¿Qué haces para saludar?', 'points': 5},
+          {'question': '🎯 Conoces a un nuevo compañero.\n\n¿Cómo lo saludas?', 'points': 10},
+          {'question': '🔥 Te encuentras con alguien en la calle.\n\n¿Qué gesto usas?', 'points': 10},
+        ],
+        'explanation': 'HOLA es el saludo básico para conocer a alguien.'
+      },
+      {
+        'correctGesture': 'COMO ESTAS',
+        'questions': [
+          {'question': '📖 Quieres saber cómo está alguien.\n\n¿Qué preguntas?', 'points': 5},
+          {'question': '🎯 Tu amigo se ve triste.\n\n¿Qué le preguntas?', 'points': 10},
+          {'question': '🔥 Saludas a tu profesor.\n\n¿Qué gesto haces después de HOLA?', 'points': 10},
+        ],
+        'explanation': 'COMO ESTAS se usa para preguntar por el estado de alguien.'
+      },
+      {
+        'correctGesture': 'NO ENTIENDO',
+        'questions': [
+          {'question': '📖 No comprendes lo que te dijeron.\n\n¿Qué señas indicas?', 'points': 5},
+          {'question': '🎯 La explicación fue muy rápida.\n\n¿Cómo lo comunicas?', 'points': 10},
+          {'question': '🔥 Algo no tiene sentido para ti.\n\n¿Qué gesto usas?', 'points': 10},
+        ],
+        'explanation': 'NO ENTIENDO indica que necesitas que te lo expliquen de nuevo.'
+      },
+      {
+        'correctGesture': 'BUENAS NOCHES',
+        'questions': [
+          {'question': '📖 Es de noche y te vas a despedir.\n\n¿Qué dices?', 'points': 5},
+          {'question': '🎯 Son las 9:00 PM y te vas a dormir.\n\n¿Cómo te despides?', 'points': 10},
+          {'question': '🔥 Termina el día y sales de casa.\n\n¿Qué gesto haces?', 'points': 10},
+        ],
+        'explanation': 'En la noche se usa BUENAS NOCHES para despedirse.'
+      },
+      {
+        'correctGesture': 'MI NOMBRE ES',
+        'questions': [
+          {'question': '📖 Quieres presentarte a alguien.\n\n¿Qué gesto usas primero?', 'points': 5},
+          {'question': '🎯 Alguien pregunta quién eres.\n\n¿Qué señas haces?', 'points': 10},
+          {'question': '🔥 En una reunión te toca presentarte.\n\n¿Cómo empiezas?', 'points': 10},
+        ],
+        'explanation': 'MI NOMBRE ES se usa antes de decir tu nombre.'
+      },
+      {
+        'correctGesture': 'SI',
+        'questions': [
+          {'question': '📖 Alguien te pregunta algo y estás de acuerdo.\n\n¿Cómo respondes?', 'points': 5},
+          {'question': '🎯 Te preguntan si entendiste la tarea.\n\n¿Qué gesto haces?', 'points': 10},
+          {'question': '🔥 Quieres confirmar que algo es correcto.\n\n¿Qué señas?', 'points': 10},
+        ],
+        'explanation': 'SI se usa para afirmar o estar de acuerdo.'
+      },
+      {
+        'correctGesture': 'PORFAVOR',
+        'questions': [
+          {'question': '📖 Quieres pedir algo de manera educada.\n\n¿Qué palabra agregas?', 'points': 5},
+          {'question': '🎯 Necesitas que te presten algo.\n\n¿Cómo lo pides amablemente?', 'points': 10},
+          {'question': '🔥 Solicitas ayuda a alguien.\n\n¿Qué gesto usas primero?', 'points': 10},
+        ],
+        'explanation': 'PORFAVOR hace tus peticiones más amables y educadas.'
+      },
+      {
+        'correctGesture': 'ENTIENDO',
+        'questions': [
+          {'question': '📖 Comprendiste perfectamente algo.\n\n¿Cómo lo indicas?', 'points': 5},
+          {'question': '🎯 La explicación quedó clara.\n\n¿Qué señas haces?', 'points': 10},
+          {'question': '🔥 Ya no tienes dudas sobre el tema.\n\n¿Cómo lo comunicas?', 'points': 10},
+        ],
+        'explanation': 'ENTIENDO muestra que has comprendido la información.'
+      }
+    ]
+  };
+
   /// Datos de las 21 lecciones de gestos básicos
   static final List<Map<String, dynamic>> _gesturesData = [
     {
@@ -1024,6 +1124,78 @@ class LessonData {
     }).toList();
   }
 
+  /// Generar las 10 lecciones de palabras básicas (59-68)
+  static Future<List<Lesson>> generateBasicWordLessons() async {
+    final data = _phraseBuilderData;
+    final allSituations = List<Map<String, dynamic>>.from(data['situations']);
+
+    // Cargar TODOS los GIFs disponibles para tener opciones
+    print('💬 Cargando GIFs para Palabras Básicas...');
+    final allGestureNames = _gesturesData.map((g) => g['gesture'] as String).toList();
+    for (var gesture in allGestureNames) {
+      if (!_gestosCache.containsKey(gesture)) {
+        await loadSingleGestoVideo(gesture, silent: true);
+      }
+    }
+
+    // Crear las 10 lecciones (una por cada situación)
+    return allSituations.asMap().entries.map((entry) {
+      final index = entry.key;
+      final situation = entry.value;
+      final lessonId = 59 + index; // Lecciones 59-68
+      final correctGesture = situation['correctGesture'];
+      final questions = List<Map<String, dynamic>>.from(situation['questions']);
+
+      // Crear 3 ejercicios para esta lección con preguntas DIFERENTES
+      final exercises = <Exercise>[];
+
+      for (int i = 0; i < questions.length; i++) {
+        final questionData = questions[i];
+
+        // Crear opciones diferentes para cada ejercicio
+        final wrongGestures = allGestureNames.where((g) => g != correctGesture).toList();
+        wrongGestures.shuffle();
+        final List<String> gestureOptions = [
+          correctGesture,
+          ...wrongGestures.take(3),
+        ]..shuffle();
+
+        exercises.add(Exercise(
+          id: i + 1,
+          type: ExerciseType.multipleChoice,
+          question: questionData['question'],
+          correctAnswer: correctGesture,
+          options: gestureOptions,
+          imageUrl: data['emoji'],
+          imageBase64: '',
+          hintText: situation['explanation'],
+          points: questionData['points'],
+        ));
+      }
+
+      return Lesson(
+        id: lessonId,
+        title: 'Lección $lessonId',
+        category: 'Basic Words',
+        letter: correctGesture,
+        description: 'Aprende a usar "$correctGesture" en diferentes situaciones',
+        imageUrl: data['emoji'],
+        imageBase64: '',
+        order: lessonId,
+        experiencePoints: 25, // 5 + 10 + 10 = 25 XP por lección
+        difficulty: DifficultyLevel.intermediate,
+        estimatedMinutes: 3,
+        exercises: exercises,
+        learningTips: [
+          '🎯 Lee cada situación con atención',
+          '🧠 Observa los GIFs cuidadosamente',
+          '💡 Solo necesitas seleccionar 1 GIF',
+          '👀 Cada pregunta es diferente',
+        ],
+      );
+    }).toList();
+  }
+
   /// Generar todas las lecciones de gestos con sus ejercicios
   static Future<List<Lesson>> generateGestureLessons() async {
     // Los GIFs deberían estar precargados en background
@@ -1364,6 +1536,16 @@ class LessonData {
       final lessons = await generateNumberLessons();
       try {
         return lessons.firstWhere((lesson) => lesson.id == id);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Lecciones de palabras básicas (IDs 59-68)
+    if (id >= 59 && id <= 68) {
+      final lessons = await generateBasicWordLessons();
+      try {
+        return lessons[id - 59]; // Índice 0-9 para IDs 59-68
       } catch (e) {
         return null;
       }

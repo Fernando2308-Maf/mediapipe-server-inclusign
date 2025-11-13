@@ -4,6 +4,7 @@ import '../models/lesson.dart';
 import '../services/lesson_service.dart';
 import '../utils/colors.dart';
 import '../widgets/media_display.dart';
+import '../data/lesson_data.dart';
 
 class LessonScreen extends StatefulWidget {
   final int lessonId;
@@ -25,6 +26,10 @@ class _LessonScreenState extends State<LessonScreen> {
   bool _answerVerified = false;
   bool _isCorrect = false;
   bool _showHint = false;
+
+  // Para la lección 59: Constructor de Frases
+  List<String> _selectedGestures = []; // Gestos seleccionados en orden
+  Map<String, String> _gestureGifs = {}; // Mapeo de nombre -> base64 GIF
 
   @override
   void initState() {
@@ -87,7 +92,16 @@ class _LessonScreenState extends State<LessonScreen> {
 
   void _verifyAnswer() {
     final exercise = _currentLesson!.exercises[_currentExerciseIndex];
-    final correct = _selectedAnswer == exercise.correctAnswer;
+
+    // Para lecciones 59-68 (palabras básicas), verificar que seleccionó exactamente 1 GIF correcto
+    bool correct;
+    if (widget.lessonId >= 59 && widget.lessonId <= 68) {
+      // Solo hay 1 gesto correcto por ejercicio
+      correct = _selectedGestures.length == 1 && _selectedGestures[0] == exercise.correctAnswer;
+    } else {
+      // Lecciones normales
+      correct = _selectedAnswer == exercise.correctAnswer;
+    }
 
     setState(() {
       _answerVerified = true;
@@ -104,6 +118,7 @@ class _LessonScreenState extends State<LessonScreen> {
       _answerVerified = false;
       _isCorrect = false;
       _showHint = false;
+      _selectedGestures.clear(); // Para lección 59
     });
   }
 
@@ -395,6 +410,11 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   Widget _buildExerciseContent(Exercise exercise) {
+    // Para lecciones 59-68 (Palabras Básicas), usar UI especial con GIFs
+    if (widget.lessonId >= 59 && widget.lessonId <= 68) {
+      return _buildGestureSelectionExercise(exercise);
+    }
+
     switch (exercise.type) {
       case ExerciseType.practice:
         return _buildPracticeExercise(exercise);
@@ -402,6 +422,8 @@ class _LessonScreenState extends State<LessonScreen> {
         return _buildSignRecognitionExercise(exercise);
       case ExerciseType.multipleChoice:
         return _buildMultipleChoiceExercise(exercise);
+      case ExerciseType.matching:
+        return _buildGestureSelectionExercise(exercise);
       default:
         return const SizedBox();
     }
@@ -757,6 +779,383 @@ class _LessonScreenState extends State<LessonScreen> {
         ),
       ),
     );
+  }
+
+  // Método especial para lección 59: Constructor de Frases
+  Widget _buildGestureSelectionExercise(Exercise exercise) {
+    return FutureBuilder<Map<String, String>>(
+      future: _loadGestureGifs(exercise.options),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: AppColors.primary),
+                SizedBox(height: 20),
+                Text(
+                  'Cargando gestos...',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(
+            child: Text(
+              'Error cargando gestos',
+              style: TextStyle(color: AppColors.error),
+            ),
+          );
+        }
+
+        final gestureGifs = snapshot.data!;
+        final correctGestures = exercise.correctAnswer.split(',');
+
+        return Column(
+          children: [
+            // Pregunta y contexto
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.purple.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: AppColors.purple.withOpacity(0.5)),
+              ),
+              child: Column(
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.touch_app, color: AppColors.purple, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Selecciona 1 GIF',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.purple,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    exercise.question,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Gestos seleccionados (vista previa)
+            if (_selectedGestures.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '✅ Seleccionados:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _selectedGestures.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final gesture = entry.value;
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.primary),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                gesture,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 8),
+                    if (!_answerVerified)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _selectedGestures.clear();
+                          });
+                        },
+                        icon: const Icon(Icons.refresh, size: 16, color: AppColors.error),
+                        label: const Text(
+                          'Reiniciar selección',
+                          style: TextStyle(fontSize: 12, color: AppColors.error),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (_selectedGestures.isNotEmpty) const SizedBox(height: 20),
+
+            // Cuadrícula de GIFs - continuado en siguiente parte...
+            _buildGestureGrid(exercise, gestureGifs, correctGestures),
+
+            const SizedBox(height: 20),
+
+            // Feedback
+            if (_answerVerified) _buildFeedback(),
+
+            // Hint
+            if (_showHint && !_answerVerified) _buildHint(exercise.hintText),
+          ],
+        );
+      },
+    );
+  }
+
+  // Cuadrícula de GIFs interactivos
+  Widget _buildGestureGrid(Exercise exercise, Map<String, String> gestureGifs, List<String> correctGestures) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: exercise.options.length,
+      itemBuilder: (context, index) {
+        final gestureName = exercise.options[index];
+        final gifBase64 = gestureGifs[gestureName] ?? '';
+        final isSelected = _selectedGestures.contains(gestureName);
+        final selectionOrder = isSelected ? _selectedGestures.indexOf(gestureName) + 1 : null;
+
+        // Verificación de respuesta
+        final isCorrectGesture = correctGestures.contains(gestureName);
+        final showAsCorrect = _answerVerified && isCorrectGesture && isSelected;
+        final showAsWrong = _answerVerified && !isCorrectGesture && isSelected;
+        final showAsMissed = _answerVerified && isCorrectGesture && !isSelected;
+
+        Color borderColor = AppColors.border;
+        Color backgroundColor = AppColors.cardBackground;
+
+        if (showAsCorrect) {
+          borderColor = AppColors.success;
+          backgroundColor = AppColors.success.withOpacity(0.1);
+        } else if (showAsWrong) {
+          borderColor = AppColors.error;
+          backgroundColor = AppColors.error.withOpacity(0.1);
+        } else if (showAsMissed) {
+          borderColor = AppColors.warning;
+          backgroundColor = AppColors.warning.withOpacity(0.1);
+        } else if (isSelected) {
+          borderColor = AppColors.primary;
+          backgroundColor = AppColors.primary.withOpacity(0.1);
+        }
+
+        return GestureDetector(
+          onTap: _answerVerified
+              ? null
+              : () {
+                  setState(() {
+                    if (isSelected) {
+                      // Deseleccionar
+                      _selectedGestures.clear();
+                    } else {
+                      // Seleccionar solo este (limpiar otros primero)
+                      _selectedGestures.clear();
+                      _selectedGestures.add(gestureName);
+                    }
+                    _selectedAnswer = _selectedGestures.isNotEmpty ? _selectedGestures[0] : null;
+                  });
+                },
+          child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: borderColor, width: 3),
+            ),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                        child: gifBase64.isNotEmpty
+                            ? MediaDisplay(
+                                base64Content: gifBase64,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : const Center(
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  size: 40,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: backgroundColor.withOpacity(0.9),
+                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+                      ),
+                      child: Text(
+                        gestureName,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                if (selectionOrder != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: isSelected && !_answerVerified
+                            ? AppColors.primary
+                            : showAsCorrect
+                                ? AppColors.success
+                                : AppColors.error,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$selectionOrder',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_answerVerified)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: showAsCorrect
+                            ? AppColors.success
+                            : showAsWrong
+                                ? AppColors.error
+                                : showAsMissed
+                                    ? AppColors.warning
+                                    : Colors.transparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        showAsCorrect
+                            ? Icons.check
+                            : showAsWrong
+                                ? Icons.close
+                                : showAsMissed
+                                    ? Icons.lightbulb_outline
+                                    : Icons.circle_outlined,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper para cargar GIFs
+  Future<Map<String, String>> _loadGestureGifs(List<String> gestureNames) async {
+    final Map<String, String> gifs = {};
+
+    for (final name in gestureNames) {
+      try {
+        final gif = await LessonData.loadSingleGestoVideo(name, silent: true);
+        if (gif.isNotEmpty) {
+          gifs[name] = gif;
+        }
+      } catch (e) {
+        print('Error cargando GIF para $name: $e');
+      }
+    }
+
+    return gifs;
   }
 
   Widget _buildFeedback() {

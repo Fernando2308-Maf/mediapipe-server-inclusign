@@ -39,7 +39,8 @@
       "Bash(timeout 60 cat:*)",
       "Bash(timeout 90 cat:*)",
       "Bash(cmd //c \"dir /b\")",
-      "Bash(dir .env)"
+      "Bash(dir .env)",
+      "Bash(cmd //c \"dir /b inclusing_language_flutter\\assets\\gifs\\gestos\\*.gif 2>nul\")"
     ],
     "deny": [],
     "ask": []

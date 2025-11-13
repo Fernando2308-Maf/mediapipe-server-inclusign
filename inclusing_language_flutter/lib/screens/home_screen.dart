@@ -28,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalNumbers = 10;
   int _completedGesturesCount = 0;
   int _totalGestures = 21;
+  int _completedWordsCount = 0;
+  int _totalWords = 10;
   Lesson? _nextLesson;
   bool _loadingLessons = true;
 
@@ -61,12 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final completedAlphabetCount = await _lessonService.getCompletedLessonsCountByCategory('Alphabet');
       final completedNumbersCount = await _lessonService.getCompletedLessonsCountByCategory('Numbers');
       final completedGesturesCount = await _lessonService.getCompletedLessonsCountByCategory('Gestures');
+      final completedWordsCount = await _lessonService.getCompletedLessonsCountByCategory('Basic Words');
       final nextLesson = await _lessonService.getNextIncompleteLesson();
 
       setState(() {
         _completedLessonsCount = completedAlphabetCount;
         _completedNumbersCount = completedNumbersCount;
         _completedGesturesCount = completedGesturesCount;
+        _completedWordsCount = completedWordsCount;
         _nextLesson = nextLesson;
         _loadingLessons = false;
       });
@@ -518,10 +522,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: _buildLessonCard(
             '💬',
             'Palabras Básicas',
-            '20 lecciones • Avanzado',
-            0.0,
+            '10 lecciones • Intermedio',
+            _completedWordsCount / _totalWords,
             _completedGesturesCount >= 10
-                ? '¡Desbloqueado! Comienza a aprender'
+                ? '$_completedWordsCount/$_totalWords completadas'
                 : 'Completa 10 lecciones de gestos ($_completedGesturesCount/10)',
             AppColors.purple,
             _completedGesturesCount < 10,
@@ -757,26 +761,209 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _showWordLessons() {
-    // TODO: Implementar lecciones de palabras
-    showDialog(
+  void _showWordLessons() async {
+    // Cargar las 10 lecciones de palabras básicas (IDs 59-68)
+    final List<Lesson> lessons = [];
+    for (int i = 59; i <= 68; i++) {
+      final lesson = await _lessonService.getLessonById(i);
+      if (lesson != null) {
+        lessons.add(lesson);
+      }
+    }
+
+    if (!mounted) return;
+
+    if (lessons.isEmpty) {
+      _showAlert('Error', 'No se pudieron cargar las lecciones de palabras básicas');
+      return;
+    }
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
-          '💬 Palabras Básicas',
-          style: TextStyle(color: AppColors.textPrimary),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        const Text('💬', style: TextStyle(fontSize: 28)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Palabras Básicas',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                '$_completedWordsCount/$_totalWords lecciones completadas',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  itemCount: lessons.length,
+                  itemBuilder: (context, index) {
+                    final lesson = lessons[index];
+                    return _buildLessonListItem(lesson, index);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-        content: const Text(
-          '¡Felicidades por desbloquear esta sección!\n\n'
-          'Las lecciones de palabras básicas estarán disponibles próximamente. '
-          'Continúa practicando el alfabeto, números y gestos mientras tanto.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido', style: TextStyle(color: AppColors.primary)),
+      ),
+    ).then((_) {
+      _loadUserData(); // Reload user data to update experience
+      _loadLessonsData(); // Reload when modal closes
+    });
+  }
+
+  Widget _buildAdvancedLessonInfo(Lesson lesson) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.purple.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: AppColors.purple.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.star, color: AppColors.purple, size: 20),
+              SizedBox(width: 8),
+              Text(
+                '¡Lección Especial Desbloqueada!',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.purple,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            lesson.description,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              _buildInfoChip('⏱️', '${lesson.estimatedMinutes} min'),
+              _buildInfoChip('⭐', '${lesson.experiencePoints} XP'),
+              _buildInfoChip('💡', 'Intermedio'),
+              _buildInfoChip('🎯', '10 Situaciones'),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '💡 Consejos:',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  '• Selecciona solo 1 GIF por pregunta\n'
+                  '• Lee la situación con atención antes de elegir\n'
+                  '• Cada intento te presenta situaciones diferentes',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(String icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
