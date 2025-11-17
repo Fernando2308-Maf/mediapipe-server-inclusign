@@ -437,105 +437,260 @@ class LessonData {
     },
   ];
 
-  /// Datos de la lección avanzada: Constructor de Frases (Lección 59)
-  static final Map<String, dynamic> _phraseBuilderData = {
-    'title': 'Palabras Básicas',
-    'description': 'Identifica el gesto correcto para cada situación',
-    'emoji': '💬',
-    'difficulty': 'intermediate',
-    'situations': [
-      {
-        'correctGesture': 'BUENOS DIAS',
-        'questions': [
-          {'question': '📖 Es por la mañana y ves a alguien.\n\n¿Qué gesto usas para saludar?', 'points': 5},
-          {'question': '🎯 Llegas a tu trabajo temprano.\n\n¿Cómo saludas a tus compañeros?', 'points': 10},
-          {'question': '🔥 Son las 8:00 AM y entras a clase.\n\n¿Qué gesto haces al profesor?', 'points': 10},
-        ],
-        'explanation': 'En la mañana se usa BUENOS DIAS para saludar.'
-      },
-      {
-        'correctGesture': 'GRACIAS',
-        'questions': [
-          {'question': '📖 Alguien te ayudó con algo.\n\n¿Cómo le respondes?', 'points': 5},
-          {'question': '🎯 Un amigo te prestó su lápiz.\n\n¿Qué le dices?', 'points': 10},
-          {'question': '🔥 Te abrieron la puerta.\n\n¿Qué gesto haces?', 'points': 10},
-        ],
-        'explanation': 'Cuando alguien te ayuda, debes decir GRACIAS para agradecer.'
-      },
-      {
-        'correctGesture': 'HOLA',
-        'questions': [
-          {'question': '📖 Ves a alguien por primera vez.\n\n¿Qué haces para saludar?', 'points': 5},
-          {'question': '🎯 Conoces a un nuevo compañero.\n\n¿Cómo lo saludas?', 'points': 10},
-          {'question': '🔥 Te encuentras con alguien en la calle.\n\n¿Qué gesto usas?', 'points': 10},
-        ],
-        'explanation': 'HOLA es el saludo básico para conocer a alguien.'
-      },
-      {
-        'correctGesture': 'COMO ESTAS',
-        'questions': [
-          {'question': '📖 Quieres saber cómo está alguien.\n\n¿Qué preguntas?', 'points': 5},
-          {'question': '🎯 Tu amigo se ve triste.\n\n¿Qué le preguntas?', 'points': 10},
-          {'question': '🔥 Saludas a tu profesor.\n\n¿Qué gesto haces después de HOLA?', 'points': 10},
-        ],
-        'explanation': 'COMO ESTAS se usa para preguntar por el estado de alguien.'
-      },
-      {
-        'correctGesture': 'NO ENTIENDO',
-        'questions': [
-          {'question': '📖 No comprendes lo que te dijeron.\n\n¿Qué señas indicas?', 'points': 5},
-          {'question': '🎯 La explicación fue muy rápida.\n\n¿Cómo lo comunicas?', 'points': 10},
-          {'question': '🔥 Algo no tiene sentido para ti.\n\n¿Qué gesto usas?', 'points': 10},
-        ],
-        'explanation': 'NO ENTIENDO indica que necesitas que te lo expliquen de nuevo.'
-      },
-      {
-        'correctGesture': 'BUENAS NOCHES',
-        'questions': [
-          {'question': '📖 Es de noche y te vas a despedir.\n\n¿Qué dices?', 'points': 5},
-          {'question': '🎯 Son las 9:00 PM y te vas a dormir.\n\n¿Cómo te despides?', 'points': 10},
-          {'question': '🔥 Termina el día y sales de casa.\n\n¿Qué gesto haces?', 'points': 10},
-        ],
-        'explanation': 'En la noche se usa BUENAS NOCHES para despedirse.'
-      },
-      {
-        'correctGesture': 'MI NOMBRE ES',
-        'questions': [
-          {'question': '📖 Quieres presentarte a alguien.\n\n¿Qué gesto usas primero?', 'points': 5},
-          {'question': '🎯 Alguien pregunta quién eres.\n\n¿Qué señas haces?', 'points': 10},
-          {'question': '🔥 En una reunión te toca presentarte.\n\n¿Cómo empiezas?', 'points': 10},
-        ],
-        'explanation': 'MI NOMBRE ES se usa antes de decir tu nombre.'
-      },
-      {
-        'correctGesture': 'SI',
-        'questions': [
-          {'question': '📖 Alguien te pregunta algo y estás de acuerdo.\n\n¿Cómo respondes?', 'points': 5},
-          {'question': '🎯 Te preguntan si entendiste la tarea.\n\n¿Qué gesto haces?', 'points': 10},
-          {'question': '🔥 Quieres confirmar que algo es correcto.\n\n¿Qué señas?', 'points': 10},
-        ],
-        'explanation': 'SI se usa para afirmar o estar de acuerdo.'
-      },
-      {
-        'correctGesture': 'PORFAVOR',
-        'questions': [
-          {'question': '📖 Quieres pedir algo de manera educada.\n\n¿Qué palabra agregas?', 'points': 5},
-          {'question': '🎯 Necesitas que te presten algo.\n\n¿Cómo lo pides amablemente?', 'points': 10},
-          {'question': '🔥 Solicitas ayuda a alguien.\n\n¿Qué gesto usas primero?', 'points': 10},
-        ],
-        'explanation': 'PORFAVOR hace tus peticiones más amables y educadas.'
-      },
-      {
-        'correctGesture': 'ENTIENDO',
-        'questions': [
-          {'question': '📖 Comprendiste perfectamente algo.\n\n¿Cómo lo indicas?', 'points': 5},
-          {'question': '🎯 La explicación quedó clara.\n\n¿Qué señas haces?', 'points': 10},
-          {'question': '🔥 Ya no tienes dudas sobre el tema.\n\n¿Cómo lo comunicas?', 'points': 10},
-        ],
-        'explanation': 'ENTIENDO muestra que has comprendido la información.'
-      }
-    ]
-  };
+  /// Datos de la lección avanzada: Palabras Básicas (Lecciones 59-68)
+  /// Cada lección tiene 3 ejercicios con DIFERENTES respuestas correctas
+  static final List<Map<String, dynamic>> _basicWordsLessons = [
+    // Lección 59: Saludos Básicos
+    {
+      'title': 'Saludos Básicos',
+      'emoji': '👋',
+      'exercises': [
+        {
+          'question': '📖 Es por la mañana y ves a alguien.\n\n¿Qué gesto usas para saludar?',
+          'correctGesture': 'BUENOS DIAS',
+          'explanation': 'En la mañana se usa BUENOS DIAS para saludar.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Ves a alguien por primera vez en el día.\n\n¿Cómo lo saludas de manera general?',
+          'correctGesture': 'HOLA',
+          'explanation': 'HOLA es el saludo básico universal.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Después de saludar, quieres saber cómo está.\n\n¿Qué preguntas?',
+          'correctGesture': 'COMO ESTAS',
+          'explanation': 'COMO ESTAS se usa para preguntar por el estado de alguien.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 60: Expresiones de Cortesía
+    {
+      'title': 'Expresiones de Cortesía',
+      'emoji': '🙏',
+      'exercises': [
+        {
+          'question': '📖 Alguien te ayudó con algo.\n\n¿Cómo le respondes?',
+          'correctGesture': 'GRACIAS',
+          'explanation': 'GRACIAS expresa gratitud cuando alguien te ayuda.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Necesitas pedir un favor de manera educada.\n\n¿Qué palabra usas?',
+          'correctGesture': 'PORFAVOR',
+          'explanation': 'PORFAVOR hace tus peticiones más amables.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres despedirte y desearle lo mejor a alguien.\n\n¿Qué gesto usas?',
+          'correctGesture': 'CUIDATE MUCHO',
+          'explanation': 'CUIDATE MUCHO es una despedida afectuosa.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 61: Presentación Personal
+    {
+      'title': 'Presentación Personal',
+      'emoji': '🤝',
+      'exercises': [
+        {
+          'question': '📖 Conoces a alguien nuevo.\n\n¿Cómo empiezas la conversación?',
+          'correctGesture': 'HOLA',
+          'explanation': 'HOLA es el primer paso para presentarte.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Quieres decir tu nombre.\n\n¿Qué gesto usas antes de tu nombre?',
+          'correctGesture': 'MI NOMBRE ES',
+          'explanation': 'MI NOMBRE ES se usa antes de decir tu nombre.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres saber el nombre de la otra persona.\n\n¿Qué le preguntas?',
+          'correctGesture': 'CUAL ES TU NOMBRE',
+          'explanation': 'CUAL ES TU NOMBRE pregunta por el nombre de alguien.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 62: Respuestas y Confirmaciones
+    {
+      'title': 'Respuestas y Confirmaciones',
+      'emoji': '✅',
+      'exercises': [
+        {
+          'question': '📖 Alguien te pregunta si estás de acuerdo.\n\n¿Cómo respondes afirmativamente?',
+          'correctGesture': 'SI',
+          'explanation': 'SI se usa para afirmar o estar de acuerdo.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 No estás de acuerdo con algo.\n\n¿Qué gesto haces?',
+          'correctGesture': 'NO',
+          'explanation': 'NO se usa para negar o no estar de acuerdo.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Comprendiste perfectamente la explicación.\n\n¿Cómo lo indicas?',
+          'correctGesture': 'ENTIENDO',
+          'explanation': 'ENTIENDO muestra que has comprendido la información.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 63: Comunicando Dificultades
+    {
+      'title': 'Comunicando Dificultades',
+      'emoji': '🤔',
+      'exercises': [
+        {
+          'question': '📖 No comprendes lo que te dijeron.\n\n¿Qué señas indicas?',
+          'correctGesture': 'NO ENTIENDO',
+          'explanation': 'NO ENTIENDO indica que necesitas que te lo expliquen de nuevo.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Quieres saber el motivo de algo.\n\n¿Qué preguntas?',
+          'correctGesture': 'POR QUE',
+          'explanation': 'POR QUE se usa para preguntar la razón de algo.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres ofrecer tu ayuda a alguien.\n\n¿Qué le dices?',
+          'correctGesture': 'PUEDO AYUDARTE',
+          'explanation': 'PUEDO AYUDARTE ofrece tu ayuda a alguien que lo necesita.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 64: Despedidas
+    {
+      'title': 'Despedidas',
+      'emoji': '👋',
+      'exercises': [
+        {
+          'question': '📖 Es de noche y te vas a dormir.\n\n¿Cómo te despides?',
+          'correctGesture': 'BUENAS NOCHES',
+          'explanation': 'BUENAS NOCHES se usa para despedirse en la noche.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Te vas pero te verás con la persona mañana.\n\n¿Qué gesto usas?',
+          'correctGesture': 'BUENOS DIAS',
+          'explanation': 'Puedes usar BUENOS DIAS anticipando el próximo encuentro.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres desearle lo mejor al despedirte.\n\n¿Qué le dices?',
+          'correctGesture': 'CUIDATE MUCHO',
+          'explanation': 'CUIDATE MUCHO es una despedida afectuosa.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 65: Identificación de Personas
+    {
+      'title': 'Identificación de Personas',
+      'emoji': '👤',
+      'exercises': [
+        {
+          'question': '📖 Quieres saber quién es alguien.\n\n¿Qué preguntas?',
+          'correctGesture': 'QUIEN',
+          'explanation': 'QUIEN se usa para preguntar la identidad de alguien.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Quieres identificarte ante alguien.\n\n¿Qué gesto usas?',
+          'correctGesture': 'MI NOMBRE ES',
+          'explanation': 'MI NOMBRE ES te permite identificarte.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres saber si alguien es sordo.\n\n¿Qué le preguntas?',
+          'correctGesture': 'ERES SORDO',
+          'explanation': 'ERES SORDO pregunta sobre la condición auditiva de alguien.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 66: Tipos de Personas
+    {
+      'title': 'Tipos de Personas',
+      'emoji': '👥',
+      'exercises': [
+        {
+          'question': '📖 Quieres indicar que alguien es sordo.\n\n¿Qué gesto usas?',
+          'correctGesture': 'SORDO',
+          'explanation': 'SORDO identifica a una persona con discapacidad auditiva.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Quieres indicar que alguien puede oír.\n\n¿Qué señas haces?',
+          'correctGesture': 'OYENTE',
+          'explanation': 'OYENTE identifica a una persona que puede escuchar.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres preguntar si pueden comunicarse.\n\n¿Qué gestos usas?',
+          'correctGesture': 'PODEMOS HABLAR',
+          'explanation': 'PODEMOS HABLAR pregunta sobre la posibilidad de comunicarse.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 67: Interacción Social
+    {
+      'title': 'Interacción Social',
+      'emoji': '💬',
+      'exercises': [
+        {
+          'question': '📖 Conoces a alguien nuevo y quieres ser amable.\n\n¿Qué le dices después de HOLA?',
+          'correctGesture': 'HOLA GUSTO CONOCERTE',
+          'explanation': 'HOLA GUSTO CONOCERTE expresa que te alegra conocer a alguien.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Quieres proponer tener una conversación.\n\n¿Qué gestos usas?',
+          'correctGesture': 'PODEMOS HABLAR',
+          'explanation': 'PODEMOS HABLAR propone iniciar una conversación.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Quieres agradecer a alguien.\n\n¿Qué gesto haces?',
+          'correctGesture': 'GRACIAS',
+          'explanation': 'GRACIAS expresa gratitud.',
+          'points': 10,
+        },
+      ],
+    },
+    // Lección 68: Situaciones Cotidianas
+    {
+      'title': 'Situaciones Cotidianas',
+      'emoji': '🌟',
+      'exercises': [
+        {
+          'question': '📖 Es tu primer día en un lugar nuevo.\n\n¿Cómo saludas?',
+          'correctGesture': 'HOLA',
+          'explanation': 'HOLA es el saludo apropiado para situaciones nuevas.',
+          'points': 5,
+        },
+        {
+          'question': '🎯 Alguien te explicó algo difícil y ahora lo entiendes.\n\n¿Qué le dices primero?',
+          'correctGesture': 'GRACIAS',
+          'explanation': 'GRACIAS agradece la ayuda recibida.',
+          'points': 10,
+        },
+        {
+          'question': '🔥 Luego quieres confirmar que comprendiste.\n\n¿Qué gesto haces?',
+          'correctGesture': 'ENTIENDO',
+          'explanation': 'ENTIENDO confirma tu comprensión.',
+          'points': 10,
+        },
+      ],
+    },
+  ];
 
   /// Datos de las 21 lecciones de gestos básicos
   static final List<Map<String, dynamic>> _gesturesData = [
@@ -1125,10 +1280,8 @@ class LessonData {
   }
 
   /// Generar las 10 lecciones de palabras básicas (59-68)
+  /// Cada lección ahora tiene 3 ejercicios con DIFERENTES respuestas correctas
   static Future<List<Lesson>> generateBasicWordLessons() async {
-    final data = _phraseBuilderData;
-    final allSituations = List<Map<String, dynamic>>.from(data['situations']);
-
     // Cargar TODOS los GIFs disponibles para tener opciones
     print('💬 Cargando GIFs para Palabras Básicas...');
     final allGestureNames = _gesturesData.map((g) => g['gesture'] as String).toList();
@@ -1138,21 +1291,22 @@ class LessonData {
       }
     }
 
-    // Crear las 10 lecciones (una por cada situación)
-    return allSituations.asMap().entries.map((entry) {
+    // Crear las 10 lecciones (una por cada entrada en _basicWordsLessons)
+    return _basicWordsLessons.asMap().entries.map((entry) {
       final index = entry.key;
-      final situation = entry.value;
+      final lessonData = entry.value;
       final lessonId = 59 + index; // Lecciones 59-68
-      final correctGesture = situation['correctGesture'];
-      final questions = List<Map<String, dynamic>>.from(situation['questions']);
 
-      // Crear 3 ejercicios para esta lección con preguntas DIFERENTES
+      final exercisesData = List<Map<String, dynamic>>.from(lessonData['exercises']);
+
+      // Crear 3 ejercicios para esta lección, cada uno con DIFERENTE respuesta correcta
       final exercises = <Exercise>[];
 
-      for (int i = 0; i < questions.length; i++) {
-        final questionData = questions[i];
+      for (int i = 0; i < exercisesData.length; i++) {
+        final exerciseData = exercisesData[i];
+        final correctGesture = exerciseData['correctGesture'] as String;
 
-        // Crear opciones diferentes para cada ejercicio
+        // Crear opciones diferentes para cada ejercicio (respuesta correcta + 3 incorrectas)
         final wrongGestures = allGestureNames.where((g) => g != correctGesture).toList();
         wrongGestures.shuffle();
         final List<String> gestureOptions = [
@@ -1163,23 +1317,29 @@ class LessonData {
         exercises.add(Exercise(
           id: i + 1,
           type: ExerciseType.multipleChoice,
-          question: questionData['question'],
+          question: exerciseData['question'],
           correctAnswer: correctGesture,
           options: gestureOptions,
-          imageUrl: data['emoji'],
+          imageUrl: lessonData['emoji'],
           imageBase64: '',
-          hintText: situation['explanation'],
-          points: questionData['points'],
+          hintText: exerciseData['explanation'],
+          points: exerciseData['points'],
         ));
       }
+
+      // Obtener todas las respuestas correctas únicas para esta lección
+      final uniqueGestures = exercisesData
+          .map((e) => e['correctGesture'] as String)
+          .toSet()
+          .join(', ');
 
       return Lesson(
         id: lessonId,
         title: 'Lección $lessonId',
         category: 'Basic Words',
-        letter: correctGesture,
-        description: 'Aprende a usar "$correctGesture" en diferentes situaciones',
-        imageUrl: data['emoji'],
+        letter: uniqueGestures, // Lista de gestos únicos en esta lección
+        description: lessonData['title'],
+        imageUrl: lessonData['emoji'],
         imageBase64: '',
         order: lessonId,
         experiencePoints: 25, // 5 + 10 + 10 = 25 XP por lección
@@ -1189,8 +1349,8 @@ class LessonData {
         learningTips: [
           '🎯 Lee cada situación con atención',
           '🧠 Observa los GIFs cuidadosamente',
-          '💡 Solo necesitas seleccionar 1 GIF',
-          '👀 Cada pregunta es diferente',
+          '💡 Solo necesitas seleccionar 1 GIF por pregunta',
+          '✨ Cada pregunta tiene una respuesta DIFERENTE',
         ],
       );
     }).toList();
@@ -1642,6 +1802,10 @@ class LessonData {
     if (category.toLowerCase() == 'gestures' || category.toLowerCase() == 'gestos') {
       // Los GIFs deberían estar precargados en background desde el login
       return await generateGestureLessons();
+    }
+    if (category.toLowerCase() == 'basic words' || category.toLowerCase() == 'palabras básicas' || category.toLowerCase() == 'palabras basicas') {
+      // Lecciones 59-68: Palabras Básicas
+      return await generateBasicWordLessons();
     }
     return [];
   }

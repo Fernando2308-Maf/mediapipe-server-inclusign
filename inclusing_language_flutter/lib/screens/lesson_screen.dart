@@ -217,22 +217,54 @@ class _LessonScreenState extends State<LessonScreen> {
           if (percentage == 100)
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop(); // Cerrar diálogo
+                print('🔍 Buscando siguiente lección...');
+                print('📚 Lección actual: ID=${_currentLesson!.id}, Categoría=${_currentLesson!.category}');
 
                 // Obtener todas las lecciones de la categoría actual
                 final currentCategory = _currentLesson!.category;
                 final allLessons = await _lessonService.getAllLessons(category: currentCategory);
 
-                // Buscar la siguiente lección en orden (por ID)
+                print('📋 Total lecciones en categoría "$currentCategory": ${allLessons.length}');
+
+                // Buscar la siguiente lección por ID (no por índice)
                 Lesson? nextLesson;
-                for (int i = 0; i < allLessons.length; i++) {
-                  if (allLessons[i].id == _currentLesson!.id && i + 1 < allLessons.length) {
-                    nextLesson = allLessons[i + 1];
-                    break;
+
+                // Para lecciones de "Basic Words" (IDs 59-68)
+                if (currentCategory == 'Basic Words' && _currentLesson!.id >= 59 && _currentLesson!.id <= 67) {
+                  // Buscar la siguiente lección por ID consecutivo
+                  final nextId = _currentLesson!.id + 1;
+                  print('🔄 Buscando siguiente lección de Basic Words: ID $nextId');
+                  nextLesson = await _lessonService.getLessonById(nextId);
+
+                  if (nextLesson != null) {
+                    print('✅ Siguiente lección encontrada: ${nextLesson.title}');
+                  } else {
+                    print('❌ No se encontró la lección con ID $nextId');
+                  }
+                } else {
+                  print('🔍 Buscando en array de lecciones (método estándar)');
+                  // Para otras categorías, buscar en el array
+                  for (int i = 0; i < allLessons.length; i++) {
+                    if (allLessons[i].id == _currentLesson!.id && i + 1 < allLessons.length) {
+                      nextLesson = allLessons[i + 1];
+                      print('✅ Siguiente lección encontrada: ${nextLesson!.title}');
+                      break;
+                    }
                   }
                 }
 
-                if (nextLesson != null && mounted) {
+                // Cerrar el diálogo primero
+                if (!mounted) return;
+                Navigator.of(context).pop();
+
+                // Esperar un momento para que el diálogo se cierre completamente
+                await Future.delayed(const Duration(milliseconds: 100));
+
+                // Ahora navegar con el context válido
+                if (!mounted) return;
+
+                if (nextLesson != null) {
+                  print('➡️ Navegando a siguiente lección: ${nextLesson.title}');
                   // Reemplazar la pantalla actual con la siguiente lección
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
@@ -240,6 +272,7 @@ class _LessonScreenState extends State<LessonScreen> {
                     ),
                   );
                 } else {
+                  print('🏠 No hay más lecciones, regresando al home');
                   // No hay más lecciones en esta categoría, regresar al home
                   Navigator.of(context).pop();
                 }

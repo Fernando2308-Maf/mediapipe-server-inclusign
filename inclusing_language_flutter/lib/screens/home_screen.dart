@@ -7,6 +7,7 @@ import '../utils/colors.dart';
 import 'profile_screen.dart';
 import 'lesson_screen.dart';
 import 'dictionary_screen.dart';
+import 'practice_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -403,10 +404,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildActionCard(String emoji, String title, String subtitle, Color color) {
     return GestureDetector(
-      onTap: () => _showAlert(
-        title,
-        'Esta función estará disponible pronto.',
-      ),
+      onTap: () {
+        if (title == 'Practicar') {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const PracticeScreen()),
+          ).then((_) {
+            _loadUserData(); // Reload user data to update experience
+          });
+        } else {
+          _showAlert(
+            title,
+            'Esta función estará disponible pronto.',
+          );
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
         decoration: BoxDecoration(
