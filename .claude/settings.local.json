@@ -46,7 +46,8 @@
       "Bash(cmd //c \"dir /b *.gif | find /c /v \"\"\")",
       "Bash(flutter build:*)",
       "Bash(dart analyze:*)",
-      "Bash(cmd //c \"taskkill /PID 92188 /F\")"
+      "Bash(cmd //c \"taskkill /PID 92188 /F\")",
+      "Bash(cmd //c \"taskkill /PID 40596 /F\")"
     ],
     "deny": [],
     "ask": []

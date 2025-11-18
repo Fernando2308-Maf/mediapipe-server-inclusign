@@ -144,11 +144,22 @@ class _LessonScreenState extends State<LessonScreen> {
       print('🎉 ¡META DIARIA COMPLETADA!');
     }
 
+    // Verificar si se completó toda la categoría
+    bool categoriaCompletada = false;
+    if (percentage == 100) {
+      categoriaCompletada = await _checkCategoryCompletion(_currentLesson!.category);
+    }
+
     if (!mounted) return;
 
     // Si se completó la meta diaria, mostrar diálogo especial primero
     if (metaDiariaCompletada) {
       await _showDailyGoalDialog();
+    }
+
+    // Si se completó toda la categoría, mostrar felicitaciones
+    if (categoriaCompletada) {
+      await _showCategoryCompletionDialog(_currentLesson!.category);
     }
 
     // Mostrar diálogo de completado
@@ -449,6 +460,213 @@ class _LessonScreenState extends State<LessonScreen> {
             ),
             child: const Text(
               '¡Genial!',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+        actionsAlignment: MainAxisAlignment.center,
+      ),
+    );
+  }
+
+  /// Verificar si se completaron todas las lecciones de una categoría
+  Future<bool> _checkCategoryCompletion(String category) async {
+    try {
+      final completedCount = await _lessonService.getCompletedLessonsCountByCategory(category);
+      final allLessons = await _lessonService.getAllLessons(category: category);
+
+      print('🎓 Verificando categoría $category: $completedCount/${allLessons.length}');
+
+      return completedCount == allLessons.length;
+    } catch (e) {
+      print('❌ Error verificando categoría: $e');
+      return false;
+    }
+  }
+
+  /// Mostrar diálogo de felicitaciones por completar toda una categoría
+  Future<void> _showCategoryCompletionDialog(String category) async {
+    String categoryName = '';
+    String emoji = '';
+    String encouragement = '';
+
+    switch (category) {
+      case 'Alphabet':
+        categoryName = 'el Alfabeto';
+        emoji = '🔤';
+        encouragement = '¡Ahora puedes deletrear cualquier palabra en lenguaje de señas!';
+        break;
+      case 'Numbers':
+        categoryName = 'los Números';
+        emoji = '🔢';
+        encouragement = '¡Ahora puedes contar y expresar cantidades con tus manos!';
+        break;
+      case 'Gestures':
+        categoryName = 'los Gestos';
+        emoji = '👋';
+        encouragement = '¡Ya puedes comunicarte con saludos y frases básicas!';
+        break;
+      case 'Basic Words':
+        categoryName = 'las Palabras Básicas';
+        emoji = '💬';
+        encouragement = '¡Tu vocabulario en lenguaje de señas está creciendo!';
+        break;
+      default:
+        categoryName = 'esta categoría';
+        emoji = '🎯';
+        encouragement = '¡Sigue así, estás aprendiendo muy bien!';
+    }
+
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.cardBackground,
+        title: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 32)),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                '¡Categoría Completada!',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, AppColors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 3,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 48),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      '100%',
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      'COMPLETADO',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                '¡Felicitaciones!',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.success,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Has completado todas las lecciones de $categoryName',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.success.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: Text(
+                  encouragement,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textPrimary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lightbulb, color: AppColors.accent, size: 20),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '¡Sigue aprendiendo! Explora otras categorías',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.success,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+            ),
+            child: const Text(
+              '¡Continuar!',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
