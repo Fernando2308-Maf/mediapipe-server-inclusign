@@ -50,6 +50,8 @@ class Progresion {
   final List<Intento> intentos;
   final Estadisticas estadisticas;
   final int experienciaTotal;
+  final int leccionesCompletadasHoy;
+  final DateTime? ultimaActualizacionDiaria;
 
   Progresion({
     this.id,
@@ -59,6 +61,8 @@ class Progresion {
     required this.intentos,
     required this.estadisticas,
     this.experienciaTotal = 0,
+    this.leccionesCompletadasHoy = 0,
+    this.ultimaActualizacionDiaria,
   });
 
   factory Progresion.fromJson(Map<String, dynamic> json) {
@@ -76,6 +80,10 @@ class Progresion {
           ? Estadisticas.fromJson(json['estadisticas'])
           : Estadisticas(tiempoJugadoMin: 0, totalIntentos: 0, totalExitos: 0),
       experienciaTotal: json['experienciaTotal'] ?? 0,
+      leccionesCompletadasHoy: json['leccionesCompletadasHoy'] ?? 0,
+      ultimaActualizacionDiaria: json['ultimaActualizacionDiaria'] != null
+          ? DateTime.parse(json['ultimaActualizacionDiaria'])
+          : null,
     );
   }
 
@@ -88,6 +96,9 @@ class Progresion {
       'intentos': intentos.map((i) => i.toJson()).toList(),
       'estadisticas': estadisticas.toJson(),
       'experienciaTotal': experienciaTotal,
+      'leccionesCompletadasHoy': leccionesCompletadasHoy,
+      if (ultimaActualizacionDiaria != null)
+        'ultimaActualizacionDiaria': ultimaActualizacionDiaria!.toIso8601String(),
     };
   }
 }

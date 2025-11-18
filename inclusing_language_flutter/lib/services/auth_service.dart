@@ -106,20 +106,24 @@ class AuthService {
         final experienciaTotal = progresion['experienciaTotal'] ?? 0;
         final nivelActual = progresion['nivelActual'] ?? 1;
         final nivelesCompletados = progresion['nivelesCompletados'] ?? [];
+        final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
 
-        print('✅ Progresión obtenida - Nivel: $nivelActual, Experiencia: $experienciaTotal, Completados: ${(nivelesCompletados as List).length}');
+        print('✅ Progresión obtenida - Nivel: $nivelActual, Experiencia: $experienciaTotal, Completados: ${(nivelesCompletados as List).length}, Hoy: $leccionesHoy/5');
 
         if (_currentUser != null) {
           _currentUser = _currentUser!.copyWith(
             level: nivelActual,
             experience: experienciaTotal,
             completedLessons: (nivelesCompletados as List).map((e) => e.toString()).toList(),
+            todayProgress: leccionesHoy,
           );
+          print('✅ Usuario actualizado: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
         } else {
           // Si no hay currentUser, cargar datos completos
           print('📥 Cargando datos completos del usuario...');
           final usuario = await _apiService.getUsuario(usuarioID);
           if (usuario != null) {
+            final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
             _currentUser = UserProfile(
               email: usuario['correo'] ?? '',
               firstName: usuario['nombre'] ?? '',
@@ -128,8 +132,10 @@ class AuthService {
               experience: experienciaTotal,
               streak: 0,
               completedLessons: (nivelesCompletados as List).map((e) => e.toString()).toList(),
+              todayProgress: leccionesHoy,
+              dailyGoal: 5,
             );
-            print('✅ Usuario creado: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}');
+            print('✅ Usuario creado: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
           } else {
             print('❌ No se pudo obtener datos del usuario desde la API');
           }
@@ -170,8 +176,13 @@ class AuthService {
         final usuario = await _apiService.getUsuario(usuarioID);
         final progresion = await _apiService.getProgresion(usuarioID);
 
+        print('📊 [AuthService] Progresión recibida del API: $progresion');
+
         if (usuario != null) {
           final nivelesCompletados = progresion?['nivelesCompletados'];
+          final leccionesHoy = progresion?['leccionesCompletadasHoy'] ?? 0;
+          print('📊 [AuthService] leccionesCompletadasHoy desde API: $leccionesHoy');
+
           _currentUser = UserProfile(
             email: usuario['correo'] ?? '',
             firstName: usuario['nombre'] ?? '',
@@ -182,8 +193,10 @@ class AuthService {
             completedLessons: nivelesCompletados != null
                 ? List<String>.from(nivelesCompletados.map((e) => e.toString()))
                 : [],
+            todayProgress: leccionesHoy,
+            dailyGoal: 5,
           );
-          print('✅ Usuario obtenido: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Completados: ${_currentUser!.completedLessons.length}');
+          print('✅ Usuario obtenido: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
           return _currentUser;
         } else {
           print('❌ No se encontró usuario en la API');

@@ -229,7 +229,8 @@ class LessonService {
   }
 
   /// Completar una lección (guardar en API)
-  Future<bool> completeLesson({
+  /// Retorna bool si es éxito/fallo normal, o Map con info de meta diaria si se completa
+  Future<dynamic> completeLesson({
     required int lessonId,
     required int score,
     required int totalPoints,
@@ -264,14 +265,27 @@ class LessonService {
 
     // Acumular experiencia siempre (incluso si no fue exitoso)
     print('💫 [LessonService] Llamando a completarNivel con experiencia: $score XP');
+    Map<String, dynamic>? metaDiariaInfo;
     try {
-      final nivelCompletado = await completarNivel(
-        usuarioID: usuarioID,
-        nivel: lessonId,
-        exito: exito, // Solo marca como completado si fue 100%
-        experienciaGanada: score, // Siempre envía la experiencia ganada
+      final resultado = await _apiService.completarNivel(
+        usuarioID,
+        lessonId,
+        exito ? 'exito' : 'fallo',
+        experienciaGanada: score,
       );
-      print('✓ [LessonService] completarNivel ejecutado: $nivelCompletado');
+      print('✓ [LessonService] completarNivel ejecutado: $resultado');
+
+      // Verificar si se completó la meta diaria
+      if (resultado && exito) {
+        // Recargar progresión para obtener info actualizada
+        final progresion = await getProgresionUsuario(usuarioID);
+        if (progresion != null) {
+          metaDiariaInfo = {
+            'leccionesCompletadasHoy': progresion.leccionesCompletadasHoy,
+            'metaDiariaCompletada': progresion.leccionesCompletadasHoy == 5,
+          };
+        }
+      }
     } catch (e) {
       print('❌ [LessonService] Error en completarNivel: $e');
     }
@@ -283,6 +297,15 @@ class LessonService {
       print('✓ [LessonService] Perfil actualizado');
     } catch (e) {
       print('❌ [LessonService] Error actualizando perfil: $e');
+    }
+
+    // Si se completó la meta diaria, retornar info adicional
+    if (metaDiariaInfo != null && metaDiariaInfo['metaDiariaCompletada'] == true) {
+      return {
+        'exito': exito,
+        'metaDiariaCompletada': true,
+        'leccionesCompletadasHoy': metaDiariaInfo['leccionesCompletadasHoy'],
+      };
     }
 
     return exito; // Retorna true solo si fue 100% exitoso

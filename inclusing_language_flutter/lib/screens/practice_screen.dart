@@ -32,6 +32,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
   // Cache de GIFs
   Map<String, String> _gestureGifs = {};
 
+  // Mapeo de índice de ejercicio -> categoría
+  Map<int, String> _exerciseCategories = {};
+
   @override
   void initState() {
     super.initState();
@@ -39,18 +42,24 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   Future<void> _loadGifsForExercises(List<Exercise> exercises) async {
-    for (var exercise in exercises) {
-      // Si es un ejercicio con muchas opciones (gestos), cargar GIFs
-      if (exercise.options.length > 4) {
+    // Cargar GIFs para ejercicios de Palabras Básicas
+    // Estos ejercicios muestran las opciones como GIFs en cuadrícula
+    for (int i = 0; i < exercises.length; i++) {
+      final exercise = exercises[i];
+      final category = _exerciseCategories[i];
+
+      // Solo para ejercicios de Basic Words
+      if (category == 'Basic Words') {
         for (var gestureName in exercise.options) {
           if (!_gestureGifs.containsKey(gestureName)) {
             try {
               final gifBase64 = await LessonData.loadSingleGestoVideo(gestureName, silent: true);
               if (gifBase64.isNotEmpty) {
                 _gestureGifs[gestureName] = gifBase64;
+                print('✅ GIF cargado para opción: $gestureName');
               }
             } catch (e) {
-              print('Error cargando GIF para $gestureName: $e');
+              print('⚠️ No se pudo cargar GIF para $gestureName: $e');
             }
           }
         }
@@ -76,21 +85,58 @@ class _PracticeScreenState extends State<PracticeScreen> {
       final completedLessons = progresion?.nivelesCompletados ?? [];
 
       // Función helper para obtener ejercicios de lecciones completadas
+      // Los ejercicios vienen EXACTAMENTE como están en las lecciones
       Future<List<Exercise>> getRandomExercisesFromCategory(String category, int count) async {
+        print('📚 Cargando lecciones de categoría: $category');
         final lessons = await LessonData.getLessonsByCategory(category);
         final completedLessonsInCategory = lessons.where((l) => completedLessons.contains(l.id)).toList();
 
+        print('✅ Lecciones completadas en $category: ${completedLessonsInCategory.length}');
+
         if (completedLessonsInCategory.isEmpty) return [];
 
+        // Tomar SOLO los ejercicios evaluables (con opciones)
+        // Filtrar ejercicios de "presentación" que no tienen opciones
         final exercises = <Exercise>[];
         for (var lesson in completedLessonsInCategory) {
-          exercises.addAll(lesson.exercises);
+          for (var exercise in lesson.exercises) {
+            // Solo tomar ejercicios que tengan opciones (son evaluables)
+            if (exercise.options.isNotEmpty) {
+              // Para alfabeto, cargar el GIF si no está cargado
+              if (category == 'Alphabet' && exercise.imageBase64.isEmpty && lesson.letter.isNotEmpty) {
+                final gifBase64 = await LessonData.loadAbecedarioImageByLetter(lesson.letter);
+
+                // Crear un nuevo ejercicio con el GIF cargado
+                final exerciseWithGif = Exercise(
+                  id: exercise.id,
+                  type: exercise.type,
+                  question: exercise.question,
+                  correctAnswer: exercise.correctAnswer,
+                  options: exercise.options,
+                  imageBase64: gifBase64,
+                  imageUrl: exercise.imageUrl,
+                  hintText: exercise.hintText,
+                  points: exercise.points,
+                );
+                exercises.add(exerciseWithGif);
+              } else {
+                exercises.add(exercise);
+              }
+            }
+          }
         }
+
+        print('📝 Ejercicios evaluables en $category: ${exercises.length}');
 
         if (exercises.isEmpty) return [];
 
+        // Mezclar y tomar los primeros 'count' ejercicios
         exercises.shuffle(random);
-        return exercises.take(count).toList();
+        final selectedExercises = exercises.take(count).toList();
+
+        print('🎯 Ejercicios seleccionados de $category: ${selectedExercises.length}');
+
+        return selectedExercises;
       }
 
       // Obtener 2 ejercicios aleatorios de cada categoría
@@ -99,15 +145,65 @@ class _PracticeScreenState extends State<PracticeScreen> {
       final gestureExercises = await getRandomExercisesFromCategory('Gestures', 2);
       final wordsExercises = await getRandomExercisesFromCategory('Basic Words', 2);
 
+      // Rastrear la categoría de cada ejercicio
+      int currentIndex = 0;
+      for (var _ in alphabetExercises) {
+        _exerciseCategories[currentIndex++] = 'Alphabet';
+      }
+      for (var _ in numberExercises) {
+        _exerciseCategories[currentIndex++] = 'Numbers';
+      }
+      for (var _ in gestureExercises) {
+        _exerciseCategories[currentIndex++] = 'Gestures';
+      }
+      for (var _ in wordsExercises) {
+        _exerciseCategories[currentIndex++] = 'Basic Words';
+      }
+
       allExercises.addAll(alphabetExercises);
       allExercises.addAll(numberExercises);
       allExercises.addAll(gestureExercises);
       allExercises.addAll(wordsExercises);
 
-      // Mezclar todos los ejercicios
+      // Mezclar todos los ejercicios y reconstruir el mapeo
+      final tempMap = <int, String>{};
+      for (int i = 0; i < allExercises.length; i++) {
+        tempMap[i] = _exerciseCategories[i]!;
+      }
+
       allExercises.shuffle(random);
 
-      // Cargar GIFs para ejercicios de gestos
+      // Reconstruir el mapeo después de mezclar
+      _exerciseCategories.clear();
+      final List<String> categoriesInOrder = [];
+      for (int i = 0; i < allExercises.length; i++) {
+        categoriesInOrder.add(tempMap[i]!);
+      }
+
+      // Ahora necesitamos rastrear qué categoría corresponde a cada ejercicio mezclado
+      // Crear un mapa temporal con los ejercicios originales
+      final Map<Exercise, String> exerciseToCategory = {};
+      currentIndex = 0;
+      for (var ex in alphabetExercises) {
+        exerciseToCategory[ex] = 'Alphabet';
+      }
+      for (var ex in numberExercises) {
+        exerciseToCategory[ex] = 'Numbers';
+      }
+      for (var ex in gestureExercises) {
+        exerciseToCategory[ex] = 'Gestures';
+      }
+      for (var ex in wordsExercises) {
+        exerciseToCategory[ex] = 'Basic Words';
+      }
+
+      // Reconstruir el mapeo basado en el orden mezclado
+      for (int i = 0; i < allExercises.length; i++) {
+        _exerciseCategories[i] = exerciseToCategory[allExercises[i]]!;
+      }
+
+      // Cargar GIFs solo para las opciones (Palabras Básicas)
+      // Los ejercicios YA vienen con su imageBase64 desde las lecciones
       await _loadGifsForExercises(allExercises);
 
       setState(() {
@@ -317,17 +413,17 @@ class _PracticeScreenState extends State<PracticeScreen> {
     if (_hasAnswered) return;
 
     final currentExercise = _practiceExercises[_currentExerciseIndex];
+    final currentCategory = _exerciseCategories[_currentExerciseIndex] ?? '';
     bool correct = false;
 
-    // Verificar según el tipo de ejercicio
-    if (currentExercise.type == ExerciseType.multipleChoice &&
-        currentExercise.options.length <= 4) {
-      // Ejercicio de opción múltiple normal
-      correct = _selectedAnswer == currentExercise.correctAnswer;
-    } else {
+    // Verificar según la categoría del ejercicio
+    if (currentCategory == 'Basic Words') {
       // Ejercicio de selección de GIF (Palabras Básicas)
       correct = _selectedGestures.length == 1 &&
                 _selectedGestures[0] == currentExercise.correctAnswer;
+    } else {
+      // Ejercicio de opción múltiple normal (Alfabeto, Números, Gestos)
+      correct = _selectedAnswer == currentExercise.correctAnswer;
     }
 
     if (correct) {
@@ -361,10 +457,26 @@ class _PracticeScreenState extends State<PracticeScreen> {
     // Guardar la experiencia ganada
     final usuarioID = await _lessonService.getUsuarioID();
 
-    if (usuarioID != null) {
-      // Aquí podrías crear un endpoint específico para guardar XP de repaso
-      // Por ahora, actualizamos el perfil
-      await _authService.refreshUserProfile();
+    if (usuarioID != null && _score > 0) {
+      print('💾 Guardando ${_score} XP de modo repaso al perfil del usuario...');
+
+      try {
+        // Usar completarNivel con nivel 0 y resultado 'fallo' para solo agregar XP
+        // sin marcar ninguna lección como completada
+        await _lessonService.completarNivel(
+          usuarioID: usuarioID,
+          nivel: 0, // Nivel especial para repaso (no marca lección como completada)
+          exito: false, // false = no marca como completado, solo suma XP
+          experienciaGanada: _score,
+        );
+
+        // Actualizar el perfil para reflejar la nueva experiencia
+        await _authService.refreshUserProfile();
+
+        print('✅ XP de repaso guardado exitosamente');
+      } catch (e) {
+        print('❌ Error guardando XP de repaso: $e');
+      }
     }
 
     if (!mounted) return;
@@ -454,13 +566,18 @@ class _PracticeScreenState extends State<PracticeScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Reiniciar repaso
+              // Reiniciar repaso con nuevos ejercicios aleatorios
               setState(() {
                 _currentExerciseIndex = 0;
                 _score = 0;
                 _showingIntro = true;
+                _selectedAnswer = null;
+                _selectedGestures.clear();
+                _hasAnswered = false;
+                _gestureGifs.clear(); // Limpiar cache de GIFs
+                _exerciseCategories.clear(); // Limpiar mapeo de categorías
               });
-              _loadPracticeExercises();
+              _loadPracticeExercises(); // Esto generará nuevos ejercicios aleatorios
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
@@ -500,7 +617,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
     }
 
     final currentExercise = _practiceExercises[_currentExerciseIndex];
-    final isGestureExercise = currentExercise.options.length > 4;
+
+    // Los ejercicios de Palabras Básicas usan selección de GIFs
+    final currentCategory = _exerciseCategories[_currentExerciseIndex] ?? '';
+    final isBasicWordsExercise = currentCategory == 'Basic Words';
+
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -547,42 +668,126 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Mostrar imagen/GIF del ejercicio si está disponible
-                    if (currentExercise.imageBase64.isNotEmpty && !isGestureExercise)
-                      Center(
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          padding: const EdgeInsets.all(12),
+                    // Renderizar según la categoría del ejercicio
+                    if (isBasicWordsExercise)
+                      // Para Palabras Básicas: cuadrícula de GIFs (igual que lecciones 59-68)
+                      ...[
+                        // Pregunta con instrucción
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.cardBackground,
+                            color: AppColors.purple.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: AppColors.purple.withOpacity(0.5)),
                           ),
-                          child: MediaDisplay(
-                            base64Content: currentExercise.imageBase64,
-                            width: 200,
-                            height: 200,
-                            fit: BoxFit.contain,
+                          child: Column(
+                            children: [
+                              const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.touch_app, color: AppColors.purple, size: 20),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Selecciona 1 GIF',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.purple,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                currentExercise.question,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.textPrimary,
+                                  height: 1.5,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    // Pregunta
-                    Text(
-                      currentExercise.question,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                        height: 1.4,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 30),
-                    // Opciones
-                    if (isGestureExercise)
-                      _buildGestureOptions(currentExercise)
+                        const SizedBox(height: 20),
+                        // Vista previa de gestos seleccionados
+                        if (_selectedGestures.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackground,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  '✅ Seleccionado:',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.secondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _selectedGestures[0],
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (_selectedGestures.isNotEmpty) const SizedBox(height: 20),
+                        // Cuadrícula de GIFs
+                        _buildGestureOptions(currentExercise),
+                      ]
                     else
-                      _buildMultipleChoiceOptions(currentExercise),
+                      // Para Alfabeto, Números, Gestos: imagen + pregunta + opciones
+                      ...[
+                        // Pregunta
+                        Text(
+                          currentExercise.question,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 30),
+                        // Imagen o Emoji
+                        Container(
+                          padding: const EdgeInsets.all(40),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBackground,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: currentExercise.imageBase64.isNotEmpty
+                              ? MediaDisplay(
+                                  base64Content: currentExercise.imageBase64,
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.contain,
+                                )
+                              : Text(
+                                  currentExercise.imageUrl,
+                                  style: const TextStyle(fontSize: 100),
+                                  textAlign: TextAlign.center,
+                                ),
+                        ),
+                        const SizedBox(height: 30),
+                        // Opciones de texto
+                        _buildMultipleChoiceOptions(currentExercise),
+                      ],
                     const SizedBox(height: 20),
                     // Botón verificar
                     if (!_hasAnswered)

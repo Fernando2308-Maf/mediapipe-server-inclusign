@@ -129,15 +129,27 @@ class _LessonScreenState extends State<LessonScreen> {
     // Guardar en API
     print('🎯 Intentando guardar lección ${_currentLesson!.id} - Score: $_score/$totalPoints ($percentage%)');
 
-    final saved = await _lessonService.completeLesson(
+    final resultado = await _lessonService.completeLesson(
       lessonId: _currentLesson!.id,
       score: _score,
       totalPoints: totalPoints,
     );
 
-    print('💾 Resultado de guardado: ${saved ? "ÉXITO" : "FALLÓ"}');
+    print('💾 Resultado de guardado: $resultado');
+
+    // Verificar si se completó la meta diaria
+    bool metaDiariaCompletada = false;
+    if (resultado is Map && resultado['metaDiariaCompletada'] == true) {
+      metaDiariaCompletada = true;
+      print('🎉 ¡META DIARIA COMPLETADA!');
+    }
 
     if (!mounted) return;
+
+    // Si se completó la meta diaria, mostrar diálogo especial primero
+    if (metaDiariaCompletada) {
+      await _showDailyGoalDialog();
+    }
 
     // Mostrar diálogo de completado
     await showDialog(
@@ -297,6 +309,155 @@ class _LessonScreenState extends State<LessonScreen> {
             child: const Text('OK', style: TextStyle(color: AppColors.primary)),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _showDailyGoalDialog() async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.cardBackground,
+        title: const Row(
+          children: [
+            Text('🎉', style: TextStyle(fontSize: 32)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '¡Meta Diaria Completada!',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.success, AppColors.primary],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    '5/5',
+                    style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Lecciones completadas hoy',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 25),
+            const Text(
+              '¡Felicitaciones!',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.success,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Has alcanzado tu meta diaria de 5 lecciones.\n\n¡Sigue así y dominarás el lenguaje de señas!',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              decoration: BoxDecoration(
+                color: AppColors.experienceGold.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.experienceGold, width: 2),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('🎁', style: TextStyle(fontSize: 28)),
+                  SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recompensa especial',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '+15 XP',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.experienceGold,
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            'BONUS',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.success,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.success,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            ),
+            child: const Text(
+              '¡Genial!',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+        actionsAlignment: MainAxisAlignment.center,
       ),
     );
   }

@@ -43,10 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserData() async {
     try {
+      print('🏠 [HomeScreen] Iniciando carga de datos del usuario...');
       // Forzar actualización del perfil desde el backend
       await _authService.refreshUserProfile();
 
       final user = await _authService.getCurrentUser();
+      print('🏠 [HomeScreen] Usuario obtenido: ${user?.firstName}, Progreso hoy: ${user?.todayProgress}/${user?.dailyGoal}');
       setState(() => _currentUser = user);
 
       // Check if new user
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _showWelcomeTutorial();
       }
     } catch (e) {
+      print('❌ [HomeScreen] Error cargando usuario: $e');
       _showAlert('Error', 'No se pudo cargar la información del usuario');
     }
   }

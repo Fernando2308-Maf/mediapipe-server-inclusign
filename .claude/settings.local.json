@@ -40,7 +40,13 @@
       "Bash(timeout 90 cat:*)",
       "Bash(cmd //c \"dir /b\")",
       "Bash(dir .env)",
-      "Bash(cmd //c \"dir /b inclusing_language_flutter\\assets\\gifs\\gestos\\*.gif 2>nul\")"
+      "Bash(cmd //c \"dir /b inclusing_language_flutter\\assets\\gifs\\gestos\\*.gif 2>nul\")",
+      "Bash(cmd //c 'dir /b *.gif' 2)",
+      "Bash(cmd //c \"dir /b *.gif | find /c \"\".gif\"\"\" 2)",
+      "Bash(cmd //c \"dir /b *.gif | find /c /v \"\"\")",
+      "Bash(flutter build:*)",
+      "Bash(dart analyze:*)",
+      "Bash(cmd //c \"taskkill /PID 92188 /F\")"
     ],
     "deny": [],
     "ask": []

@@ -935,8 +935,14 @@ class LessonData {
     }
 
     try {
+      // Mapeo especial para la letra Ñ (evita problemas de codificación)
+      String fileName = letra;
+      if (letra == 'Ñ' || letra == 'ñ') {
+        fileName = 'ENYE';
+      }
+
       // Cargar GIF desde assets locales
-      final path = 'assets/gifs/abecedario/$letra.gif';
+      final path = 'assets/gifs/abecedario/$fileName.gif';
       final ByteData data = await rootBundle.load(path);
       final bytes = data.buffer.asUint8List();
 
