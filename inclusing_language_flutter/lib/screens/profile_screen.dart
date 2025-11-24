@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import '../services/auth_service.dart';
+import '../services/theme_service.dart';
 import '../utils/colors.dart';
 import 'login_screen.dart';
 
@@ -13,6 +14,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = AuthService();
+  final _themeService = ThemeService();
   UserProfile? _currentUser;
 
   @override
@@ -30,23 +32,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(
           'Cerrar Sesión',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
-        content: const Text(
+        content: Text(
           '¿Estás seguro que deseas cerrar sesión?',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancelar', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Cerrar Sesión', style: TextStyle(color: AppColors.error)),
+            child: Text('Cerrar Sesión', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -67,13 +69,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(message, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK', style: TextStyle(color: AppColors.primary)),
+            child: Text('OK', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -83,17 +85,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Perfil',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
       ),
       body: _currentUser == null
@@ -104,11 +106,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   _buildHeader(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   _buildStats(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   _buildOptions(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -119,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -128,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 30),
+      padding: EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
           Container(
@@ -150,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _currentUser?.firstName.isNotEmpty == true
                     ? _currentUser!.firstName[0].toUpperCase()
                     : 'U',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -158,35 +160,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           Text(
             _currentUser?.isGuest == true
                 ? 'Usuario Invitado'
                 : '${_currentUser?.firstName ?? ""} ${_currentUser?.lastName ?? ""}'.trim(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
-          const SizedBox(height: 5),
+          SizedBox(height: 5),
           Text(
             _currentUser?.email ?? '',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.secondary,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             decoration: BoxDecoration(
               color: AppColors.primary.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               'Nivel ${_currentUser?.level ?? 1}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -200,19 +202,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStats() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '📊 Tus Estadísticas',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           Row(
             children: [
               Expanded(
@@ -223,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   AppColors.experienceGold,
                 ),
               ),
-              const SizedBox(width: 15),
+              SizedBox(width: 15),
               Expanded(
                 child: _buildStatCard(
                   '🔥',
@@ -234,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           Row(
             children: [
               Expanded(
@@ -245,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   AppColors.success,
                 ),
               ),
-              const SizedBox(width: 15),
+              SizedBox(width: 15),
               Expanded(
                 child: _buildStatCard(
                   '🎯',
@@ -263,11 +265,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatCard(String emoji, String value, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.border
+              : AppColors.borderLight,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -278,8 +284,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 32)),
-          const SizedBox(height: 8),
+          Text(emoji, style: TextStyle(fontSize: 32)),
+          SizedBox(height: 8),
           Text(
             value,
             style: TextStyle(
@@ -288,12 +294,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.secondary,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
           ),
         ],
@@ -303,47 +309,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildOptions() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '⚙️ Configuración',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           _buildOptionCard(
             '👤',
             'Editar Perfil',
             'Actualiza tu información personal',
             () => _showAlert('Editar Perfil', 'Esta función estará disponible pronto.'),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _buildOptionCard(
             '🔔',
             'Notificaciones',
             'Gestiona tus preferencias de notificaciones',
             () => _showAlert('Notificaciones', 'Esta función estará disponible pronto.'),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           _buildOptionCard(
             '🎯',
             'Meta Diaria',
             'Cambia tu objetivo de lecciones diarias',
             () => _showAlert('Meta Diaria', 'Esta función estará disponible pronto.'),
           ),
-          const SizedBox(height: 10),
-          _buildOptionCard(
-            '🌙',
-            'Tema',
-            'Cambiar entre modo claro y oscuro',
-            () => _showAlert('Tema', 'La app usa tema oscuro por defecto.'),
-          ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
+          _buildThemeCard(),
+          SizedBox(height: 10),
           _buildOptionCard(
             'ℹ️',
             'Acerca de',
@@ -355,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               '© 2024 Inclusign',
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           _buildOptionCard(
             '🚪',
             'Cerrar Sesión',
@@ -378,12 +379,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(15),
+        padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: isDestructive ? AppColors.error.withOpacity(0.5) : AppColors.border,
+            color: isDestructive
+                ? AppColors.error.withOpacity(0.5)
+                : (Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.border
+                    : AppColors.borderLight),
           ),
           boxShadow: [
             BoxShadow(
@@ -395,8 +400,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         child: Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(width: 15),
+            Text(emoji, style: TextStyle(fontSize: 28)),
+            SizedBox(width: 15),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,15 +411,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isDestructive ? AppColors.error : AppColors.textPrimary,
+                      color: isDestructive ? AppColors.error : Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ],
@@ -422,7 +427,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right,
-              color: isDestructive ? AppColors.error : AppColors.secondary,
+              color: isDestructive ? AppColors.error : Theme.of(context).textTheme.bodySmall?.color,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeCard() {
+    final isDark = _themeService.isDarkMode;
+    return GestureDetector(
+      onTap: () async {
+        await _themeService.toggleTheme();
+        setState(() {}); // Actualizar UI
+      },
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.borderDark
+                : AppColors.borderLight,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(
+              isDark ? '🌙' : '☀️',
+              style: TextStyle(fontSize: 28),
+            ),
+            SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tema',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    isDark ? 'Modo Oscuro' : 'Modo Claro',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: isDark,
+              onChanged: (value) async {
+                await _themeService.toggleTheme();
+                setState(() {});
+              },
+              activeColor: AppColors.primary,
             ),
           ],
         ),

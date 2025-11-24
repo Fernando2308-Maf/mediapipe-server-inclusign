@@ -226,14 +226,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(
           'Sin lecciones completadas',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
-        content: const Text(
+        content: Text(
           'Necesitas completar algunas lecciones primero para poder practicar.\n\n¡Empieza con el alfabeto!',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
         ),
         actions: [
           TextButton(
@@ -241,7 +241,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Entendido', style: TextStyle(color: AppColors.primary)),
+            child: Text('Entendido', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -252,11 +252,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text('Error', style: TextStyle(color: AppColors.textPrimary)),
-        content: const Text(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text('Error', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(
           'Hubo un error al cargar los ejercicios de repaso.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
         ),
         actions: [
           TextButton(
@@ -264,7 +264,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('OK', style: TextStyle(color: AppColors.primary)),
+            child: Text('OK', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -276,14 +276,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         title: Row(
           children: [
-            const Text('💪 ', style: TextStyle(fontSize: 28)),
-            const Text(
+            Text('💪 ', style: TextStyle(fontSize: 28)),
+            Text(
               'Modo Repaso',
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -294,7 +294,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 '¡Bienvenido al Modo Repaso!',
                 style: TextStyle(
                   fontSize: 16,
@@ -302,38 +302,38 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 15),
-              const Text(
+              SizedBox(height: 15),
+              Text(
                 'Este es un mini examen diseñado para reforzar tu aprendizaje.',
-                style: TextStyle(color: AppColors.textSecondary, height: 1.5),
+                style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, height: 1.5),
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
               _buildInfoPoint('🎯', 'Retos', '${_practiceExercises.length} ejercicios aleatorios de todas las categorías'),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildInfoPoint('⚡', 'Recompensa', 'Gana XP por cada respuesta correcta'),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildInfoPoint('🎓', 'Aprendizaje', 'Refuerza lo que ya has aprendido'),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               _buildInfoPoint('🔥', 'Objetivo', 'Pon a prueba tu memoria y velocidad'),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                 ),
-                child: const Text(
+                child: Text(
                   '💡 Tip: No te preocupes si fallas, esto es solo para practicar. ¡Lo importante es seguir aprendiendo!',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                     height: 1.4,
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
-              const Center(
+              SizedBox(height: 15),
+              Center(
                 child: Text(
                   '¡Mucha suerte! 🍀',
                   style: TextStyle(
@@ -352,7 +352,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop(); // Volver al home
             },
-            child: const Text('Cancelar', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancelar', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -361,9 +361,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: const Text(
+            child: Text(
               '¡Comenzar!',
               style: TextStyle(
                 color: Colors.white,
@@ -380,24 +380,24 @@ class _PracticeScreenState extends State<PracticeScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 20)),
-        const SizedBox(width: 10),
+        Text(emoji, style: TextStyle(fontSize: 20)),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                   fontSize: 14,
                 ),
               ),
               Text(
                 description,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                   fontSize: 12,
                   height: 1.3,
                 ),
@@ -488,44 +488,44 @@ class _PracticeScreenState extends State<PracticeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(
           '¡Repaso Completado! 🎉',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.accent,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
                 '$percentage%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               'Completaste $_currentExerciseIndex ejercicios de repaso',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('⚡', style: TextStyle(fontSize: 24)),
-                const SizedBox(width: 5),
+                Text('⚡', style: TextStyle(fontSize: 24)),
+                SizedBox(width: 5),
                 Text(
                   '+$_score XP',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.experienceGold,
@@ -533,9 +533,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
+            SizedBox(height: 15),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: AppColors.success.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
@@ -546,8 +546,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     : percentage >= 60
                         ? '¡Bien hecho! Sigue practicando para mejorar.'
                         : '¡No te desanimes! La práctica hace al maestro.',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                   fontSize: 12,
                 ),
                 textAlign: TextAlign.center,
@@ -561,7 +561,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Volver al Inicio', style: TextStyle(color: AppColors.primary)),
+            child: Text('Volver al Inicio', style: TextStyle(color: AppColors.primary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -582,7 +582,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
             ),
-            child: const Text('Nuevo Repaso', style: TextStyle(color: Colors.white)),
+            child: Text('Nuevo Repaso', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -593,8 +593,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Widget build(BuildContext context) {
     if (_loadingExercises) {
       return Scaffold(
-        backgroundColor: AppColors.background,
-        body: const Center(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
@@ -602,11 +602,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
     if (_practiceExercises.isEmpty) {
       return Scaffold(
-        backgroundColor: AppColors.background,
-        body: const Center(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Center(
           child: Text(
             'No hay ejercicios disponibles',
-            style: TextStyle(color: AppColors.textPrimary),
+            style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
           ),
         ),
       );
@@ -624,25 +624,25 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          icon: Icon(Icons.close, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Modo Repaso 💪',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
                 '${_currentExerciseIndex + 1}/${_practiceExercises.length}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -664,7 +664,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -675,7 +675,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         // Pregunta con instrucción
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: AppColors.purple.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(15),
@@ -683,7 +683,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           ),
                           child: Column(
                             children: [
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.touch_app, color: AppColors.purple, size: 20),
@@ -698,12 +698,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12),
                               Text(
                                 currentExercise.question,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                   height: 1.5,
                                 ),
                                 textAlign: TextAlign.center,
@@ -711,21 +711,21 @@ class _PracticeScreenState extends State<PracticeScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         // Vista previa de gestos seleccionados
                         if (_selectedGestures.isNotEmpty)
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(15),
+                            padding: EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: AppColors.cardBackground,
+                              color: Theme.of(context).cardTheme.color,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: AppColors.border),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   '✅ Seleccionado:',
                                   style: TextStyle(
                                     fontSize: 13,
@@ -733,18 +733,18 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                     color: AppColors.secondary,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Text(
                                   _selectedGestures[0],
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.textPrimary,
+                                    color: Theme.of(context).textTheme.bodyLarge?.color,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        if (_selectedGestures.isNotEmpty) const SizedBox(height: 20),
+                        if (_selectedGestures.isNotEmpty) SizedBox(height: 20),
                         // Cuadrícula de GIFs
                         _buildGestureOptions(currentExercise),
                       ]
@@ -754,20 +754,20 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         // Pregunta
                         Text(
                           currentExercise.question,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             height: 1.4,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30),
                         // Imagen o Emoji
                         Container(
-                          padding: const EdgeInsets.all(40),
+                          padding: EdgeInsets.all(40),
                           decoration: BoxDecoration(
-                            color: AppColors.cardBackground,
+                            color: Theme.of(context).cardTheme.color,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: AppColors.border),
                           ),
@@ -780,15 +780,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                 )
                               : Text(
                                   currentExercise.imageUrl,
-                                  style: const TextStyle(fontSize: 100),
+                                  style: TextStyle(fontSize: 100),
                                   textAlign: TextAlign.center,
                                 ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30),
                         // Opciones de texto
                         _buildMultipleChoiceOptions(currentExercise),
                       ],
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     // Botón verificar
                     if (!_hasAnswered)
                       ElevatedButton(
@@ -797,12 +797,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.success,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Verificar Respuesta',
                           style: TextStyle(
                             fontSize: 16,
@@ -814,7 +814,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     // Feedback
                     if (_hasAnswered)
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: (_selectedAnswer == currentExercise.correctAnswer ||
                                   (_selectedGestures.isNotEmpty &&
@@ -845,7 +845,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                   : AppColors.error,
                               size: 32,
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 (_selectedAnswer == currentExercise.correctAnswer ||
@@ -853,8 +853,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                             _selectedGestures[0] == currentExercise.correctAnswer))
                                     ? '¡Correcto! +${currentExercise.points} XP'
                                     : 'Incorrecto. La respuesta era: ${currentExercise.correctAnswer}',
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -881,7 +881,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
         final showIncorrect = _hasAnswered && isSelected && !isCorrect;
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: 12),
           child: InkWell(
             onTap: _hasAnswered
                 ? null
@@ -890,7 +890,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   },
             borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: showCorrect
                     ? AppColors.success.withOpacity(0.2)
@@ -944,7 +944,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           )
                         : null,
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       option,
@@ -1022,13 +1022,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8),
                     child: _gestureGifs.containsKey(gesture)
                         ? MediaDisplay(
                             base64Content: _gestureGifs[gesture]!,
                             fit: BoxFit.contain,
                           )
-                        : const Center(
+                        : Center(
                             child: CircularProgressIndicator(
                               color: AppColors.primary,
                               strokeWidth: 2,
@@ -1038,7 +1038,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: AppColors.cardBackground.withOpacity(0.5),
                     borderRadius: const BorderRadius.only(
@@ -1049,9 +1049,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   child: Text(
                     gesture,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,

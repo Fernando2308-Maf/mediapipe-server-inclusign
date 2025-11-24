@@ -19,14 +19,14 @@ class SignDetailScreen extends StatelessWidget {
     final gifPath = _getGifPath();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardBackground,
+                color: Theme.of(context).cardTheme.color,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -35,28 +35,28 @@ class SignDetailScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(25),
+              padding: EdgeInsets.all(25),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   if (itemEmoji.isNotEmpty) ...[
                     Text(
                       itemEmoji,
-                      style: const TextStyle(fontSize: 28),
+                      style: TextStyle(fontSize: 28),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                   ],
                   Expanded(
                     child: Text(
                       displayText.toString(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                   ),
@@ -66,7 +66,7 @@ class SignDetailScreen extends StatelessWidget {
             // Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -74,7 +74,7 @@ class SignDetailScreen extends StatelessWidget {
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: AppColors.border),
                         boxShadow: [
@@ -100,13 +100,13 @@ class SignDetailScreen extends StatelessWidget {
                                         children: [
                                           Text(
                                             itemEmoji,
-                                            style: const TextStyle(fontSize: 80),
+                                            style: TextStyle(fontSize: 80),
                                           ),
-                                          const SizedBox(height: 10),
-                                          const Text(
+                                          SizedBox(height: 10),
+                                          Text(
                                             'GIF no disponible',
                                             style: TextStyle(
-                                              color: AppColors.textSecondary,
+                                              color: Theme.of(context).textTheme.bodySmall?.color,
                                               fontSize: 12,
                                             ),
                                           ),
@@ -118,18 +118,18 @@ class SignDetailScreen extends StatelessWidget {
                               : Center(
                                   child: Text(
                                     itemEmoji,
-                                    style: const TextStyle(fontSize: 80),
+                                    style: TextStyle(fontSize: 80),
                                   ),
                                 ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30),
                     // Instructions Section
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: AppColors.border),
                       ),
@@ -139,7 +139,7 @@ class SignDetailScreen extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(10),
+                                padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: _getCategoryColor().withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(10),
@@ -150,39 +150,39 @@ class SignDetailScreen extends StatelessWidget {
                                   size: 24,
                                 ),
                               ),
-                              const SizedBox(width: 15),
-                              const Text(
+                              SizedBox(width: 15),
+                              Text(
                                 'Cómo se hace',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 15),
+                          SizedBox(height: 15),
                           Text(
                             description,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
                               height: 1.5,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     // Practice Tip
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text('💡', style: TextStyle(fontSize: 40)),
                           SizedBox(width: 15),
@@ -203,7 +203,7 @@ class SignDetailScreen extends StatelessWidget {
                                   'Practica frente a un espejo para perfeccionar el gesto',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(context).textTheme.bodySmall?.color,
                                   ),
                                 ),
                               ],
@@ -238,7 +238,11 @@ class SignDetailScreen extends StatelessWidget {
   String _getGifPath() {
     switch (category) {
       case 'alphabet':
-        final letter = item['letter'];
+        String letter = item['letter'];
+        // Mapeo especial para la letra Ñ
+        if (letter == 'Ñ' || letter == 'ñ') {
+          letter = 'ENYE';
+        }
         return 'assets/gifs/abecedario/$letter.gif';
       case 'numbers':
         // Numbers don't have GIF files, will use emoji instead

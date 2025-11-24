@@ -73,14 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: Theme.of(context).cardTheme.color,
             title: const Text(
               '¡Bienvenido!',
               style: TextStyle(color: AppColors.textPrimary),
             ),
             content: Text(
               'Hola ${result.userProfile!.firstName}, ¡es genial verte de nuevo!',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
             ),
             actions: [
               TextButton(
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final shouldRegister = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: Theme.of(context).cardTheme.color,
             title: const Text(
               'Usuario no encontrado',
               style: TextStyle(color: AppColors.textPrimary),
@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final shouldContinueAsGuest = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              backgroundColor: AppColors.cardBackground,
+              backgroundColor: Theme.of(context).cardTheme.color,
               title: const Row(
                 children: [
                   Icon(Icons.wifi_off, color: AppColors.error, size: 28),
@@ -199,9 +199,9 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(message, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(30),
@@ -355,7 +355,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: AppColors.border),
         boxShadow: [
@@ -377,7 +377,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: controller,
                 obscureText: isPassword,
                 keyboardType: keyboardType,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                 decoration: InputDecoration(
                   hintText: hint,
                   hintStyle: const TextStyle(color: AppColors.secondary),
@@ -454,7 +454,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => const RegisterScreen()),
         ),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppColors.primary, width: 2),
+          side: BorderSide(color: AppColors.primary, width: 2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -490,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final confirm = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: Theme.of(context).cardTheme.color,
             title: const Text(
               'Modo Invitado',
               style: TextStyle(color: AppColors.textPrimary),
@@ -567,9 +567,9 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(fontSize: 12, color: AppColors.border),
         ),
         const SizedBox(height: 5),
-        const Text(
+        Text(
           'Hecho con ❤️ para la comunidad sorda',
-          style: TextStyle(fontSize: 11, color: AppColors.borderDark),
+          style: TextStyle(fontSize: 11, color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight),
           textAlign: TextAlign.center,
         ),
       ],
@@ -582,7 +582,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(

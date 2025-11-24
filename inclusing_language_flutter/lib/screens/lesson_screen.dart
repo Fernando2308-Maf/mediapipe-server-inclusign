@@ -167,46 +167,46 @@ class _LessonScreenState extends State<LessonScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         title: Text(
           percentage == 100 ? '¡Perfecto! 🎉' : 'Intenta de nuevo',
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: percentage == 100 ? AppColors.success : AppColors.error,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
                 '$percentage%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(
               percentage == 100
                   ? '¡Has completado la lección con 3/3 correctas!'
                   : 'Necesitas responder todas las preguntas correctamente (3/3)',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('⚡', style: TextStyle(fontSize: 24)),
-                const SizedBox(width: 5),
+                Text('⚡', style: TextStyle(fontSize: 24)),
+                SizedBox(width: 5),
                 Text(
                   '+$_score XP',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: AppColors.experienceGold,
@@ -222,7 +222,7 @@ class _LessonScreenState extends State<LessonScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Volver al Inicio', style: TextStyle(color: AppColors.primary)),
+            child: Text('Volver al Inicio', style: TextStyle(color: AppColors.primary)),
           ),
           if (percentage < 100)
             TextButton(
@@ -235,7 +235,7 @@ class _LessonScreenState extends State<LessonScreen> {
                   _resetExerciseState();
                 });
               },
-              child: const Text('Reintentar Lección', style: TextStyle(color: AppColors.error)),
+              child: Text('Reintentar Lección', style: TextStyle(color: AppColors.error)),
             ),
           if (percentage == 100)
             TextButton(
@@ -300,7 +300,7 @@ class _LessonScreenState extends State<LessonScreen> {
                   Navigator.of(context).pop();
                 }
               },
-              child: const Text('Continuar', style: TextStyle(color: AppColors.success)),
+              child: Text('Continuar', style: TextStyle(color: AppColors.success)),
             ),
         ],
       ),
@@ -311,13 +311,13 @@ class _LessonScreenState extends State<LessonScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(message, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK', style: TextStyle(color: AppColors.primary)),
+            child: Text('OK', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -329,8 +329,8 @@ class _LessonScreenState extends State<LessonScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Row(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Row(
           children: [
             Text('🎉', style: TextStyle(fontSize: 32)),
             SizedBox(width: 10),
@@ -338,7 +338,7 @@ class _LessonScreenState extends State<LessonScreen> {
               child: Text(
                 '¡Meta Diaria Completada!',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -350,7 +350,7 @@ class _LessonScreenState extends State<LessonScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(30),
+              padding: EdgeInsets.all(30),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.success, AppColors.primary],
@@ -359,7 +359,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   Text(
                     '5/5',
@@ -382,8 +382,8 @@ class _LessonScreenState extends State<LessonScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 25),
-            const Text(
+            SizedBox(height: 25),
+            Text(
               '¡Felicitaciones!',
               style: TextStyle(
                 fontSize: 22,
@@ -391,24 +391,24 @@ class _LessonScreenState extends State<LessonScreen> {
                 color: AppColors.success,
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
+            SizedBox(height: 10),
+            Text(
               'Has alcanzado tu meta diaria de 5 lecciones.\n\n¡Sigue así y dominarás el lenguaje de señas!',
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).textTheme.bodySmall?.color,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
                 color: AppColors.experienceGold.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.experienceGold, width: 2),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('🎁', style: TextStyle(fontSize: 28)),
@@ -420,7 +420,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         'Recompensa especial',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                       ),
                       Row(
@@ -456,9 +456,9 @@ class _LessonScreenState extends State<LessonScreen> {
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
             ),
-            child: const Text(
+            child: Text(
               '¡Genial!',
               style: TextStyle(
                 color: Colors.white,
@@ -525,16 +525,16 @@ class _LessonScreenState extends State<LessonScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         title: Row(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 32)),
-            const SizedBox(width: 10),
-            const Expanded(
+            Text(emoji, style: TextStyle(fontSize: 32)),
+            SizedBox(width: 10),
+            Expanded(
               child: Text(
                 '¡Categoría Completada!',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -547,7 +547,7 @@ class _LessonScreenState extends State<LessonScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(25),
+                padding: EdgeInsets.all(25),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.primary, AppColors.secondary],
@@ -567,10 +567,10 @@ class _LessonScreenState extends State<LessonScreen> {
                   children: [
                     Text(
                       emoji,
-                      style: const TextStyle(fontSize: 48),
+                      style: TextStyle(fontSize: 48),
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
+                    SizedBox(height: 10),
+                    Text(
                       '100%',
                       style: TextStyle(
                         fontSize: 40,
@@ -578,8 +578,8 @@ class _LessonScreenState extends State<LessonScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    const Text(
+                    SizedBox(height: 5),
+                    Text(
                       'COMPLETADO',
                       style: TextStyle(
                         fontSize: 14,
@@ -591,27 +591,27 @@ class _LessonScreenState extends State<LessonScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 '¡Felicitaciones!',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Text(
                 'Has completado todas las lecciones de $categoryName',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.success.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -623,21 +623,21 @@ class _LessonScreenState extends State<LessonScreen> {
                 child: Text(
                   encouragement,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                 decoration: BoxDecoration(
                   color: AppColors.accent.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.lightbulb, color: AppColors.accent, size: 20),
@@ -648,7 +648,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                     ),
@@ -663,9 +663,9 @@ class _LessonScreenState extends State<LessonScreen> {
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
             ),
-            child: const Text(
+            child: Text(
               '¡Continuar!',
               style: TextStyle(
                 color: Colors.white,
@@ -701,8 +701,8 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: AppColors.background,
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
@@ -711,19 +711,19 @@ class _LessonScreenState extends State<LessonScreen> {
 
     if (_currentLesson == null) {
       return Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: AppColors.cardBackground,
+          backgroundColor: Theme.of(context).cardTheme.color,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: const Text('Lección', style: TextStyle(color: Colors.white)),
+          title: Text('Lección', style: TextStyle(color: Colors.white)),
         ),
-        body: const Center(
+        body: Center(
           child: Text(
             'Lección no encontrada',
-            style: TextStyle(color: AppColors.textPrimary, fontSize: 18),
+            style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 18),
           ),
         ),
       );
@@ -733,29 +733,29 @@ class _LessonScreenState extends State<LessonScreen> {
     final progress = (_currentExerciseIndex + 1) / _currentLesson!.exercises.length;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: Icon(Icons.close, color: Colors.white),
           onPressed: () async {
             final confirm = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                backgroundColor: AppColors.cardBackground,
-                title: const Text('¿Salir?', style: TextStyle(color: AppColors.textPrimary)),
-                content: const Text(
+                backgroundColor: Theme.of(context).cardTheme.color,
+                title: Text('¿Salir?', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+                content: Text(
                   'Perderás tu progreso en esta lección.',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Cancelar', style: TextStyle(color: AppColors.secondary)),
+                    child: Text('Cancelar', style: TextStyle(color: AppColors.secondary)),
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Salir', style: TextStyle(color: AppColors.error)),
+                    child: Text('Salir', style: TextStyle(color: AppColors.error)),
                   ),
                 ],
               ),
@@ -770,25 +770,25 @@ class _LessonScreenState extends State<LessonScreen> {
           children: [
             Text(
               _currentLesson!.title,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
             Text(
               'Ejercicio ${_currentExerciseIndex + 1}/${_currentLesson!.exercises.length}',
-              style: const TextStyle(color: AppColors.secondary, fontSize: 13),
+              style: TextStyle(color: AppColors.secondary, fontSize: 13),
             ),
           ],
         ),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 15),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            margin: EdgeInsets.only(right: 15),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: AppColors.experienceGold,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Text(
               '⚡ $_score/${_currentLesson!.experiencePoints}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.background,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -810,7 +810,7 @@ class _LessonScreenState extends State<LessonScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: _buildExerciseContent(exercise),
               ),
             ),
@@ -837,7 +837,7 @@ class _LessonScreenState extends State<LessonScreen> {
       case ExerciseType.matching:
         return _buildGestureSelectionExercise(exercise);
       default:
-        return const SizedBox();
+        return SizedBox();
     }
   }
 
@@ -846,9 +846,9 @@ class _LessonScreenState extends State<LessonScreen> {
       children: [
         // Imagen o Emoji grande
         Container(
-          padding: const EdgeInsets.all(30),
+          padding: EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.border),
           ),
@@ -861,21 +861,21 @@ class _LessonScreenState extends State<LessonScreen> {
                 )
               : Text(
                   exercise.imageUrl,
-                  style: const TextStyle(fontSize: 120),
+                  style: TextStyle(fontSize: 120),
                 ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: 30),
         // Título
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.info,
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
             '📖 Ver y Aprender',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -883,20 +883,20 @@ class _LessonScreenState extends State<LessonScreen> {
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         // Descripción
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: AppColors.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.info, size: 20),
                   SizedBox(width: 8),
@@ -905,36 +905,36 @@ class _LessonScreenState extends State<LessonScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
               Text(
                 exercise.correctAnswer,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   height: 1.6,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         // Tips
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.borderDark,
+            color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight,
             borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
                   Text('💡', style: TextStyle(fontSize: 20)),
                   SizedBox(width: 8),
@@ -943,17 +943,17 @@ class _LessonScreenState extends State<LessonScreen> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'Practica frente a un espejo para ver tu mano desde la perspectiva del observador.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],
@@ -969,14 +969,14 @@ class _LessonScreenState extends State<LessonScreen> {
         // Pregunta
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.info,
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
             exercise.question,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -984,12 +984,12 @@ class _LessonScreenState extends State<LessonScreen> {
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: 30),
         // Imagen o Emoji
         Container(
-          padding: const EdgeInsets.all(40),
+          padding: EdgeInsets.all(40),
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.border),
           ),
@@ -1002,10 +1002,10 @@ class _LessonScreenState extends State<LessonScreen> {
                 )
               : Text(
                   exercise.imageUrl,
-                  style: const TextStyle(fontSize: 100),
+                  style: TextStyle(fontSize: 100),
                 ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: 30),
         // Opciones
         ...exercise.options.map((option) {
           final isSelected = _selectedAnswer == option;
@@ -1014,7 +1014,7 @@ class _LessonScreenState extends State<LessonScreen> {
           final showAsWrong = _answerVerified && isSelected && !_isCorrect;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 15),
+            padding: EdgeInsets.only(bottom: 15),
             child: _buildOptionButton(
               option,
               isSelected,
@@ -1023,7 +1023,7 @@ class _LessonScreenState extends State<LessonScreen> {
             ),
           );
         }).toList(),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         // Feedback
         if (_answerVerified) _buildFeedback(),
         // Hint
@@ -1038,7 +1038,7 @@ class _LessonScreenState extends State<LessonScreen> {
         // Pregunta con letra
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.accent,
             borderRadius: BorderRadius.circular(15),
@@ -1047,14 +1047,14 @@ class _LessonScreenState extends State<LessonScreen> {
             children: [
               Text(
                 exercise.question,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 15),
               exercise.imageBase64.isNotEmpty
                   ? MediaDisplay(
                       base64Content: exercise.imageBase64,
@@ -1064,12 +1064,12 @@ class _LessonScreenState extends State<LessonScreen> {
                     )
                   : Text(
                       exercise.imageUrl,
-                      style: const TextStyle(fontSize: 80),
+                      style: TextStyle(fontSize: 80),
                     ),
             ],
           ),
         ),
-        const SizedBox(height: 30),
+        SizedBox(height: 30),
         // Opciones
         ...exercise.options.map((option) {
           final isSelected = _selectedAnswer == option;
@@ -1078,7 +1078,7 @@ class _LessonScreenState extends State<LessonScreen> {
           final showAsWrong = _answerVerified && isSelected && !_isCorrect;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 15),
+            padding: EdgeInsets.only(bottom: 15),
             child: _buildDescriptionOption(
               option,
               isSelected,
@@ -1087,7 +1087,7 @@ class _LessonScreenState extends State<LessonScreen> {
             ),
           );
         }).toList(),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         // Feedback
         if (_answerVerified) _buildFeedback(),
         // Hint
@@ -1126,7 +1126,7 @@ class _LessonScreenState extends State<LessonScreen> {
             },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(15),
@@ -1175,7 +1175,7 @@ class _LessonScreenState extends State<LessonScreen> {
             },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
+        padding: EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(15),
@@ -1199,7 +1199,7 @@ class _LessonScreenState extends State<LessonScreen> {
       future: _loadGestureGifs(exercise.options),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1207,7 +1207,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 SizedBox(height: 20),
                 Text(
                   'Cargando gestos...',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                 ),
               ],
             ),
@@ -1231,7 +1231,7 @@ class _LessonScreenState extends State<LessonScreen> {
             // Pregunta y contexto
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: AppColors.purple.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(15),
@@ -1239,7 +1239,7 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.touch_app, color: AppColors.purple, size: 20),
@@ -1254,12 +1254,12 @@ class _LessonScreenState extends State<LessonScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Text(
                     exercise.question,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
@@ -1267,22 +1267,22 @@ class _LessonScreenState extends State<LessonScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Gestos seleccionados (vista previa)
             if (_selectedGestures.isNotEmpty)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: AppColors.cardBackground,
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '✅ Seleccionados:',
                       style: TextStyle(
                         fontSize: 13,
@@ -1290,7 +1290,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         color: AppColors.secondary,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -1298,7 +1298,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         final index = entry.key;
                         final gesture = entry.value;
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -1310,14 +1310,14 @@ class _LessonScreenState extends State<LessonScreen> {
                               Container(
                                 width: 20,
                                 height: 20,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
                                   child: Text(
                                     '${index + 1}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
@@ -1325,12 +1325,12 @@ class _LessonScreenState extends State<LessonScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 gesture,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -1339,7 +1339,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     if (!_answerVerified)
                       TextButton.icon(
                         onPressed: () {
@@ -1347,8 +1347,8 @@ class _LessonScreenState extends State<LessonScreen> {
                             _selectedGestures.clear();
                           });
                         },
-                        icon: const Icon(Icons.refresh, size: 16, color: AppColors.error),
-                        label: const Text(
+                        icon: Icon(Icons.refresh, size: 16, color: AppColors.error),
+                        label: Text(
                           'Reiniciar selección',
                           style: TextStyle(fontSize: 12, color: AppColors.error),
                         ),
@@ -1356,12 +1356,12 @@ class _LessonScreenState extends State<LessonScreen> {
                   ],
                 ),
               ),
-            if (_selectedGestures.isNotEmpty) const SizedBox(height: 20),
+            if (_selectedGestures.isNotEmpty) SizedBox(height: 20),
 
             // Cuadrícula de GIFs - continuado en siguiente parte...
             _buildGestureGrid(exercise, gestureGifs, correctGestures),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // Feedback
             if (_answerVerified) _buildFeedback(),
@@ -1451,28 +1451,28 @@ class _LessonScreenState extends State<LessonScreen> {
                                 height: double.infinity,
                                 fit: BoxFit.cover,
                               )
-                            : const Center(
+                            : Center(
                                 child: Icon(
                                   Icons.image_not_supported,
                                   size: 40,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(context).textTheme.bodySmall?.color,
                                 ),
                               ),
                       ),
                     ),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       decoration: BoxDecoration(
                         color: backgroundColor.withOpacity(0.9),
                         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
                       ),
                       child: Text(
                         gestureName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 2,
@@ -1506,7 +1506,7 @@ class _LessonScreenState extends State<LessonScreen> {
                       child: Center(
                         child: Text(
                           '$selectionOrder',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -1520,7 +1520,7 @@ class _LessonScreenState extends State<LessonScreen> {
                     top: 8,
                     right: 8,
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: showAsCorrect
                             ? AppColors.success
@@ -1573,7 +1573,7 @@ class _LessonScreenState extends State<LessonScreen> {
   Widget _buildFeedback() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: _isCorrect ? AppColors.success : AppColors.error,
         borderRadius: BorderRadius.circular(15),
@@ -1585,11 +1585,11 @@ class _LessonScreenState extends State<LessonScreen> {
             color: Colors.white,
             size: 30,
           ),
-          const SizedBox(width: 15),
+          SizedBox(width: 15),
           Expanded(
             child: Text(
               _isCorrect ? '¡Correcto! 🎉' : 'Incorrecto. Inténtalo de nuevo la próxima vez.',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -1604,34 +1604,34 @@ class _LessonScreenState extends State<LessonScreen> {
   Widget _buildHint(String hintText) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.borderDark,
+        color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('💡', style: TextStyle(fontSize: 24)),
-          const SizedBox(width: 15),
+          Text('💡', style: TextStyle(fontSize: 24)),
+          SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Pista:',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
-                const SizedBox(height: 5),
+                SizedBox(height: 5),
                 Text(
                   hintText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
                 ),
               ],
@@ -1646,9 +1646,9 @@ class _LessonScreenState extends State<LessonScreen> {
     final canShowHint = exercise.type != ExerciseType.practice && !_answerVerified;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -1663,11 +1663,11 @@ class _LessonScreenState extends State<LessonScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => setState(() => _showHint = !_showHint),
-                icon: const Icon(Icons.lightbulb_outline),
+                icon: Icon(Icons.lightbulb_outline),
                 label: Text(_showHint ? 'Ocultar Pista' : 'Ver Pista'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.secondary,
-                  side: const BorderSide(color: AppColors.border),
+                  side: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? AppColors.border : AppColors.borderLight),
                   minimumSize: const Size(0, 55),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -1675,7 +1675,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 ),
               ),
             ),
-          if (canShowHint) const SizedBox(width: 15),
+          if (canShowHint) SizedBox(width: 15),
           Expanded(
             flex: canShowHint ? 2 : 1,
             child: ElevatedButton(
@@ -1689,7 +1689,7 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
               child: Text(
                 _getButtonText(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

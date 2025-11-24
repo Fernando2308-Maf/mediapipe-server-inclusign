@@ -8,6 +8,7 @@ import 'profile_screen.dart';
 import 'lesson_screen.dart';
 import 'dictionary_screen.dart';
 import 'practice_screen.dart';
+import 'progress_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -89,24 +90,24 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: const Text(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(
           '¡Bienvenido a Inclusign! 🤟',
-          style: TextStyle(color: AppColors.textPrimary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
         ),
-        content: const Text(
+        content: Text(
           'Estamos emocionados de tenerte aquí.\n\n'
           '📖 Comienza con el alfabeto\n'
           '💪 Completa lecciones para ganar XP\n'
           '🔥 Mantén tu racha diaria\n'
           '⚡ Sube de nivel y desbloquea contenido\n\n'
           '¡Empecemos tu viaje en el lenguaje de señas!',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('¡Vamos!', style: TextStyle(color: AppColors.primary)),
+            child: Text('¡Vamos!', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -117,13 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(message, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK', style: TextStyle(color: AppColors.primary)),
+            child: Text('OK', style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -133,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHeader() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -189,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _currentUser?.firstName.isNotEmpty == true
                         ? _currentUser!.firstName[0].toUpperCase()
                         : 'U',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -207,17 +208,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       _currentUser?.isGuest == true
                           ? '¡Hola, Invitado!'
                           : '¡Hola, ${_currentUser?.firstName ?? "Usuario"}!',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                     Text(
                       _currentUser?.isGuest == true
                           ? 'Modo Invitado'
                           : 'Nivel ${_currentUser?.level ?? 1}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: AppColors.secondary,
                       ),
@@ -229,16 +230,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.borderDark,
+                  color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   children: [
-                    const Text('🔥', style: TextStyle(fontSize: 18)),
+                    Text('🔥', style: TextStyle(fontSize: 18)),
                     const SizedBox(width: 4),
                     Text(
                       '${_currentUser?.streak ?? 0}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.streakOrange,
@@ -252,16 +253,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.borderDark,
+                  color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   children: [
-                    const Text('⚡', style: TextStyle(fontSize: 18)),
+                    Text('⚡', style: TextStyle(fontSize: 18)),
                     const SizedBox(width: 4),
                     Text(
                       '${_currentUser?.experience ?? 0}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.experienceGold,
@@ -279,13 +280,13 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Meta diaria',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodySmall?.color),
                   ),
                   Text(
                     '${_currentUser?.todayProgress ?? 0}/${_currentUser?.dailyGoal ?? 5}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
@@ -316,12 +317,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '🚀 Acciones Rápidas',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         const SizedBox(height: 15),
@@ -382,9 +383,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Column(
           children: [
-            const Text('📚', style: TextStyle(fontSize: 36)),
+            Text('📚', style: TextStyle(fontSize: 36)),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Continuar',
               style: TextStyle(
                 fontSize: 16,
@@ -394,9 +395,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text(
               nextLessonTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textLight,
+                color: Colors.white.withOpacity(0.9),
               ),
             ),
           ],
@@ -436,11 +437,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 36)),
+            Text(emoji, style: TextStyle(fontSize: 36)),
             const SizedBox(height: 12),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -448,9 +449,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textLight,
+                color: Colors.white.withOpacity(0.9),
               ),
             ),
           ],
@@ -475,12 +476,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '📖 Tu Ruta de Aprendizaje',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         const SizedBox(height: 15),
@@ -564,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.background,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -572,8 +573,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: AppColors.cardBackground,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Column(
@@ -587,7 +588,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    const Row(
+                    Row(
                       children: [
                         Text('🔤', style: TextStyle(fontSize: 28)),
                         SizedBox(width: 12),
@@ -596,7 +597,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ],
@@ -639,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.background,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -647,8 +648,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: AppColors.cardBackground,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Column(
@@ -662,7 +663,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    const Row(
+                    Row(
                       children: [
                         Text('🔢', style: TextStyle(fontSize: 28)),
                         SizedBox(width: 12),
@@ -671,7 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ],
@@ -714,7 +715,7 @@ class _HomeScreenState extends State<HomeScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.background,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -722,8 +723,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: AppColors.cardBackground,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Column(
@@ -737,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    const Row(
+                    Row(
                       children: [
                         Text('👋', style: TextStyle(fontSize: 28)),
                         SizedBox(width: 12),
@@ -746,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ],
@@ -801,7 +802,7 @@ class _HomeScreenState extends State<HomeScreen> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.background,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -809,8 +810,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: AppColors.cardBackground,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
                 child: Column(
@@ -826,23 +827,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 15),
                     Row(
                       children: [
-                        const Text('💬', style: TextStyle(fontSize: 28)),
+                        Text('💬', style: TextStyle(fontSize: 28)),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Palabras Básicas',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                 ),
                               ),
                               Text(
                                 '$_completedWordsCount/$_totalWords lecciones completadas',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   color: AppColors.secondary,
                                 ),
@@ -887,7 +888,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.star, color: AppColors.purple, size: 20),
               SizedBox(width: 8),
@@ -904,9 +905,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 12),
           Text(
             lesson.description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).textTheme.bodySmall?.color,
               height: 1.5,
             ),
           ),
@@ -925,10 +926,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.cardBackground,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -936,7 +937,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
                 SizedBox(height: 8),
@@ -946,7 +947,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   '• Cada intento te presenta situaciones diferentes',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                     height: 1.5,
                   ),
                 ),
@@ -962,20 +963,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: const TextStyle(fontSize: 14)),
+          Text(icon, style: TextStyle(fontSize: 14)),
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).textTheme.bodySmall?.color,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -988,7 +989,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: lesson.isCompleted ? AppColors.success : AppColors.border,
@@ -1006,16 +1007,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Center(
             child: Text(
               lesson.imageUrl,
-              style: const TextStyle(fontSize: 28),
+              style: TextStyle(fontSize: 28),
             ),
           ),
         ),
         title: Text(
           lesson.title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         subtitle: Text(
@@ -1060,7 +1061,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: locked ? AppColors.borderDark : AppColors.border,
@@ -1094,7 +1095,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
               ),
               child: Center(
-                child: Text(emoji, style: const TextStyle(fontSize: 30)),
+                child: Text(emoji, style: TextStyle(fontSize: 30)),
               ),
             ),
             const SizedBox(width: 15),
@@ -1104,16 +1105,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: AppColors.secondary,
                     ),
@@ -1143,7 +1144,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Text(
               locked ? '🔒' : '▶️',
-              style: const TextStyle(fontSize: 24),
+              style: TextStyle(fontSize: 24),
             ),
           ],
         ),
@@ -1154,7 +1155,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -1183,6 +1184,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const DictionaryScreen()),
           );
+        } else if (index == 2) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ProgressScreen()),
+          );
         } else if (index == 3) {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const ProfileScreen()),
@@ -1204,7 +1209,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: selected ? AppColors.primary : Colors.transparent,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Text(emoji, style: const TextStyle(fontSize: 22)),
+            child: Text(emoji, style: TextStyle(fontSize: 22)),
           ),
           const SizedBox(height: 5),
           Text(

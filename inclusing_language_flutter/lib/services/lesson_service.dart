@@ -331,6 +331,22 @@ class LessonService {
       }
     }
 
+    // Si todas las de números están completadas, buscar en gestos
+    final gestureLessons = await getAllLessons(category: 'Gestures');
+    for (final lesson in gestureLessons) {
+      if (!lesson.isCompleted) {
+        return lesson;
+      }
+    }
+
+    // Si todas las de gestos están completadas, buscar en palabras básicas
+    final basicWordsLessons = await getAllLessons(category: 'Basic Words');
+    for (final lesson in basicWordsLessons) {
+      if (!lesson.isCompleted) {
+        return lesson;
+      }
+    }
+
     // Si todas están completadas, retornar null (no hay más lecciones)
     return null;
   }

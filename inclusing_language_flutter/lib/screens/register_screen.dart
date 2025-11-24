@@ -97,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: Theme.of(context).cardTheme.color,
             title: const Text(
               '¡Cuenta creada exitosamente! 🎉',
               style: TextStyle(color: AppColors.textPrimary),
@@ -105,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             content: Text(
               'Hola ${_firstNameController.text}, tu cuenta ha sido creada exitosamente.\n\n'
               'Ahora puedes iniciar sesión con tu correo y contraseña.',
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
             ),
             actions: [
               TextButton(
@@ -124,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final goToLogin = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
+            backgroundColor: Theme.of(context).cardTheme.color,
             title: const Text(
               'Cuenta existente',
               style: TextStyle(color: AppColors.textPrimary),
@@ -159,9 +159,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
-        title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
-        content: Text(message, style: const TextStyle(color: AppColors.textSecondary)),
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+        content: Text(message, style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -176,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.cardBackground,
+        backgroundColor: Theme.of(context).cardTheme.color,
         title: const Text(
           'Términos y Condiciones',
           style: TextStyle(color: AppColors.textPrimary),
@@ -209,7 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -365,7 +365,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: AppColors.border),
             boxShadow: [
@@ -387,7 +387,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: controller,
                     obscureText: isPassword,
                     keyboardType: keyboardType,
-                    style: const TextStyle(color: AppColors.textPrimary),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     decoration: InputDecoration(
                       hintText: hint,
                       hintStyle: const TextStyle(color: AppColors.secondary),

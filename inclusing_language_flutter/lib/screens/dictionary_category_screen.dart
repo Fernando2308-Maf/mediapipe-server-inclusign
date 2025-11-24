@@ -20,14 +20,14 @@ class DictionaryCategoryScreen extends StatelessWidget {
     final items = _getItemsForCategory();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardBackground,
+                color: Theme.of(context).cardTheme.color,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -36,42 +36,42 @@ class DictionaryCategoryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(25),
+              padding: EdgeInsets.all(25),
               child: Column(
                 children: [
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                        icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Text(
                         emoji,
-                        style: const TextStyle(fontSize: 28),
+                        style: TextStyle(fontSize: 28),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     children: [
-                      const SizedBox(width: 60), // Offset for back button
+                      SizedBox(width: 60), // Offset for back button
                       Text(
                         '${items.length} elementos disponibles',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                       ),
                     ],
@@ -82,7 +82,7 @@ class DictionaryCategoryScreen extends StatelessWidget {
             // Grid of items
             Expanded(
               child: GridView.builder(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 15,
@@ -119,7 +119,7 @@ class DictionaryCategoryScreen extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: AppColors.border),
           boxShadow: [
@@ -136,7 +136,7 @@ class DictionaryCategoryScreen extends StatelessWidget {
             if (itemEmoji.isNotEmpty)
               Text(
                 itemEmoji,
-                style: const TextStyle(fontSize: 40),
+                style: TextStyle(fontSize: 40),
               )
             else
               Container(
@@ -149,7 +149,7 @@ class DictionaryCategoryScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     displayText.toString(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -157,15 +157,15 @@ class DictionaryCategoryScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text(
                 displayText.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,

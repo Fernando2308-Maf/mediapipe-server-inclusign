@@ -8,14 +8,14 @@ class DictionaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardBackground,
+                color: Theme.of(context).cardTheme.color,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -24,20 +24,20 @@ class DictionaryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(25),
+              padding: EdgeInsets.all(25),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                    icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
+                  SizedBox(width: 10),
+                  Text(
                     '📖 Diccionario',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                 ],
@@ -46,18 +46,18 @@ class DictionaryScreen extends StatelessWidget {
             // Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Explora el lenguaje de señas',
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
                     ),
-                    const SizedBox(height: 25),
+                    SizedBox(height: 25),
                     _buildCategoryCard(
                       context,
                       '🔤',
@@ -77,7 +77,7 @@ class DictionaryScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     _buildCategoryCard(
                       context,
                       '🔢',
@@ -97,7 +97,7 @@ class DictionaryScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     _buildCategoryCard(
                       context,
                       '👋',
@@ -117,15 +117,15 @@ class DictionaryScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30),
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
+                        color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15),
                         border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text('💡', style: TextStyle(fontSize: 40)),
                           SizedBox(width: 15),
@@ -146,7 +146,7 @@ class DictionaryScreen extends StatelessWidget {
                                   'Practica frente a un espejo para perfeccionar cada gesto',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(context).textTheme.bodySmall?.color,
                                   ),
                                 ),
                               ],
@@ -177,9 +177,9 @@ class DictionaryScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.border),
           boxShadow: [
@@ -207,23 +207,23 @@ class DictionaryScreen extends StatelessWidget {
                 ],
               ),
               child: Center(
-                child: Text(emoji, style: const TextStyle(fontSize: 35)),
+                child: Text(emoji, style: TextStyle(fontSize: 35)),
               ),
             ),
-            const SizedBox(width: 20),
+            SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -232,18 +232,18 @@ class DictionaryScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
               color: AppColors.secondary,
               size: 20,

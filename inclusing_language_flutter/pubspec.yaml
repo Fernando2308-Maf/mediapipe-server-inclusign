@@ -56,6 +56,9 @@ dependencies:
   # Path provider for temporary files
   path_provider: ^2.1.2
 
+  # Charts for progress visualization
+  fl_chart: ^0.69.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

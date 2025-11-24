@@ -1,0 +1,70 @@
+========================================
+  CÓMO DESCARGAR EL APK DESDE GITHUB
+========================================
+
+El APK se está compilando automáticamente en GitHub Actions.
+
+📍 PASOS PARA DESCARGAR:
+
+1. Abre tu navegador y ve a:
+   https://github.com/Fernando2308-Maf/AplicacionInclusign/actions
+
+2. Verás una lista de "workflows". Busca el más reciente llamado:
+   "Build Android APK"
+
+3. Haz clic en ese workflow
+
+4. Espera a que termine (aparecerá un check verde ✅)
+   - Si todavía está corriendo, verás un círculo amarillo girando
+   - Esto puede tomar 5-10 minutos
+
+5. Una vez completado, baja hasta la sección "Artifacts"
+
+6. Haz clic en "inclusign-release-apk" para descargar
+
+7. Se descargará un archivo ZIP
+
+8. Descomprime el ZIP
+
+9. Encontrarás el archivo "app-release.apk"
+
+10. COPIA ESE ARCHIVO A ESTA MISMA CARPETA:
+    C:\Users\ferna\OneDrive\Escritorio\Inclusign\APK_PARA_INSTALAR\
+
+========================================
+  ALTERNATIVA: DESDE RELEASES
+========================================
+
+Si ya está disponible, también puedes ir directamente a:
+https://github.com/Fernando2308-Maf/AplicacionInclusign/releases
+
+Y descargar el APK desde allí (más fácil).
+
+========================================
+  INSTALAR EN TU CELULAR
+========================================
+
+1. Conecta tu celular a la PC por USB
+
+2. Copia el archivo "app-release.apk" a tu celular
+
+3. En tu celular:
+   - Abre el archivo APK
+   - Si pide permiso, activa "Instalar apps de fuentes desconocidas"
+   - Toca "Instalar"
+   - Toca "Abrir"
+
+¡Listo! Tu app Inclusign estará instalada.
+
+========================================
+  NOTA IMPORTANTE
+========================================
+
+GitHub Actions tarda aproximadamente 5-10 minutos en compilar.
+El workflow se inició hace unos minutos, así que en breve
+estará listo.
+
+Mientras tanto, puedes usar la versión web en tu celular:
+http://192.168.0.6:8080
+
+========================================
