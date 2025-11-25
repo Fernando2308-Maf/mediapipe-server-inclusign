@@ -28,19 +28,22 @@ jobs:
         channel: 'stable'
 
     - name: Obtener dependencias
+      working-directory: inclusing_language_flutter
       run: flutter pub get
 
     - name: Analizar código
+      working-directory: inclusing_language_flutter
       run: flutter analyze
 
     - name: Construir APK
+      working-directory: inclusing_language_flutter
       run: flutter build apk --release
 
     - name: Subir APK como artefacto
       uses: actions/upload-artifact@v4
       with:
         name: inclusign-release-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        path: inclusing_language_flutter/build/app/outputs/flutter-apk/app-release.apk
         retention-days: 30
 
     - name: Crear Release (solo en push a master/main)
@@ -63,6 +66,6 @@ jobs:
           - Gestos básicos de lenguaje de señas
           - Sistema de progreso y estadísticas
           - Tema oscuro/claro
-        files: build/app/outputs/flutter-apk/app-release.apk
+        files: inclusing_language_flutter/build/app/outputs/flutter-apk/app-release.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
