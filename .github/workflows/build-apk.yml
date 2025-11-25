@@ -1,0 +1,68 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Configurar Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.7'
+        channel: 'stable'
+
+    - name: Obtener dependencias
+      run: flutter pub get
+
+    - name: Analizar código
+      run: flutter analyze
+
+    - name: Construir APK
+      run: flutter build apk --release
+
+    - name: Subir APK como artefacto
+      uses: actions/upload-artifact@v4
+      with:
+        name: inclusign-release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+    - name: Crear Release (solo en push a master/main)
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Release v1.0.${{ github.run_number }}
+        body: |
+          APK generado automáticamente por GitHub Actions
+
+          Para instalar en tu celular Android:
+          1. Descarga el archivo APK
+          2. Habilita "Instalar aplicaciones de fuentes desconocidas" en tu celular
+          3. Abre el archivo APK descargado
+          4. Instala la aplicación
+
+          🎯 Características de esta versión:
+          - Lecciones de alfabeto (A-Z + Ñ)
+          - Gestos básicos de lenguaje de señas
+          - Sistema de progreso y estadísticas
+          - Tema oscuro/claro
+        files: build/app/outputs/flutter-apk/app-release.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
