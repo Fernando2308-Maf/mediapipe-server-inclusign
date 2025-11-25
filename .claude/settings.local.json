@@ -24,7 +24,14 @@
       "Bash(cmd.exe /c start https://github.com/Fernando2308-Maf/AplicacionInclusign/actions)",
       "Bash(cmd.exe /c start \"\" \"C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe\")",
       "Bash(flutter clean:*)",
-      "Bash(start ms-settings:developers)"
+      "Bash(start ms-settings:developers)",
+      "Bash(cmd.exe /c rmdir /s /q:*)",
+      "Bash(cmd.exe /c start https://github.com/Fernando2308-Maf/AplicacionInclusign/releases)",
+      "Bash(gh run list:*)",
+      "Bash(powershell -Command \"Remove-Item -Path ''C:\\Users\\ferna\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973'' -Recurse -Force\")",
+      "Bash(flutter devices:*)",
+      "Bash(flutter emulators:*)",
+      "Bash(timeout /t 30 /nobreak)"
     ],
     "deny": [],
     "ask": []
