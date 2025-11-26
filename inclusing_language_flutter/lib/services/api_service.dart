@@ -201,6 +201,39 @@ class ApiService {
     }
   }
 
+  // Actualizar contraseña del usuario
+  Future<bool> updatePassword(String usuarioID, String currentPassword, String newPassword) async {
+    try {
+      _log('Updating password for usuario: $usuarioID');
+
+      final response = await _makeRequest(
+        'PUT',
+        '/usuarios/$usuarioID/password',
+        body: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+      print('🔐 [ApiService] Status Code: ${response.statusCode}');
+      print('🔐 [ApiService] Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        _log('Password updated successfully');
+        return true;
+      } else if (response.statusCode == 401) {
+        _log('Current password is incorrect');
+        return false;
+      } else {
+        _log('Password update failed with status: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      _log('Error updating password: $e');
+      return false;
+    }
+  }
+
   // Progresión endpoints (colección: progresión)
   Future<Map<String, dynamic>?> getProgresion(String usuarioID) async {
     try {

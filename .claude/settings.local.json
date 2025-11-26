@@ -31,7 +31,22 @@
       "Bash(powershell -Command \"Remove-Item -Path ''C:\\Users\\ferna\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973'' -Recurse -Force\")",
       "Bash(flutter devices:*)",
       "Bash(flutter emulators:*)",
-      "Bash(timeout /t 30 /nobreak)"
+      "Bash(timeout /t 30 /nobreak)",
+      "Bash(flutter run:*)",
+      "Bash(cmd)",
+      "Bash(dart run:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm install:*)",
+      "Bash(npm start)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(cmd.exe /c start \"\" \"C:\\Users\\ferna\\OneDrive\\Escritorio\\Inclusign\\inclusing_language_flutter\\build\\app\\outputs\\flutter-apk\")",
+      "Bash(flutter analyze:*)",
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(node -e:*)",
+      "Bash(netstat:*)",
+      "Bash(cmd.exe /c \"taskkill /PID 30168 /F && taskkill /PID 2364 /F\")",
+      "Bash(powershell -Command \"Stop-Process -Id 30168 -Force; Stop-Process -Id 2364 -Force\")"
     ],
     "deny": [],
     "ask": []

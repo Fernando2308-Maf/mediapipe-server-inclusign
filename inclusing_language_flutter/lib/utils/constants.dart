@@ -3,6 +3,13 @@ class AppConstants {
   // Production (Railway): 'https://inclusing-lenguage-api-production.up.railway.app/api'
   // Windows/Web: 'http://localhost:5246/api'
   // Android Emulator: 'http://10.0.2.2:5246/api'
+  // Android Physical Device on same network: 'http://192.168.43.19:5246/api'
+  // API Configuration
+  // NOTA: Antes de generar el APK, actualiza esto a la URL de producción
+  // Opciones:
+  // - Local: 'http://192.168.43.19:5246/api' (solo funciona en tu red)
+  // - Vercel: 'https://tu-app.vercel.app/api' (después de desplegar)
+  // - Railway: 'https://tu-app.up.railway.app/api' (después de desplegar)
   static const String baseUrl = 'http://localhost:5246/api';
 
   // Storage Keys
@@ -11,6 +18,8 @@ class AppConstants {
   static const String keyIsGuest = 'is_guest';
   static const String keyIsNewUser = 'is_new_user';
   static const String keyRememberMe = 'remember_me';
+  static const String keySavedEmail = 'saved_email';
+  static const String keySavedPassword = 'saved_password';
 
   // App Info
   static const String appName = 'Inclusign';

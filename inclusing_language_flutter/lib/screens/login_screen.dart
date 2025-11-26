@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _checkIfLoggedIn();
+    _loadSavedCredentials();
   }
 
   Future<void> _checkIfLoggedIn() async {
@@ -36,6 +37,17 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
+    }
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final credentials = await _authService.getSavedCredentials();
+    if (credentials != null) {
+      setState(() {
+        _emailController.text = credentials['email']!;
+        _passwordController.text = credentials['password']!;
+        _rememberMe = true;
+      });
     }
   }
 
@@ -535,74 +547,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildFooter() {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildQuickAction('👀', 'Tour rápido', () {
-              _showAlert(
-                'Tour Rápido',
-                '¡Bienvenido a Inclusign! 🤟\n\n'
-                '• Aprende el alfabeto en señas\n'
-                '• Practica con ejercicios interactivos\n'
-                '• Gana experiencia y sube de nivel\n'
-                '• Mantén tu racha diaria\n\n'
-                '¡Comienza tu viaje hoy mismo!',
-              );
-            }),
-            const SizedBox(width: 20),
-            _buildQuickAction('❓', 'Ayuda', () {
-              _showAlert(
-                'Ayuda',
-                '¿Necesitas ayuda?\n\n'
-                '📧 Email: soporte@signlearn.com\n'
-                '💬 Chat en vivo disponible 24/7\n'
-                '📖 Visita nuestra sección de Preguntas Frecuentes',
-              );
-            }),
-          ],
-        ),
-        const SizedBox(height: 20),
         const Text(
-          '© 2024 Inclusign',
+          '© 2025 Inclusign',
           style: TextStyle(fontSize: 12, color: AppColors.border),
         ),
         const SizedBox(height: 5),
         Text(
-          'Hecho con ❤️ para la comunidad sorda',
+          'Hecho con ❤️ para la comunidad sorda - FARO',
           style: TextStyle(fontSize: 11, color: Theme.of(context).brightness == Brightness.dark ? AppColors.borderDark : AppColors.borderDarkLight),
           textAlign: TextAlign.center,
         ),
       ],
-    );
-  }
-
-  Widget _buildQuickAction(String icon, String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(25),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Text(icon, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: AppColors.secondary),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

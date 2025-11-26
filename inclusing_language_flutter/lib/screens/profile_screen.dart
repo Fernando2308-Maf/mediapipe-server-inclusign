@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/theme_service.dart';
 import '../utils/colors.dart';
 import 'login_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -326,7 +327,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             '👤',
             'Editar Perfil',
             'Actualiza tu información personal',
-            () => _showAlert('Editar Perfil', 'Esta función estará disponible pronto.'),
+            () {
+              if (_currentUser != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => EditProfileScreen(userProfile: _currentUser!),
+                  ),
+                );
+              }
+            },
           ),
           SizedBox(height: 10),
           _buildOptionCard(

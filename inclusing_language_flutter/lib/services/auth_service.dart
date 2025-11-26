@@ -43,8 +43,16 @@ class AuthService {
         _currentUser = result.userProfile;
         await _saveUserData(result.token, result.userProfile!, usuarioID: result.usuarioID);
 
+        // Guardar credenciales si "Recordar mis datos" está activado
         if (request.rememberMe) {
           await _storageService.setBool(AppConstants.keyRememberMe, true);
+          await _storageService.setSecure(AppConstants.keySavedEmail, request.email);
+          await _storageService.setSecure(AppConstants.keySavedPassword, request.password);
+        } else {
+          // Limpiar credenciales guardadas si no se marca
+          await _storageService.setBool(AppConstants.keyRememberMe, false);
+          await _storageService.deleteSecure(AppConstants.keySavedEmail);
+          await _storageService.deleteSecure(AppConstants.keySavedPassword);
         }
       }
 
@@ -267,5 +275,20 @@ class AuthService {
 
   Future<void> clearNewUserFlag() async {
     await _storageService.setSecure(AppConstants.keyIsNewUser, 'false');
+  }
+
+  // Obtener credenciales guardadas
+  Future<Map<String, String>?> getSavedCredentials() async {
+    final rememberMe = _storageService.getBool(AppConstants.keyRememberMe);
+    if (rememberMe != true) return null;
+
+    final email = await _storageService.getSecure(AppConstants.keySavedEmail);
+    final password = await _storageService.getSecure(AppConstants.keySavedPassword);
+
+    if (email != null && password != null && email.isNotEmpty && password.isNotEmpty) {
+      return {'email': email, 'password': password};
+    }
+
+    return null;
   }
 }
