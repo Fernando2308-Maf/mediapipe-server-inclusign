@@ -32,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalGestures = 21;
   int _completedWordsCount = 0;
   int _totalWords = 10;
+  int _completedWordBuilderCount = 0;
+  int _totalWordBuilder = 10;
   Lesson? _nextLesson;
   bool _loadingLessons = true;
 
@@ -69,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final completedNumbersCount = await _lessonService.getCompletedLessonsCountByCategory('Numbers');
       final completedGesturesCount = await _lessonService.getCompletedLessonsCountByCategory('Gestures');
       final completedWordsCount = await _lessonService.getCompletedLessonsCountByCategory('Basic Words');
+      final completedWordBuilderCount = await _lessonService.getCompletedLessonsCountByCategory('Word Builder');
       final nextLesson = await _lessonService.getNextIncompleteLesson();
 
       setState(() {
@@ -76,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _completedNumbersCount = completedNumbersCount;
         _completedGesturesCount = completedGesturesCount;
         _completedWordsCount = completedWordsCount;
+        _completedWordBuilderCount = completedWordBuilderCount;
         _nextLesson = nextLesson;
         _loadingLessons = false;
       });
@@ -547,6 +551,22 @@ class _HomeScreenState extends State<HomeScreen> {
             dimmed: _completedGesturesCount < 10,
           ),
         ),
+        const SizedBox(height: 15),
+        GestureDetector(
+          onTap: _completedWordsCount >= 5 ? _showWordBuilderLessons : null,
+          child: _buildLessonCard(
+            '🔤',
+            'Armar Palabras',
+            '10 lecciones • Avanzado',
+            _completedWordBuilderCount / _totalWordBuilder,
+            _completedWordsCount >= 5
+                ? '$_completedWordBuilderCount/$_totalWordBuilder completadas'
+                : 'Completa 5 lecciones de palabras básicas ($_completedWordsCount/5)',
+            AppColors.info,
+            _completedWordsCount < 5,
+            dimmed: _completedWordsCount < 5,
+          ),
+        ),
       ],
     );
   }
@@ -843,6 +863,107 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(
                                 '$_completedWordsCount/$_totalWords lecciones completadas',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  itemCount: lessons.length,
+                  itemBuilder: (context, index) {
+                    final lesson = lessons[index];
+                    return _buildLessonListItem(lesson, index);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).then((_) {
+      _loadUserData(); // Reload user data to update experience
+      _loadLessonsData(); // Reload when modal closes
+    });
+  }
+
+  void _showWordBuilderLessons() async {
+    // Cargar las 10 lecciones de Armar Palabras (IDs 69-78)
+    final List<Lesson> lessons = [];
+    for (int i = 69; i <= 78; i++) {
+      final lesson = await _lessonService.getLessonById(i);
+      if (lesson != null) {
+        lessons.add(lesson);
+      }
+    }
+
+    if (!mounted) return;
+
+    if (lessons.isEmpty) {
+      _showAlert('Error', 'No se pudieron cargar las lecciones de Armar Palabras');
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Text('🔤', style: TextStyle(fontSize: 28)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Armar Palabras',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                ),
+                              ),
+                              Text(
+                                '$_completedWordBuilderCount/$_totalWordBuilder lecciones completadas',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: AppColors.secondary,

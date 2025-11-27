@@ -10,6 +10,7 @@ enum ExerciseType {
   practice,
   matching,
   trueFalse,
+  wordBuilder,
 }
 
 class Lesson {
@@ -163,6 +164,7 @@ class Exercise {
     if (str.contains('practice')) return ExerciseType.practice;
     if (str.contains('matching')) return ExerciseType.matching;
     if (str.contains('truefalse')) return ExerciseType.trueFalse;
+    if (str.contains('wordbuilder')) return ExerciseType.wordBuilder;
     return ExerciseType.multipleChoice;
   }
 

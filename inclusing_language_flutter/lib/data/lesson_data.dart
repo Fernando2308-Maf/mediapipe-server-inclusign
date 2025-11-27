@@ -693,6 +693,81 @@ class LessonData {
     },
   ];
 
+  /// Datos de las 10 lecciones de Armar Palabras (Lecciones 69-78)
+  /// El usuario debe formar palabras usando el teclado de alfabeto
+  static final List<Map<String, dynamic>> _wordBuilderLessons = [
+    // Lección 69: Palabras de 3 letras
+    {
+      'title': 'Palabras Simples - 3 Letras',
+      'emoji': '🔤',
+      'targetWord': 'SOL',
+      'hint': 'Una estrella brillante en el cielo',
+    },
+    // Lección 70: Animales
+    {
+      'title': 'Animales - 4 Letras',
+      'emoji': '🐕',
+      'targetWord': 'PERRO',
+      'hint': 'Mejor amigo del hombre',
+    },
+    // Lección 71: Familia
+    {
+      'title': 'Familia - 4 Letras',
+      'emoji': '👨',
+      'targetWord': 'PAPA',
+      'hint': 'Figura paterna en la familia',
+    },
+    // Lección 72: Familia 2
+    {
+      'title': 'Familia - 4 Letras',
+      'emoji': '👩',
+      'targetWord': 'MAMA',
+      'hint': 'Figura materna en la familia',
+    },
+    // Lección 73: Colores
+    {
+      'title': 'Colores - 4 Letras',
+      'emoji': '🔴',
+      'targetWord': 'ROJO',
+      'hint': 'Color del fuego y la sangre',
+    },
+    // Lección 74: Naturaleza
+    {
+      'title': 'Naturaleza - 4 Letras',
+      'emoji': '🌙',
+      'targetWord': 'LUNA',
+      'hint': 'Brilla en la noche',
+    },
+    // Lección 75: Emociones
+    {
+      'title': 'Emociones - 4 Letras',
+      'emoji': '❤️',
+      'targetWord': 'AMOR',
+      'hint': 'Sentimiento profundo de cariño',
+    },
+    // Lección 76: Casa
+    {
+      'title': 'Hogar - 4 Letras',
+      'emoji': '🏠',
+      'targetWord': 'CASA',
+      'hint': 'Lugar donde vives',
+    },
+    // Lección 77: Alimentos
+    {
+      'title': 'Alimentos - 3 Letras',
+      'emoji': '🍞',
+      'targetWord': 'PAN',
+      'hint': 'Alimento básico hecho de harina',
+    },
+    // Lección 78: Líquidos
+    {
+      'title': 'Líquidos - 4 Letras',
+      'emoji': '💧',
+      'targetWord': 'AGUA',
+      'hint': 'Líquido vital para la vida',
+    },
+  ];
+
   /// Datos de las 21 lecciones de gestos básicos
   static final List<Map<String, dynamic>> _gesturesData = [
     {
@@ -1407,6 +1482,67 @@ class LessonData {
     }).toList();
   }
 
+  /// Generar las 10 lecciones de Armar Palabras (69-78)
+  /// El usuario forma palabras seleccionando letras del alfabeto
+  static Future<List<Lesson>> generateWordBuilderLessons() async {
+    // Cargar TODOS los GIFs del alfabeto para el teclado
+    print('🔤 Cargando GIFs del alfabeto para Armar Palabras...');
+
+    // Cargar todos los GIFs del alfabeto (A-Z, Ñ)
+    for (var letterData in _alphabetData) {
+      final letter = letterData['letter'] as String;
+      if (!_abecedarioCache.containsKey(letter)) {
+        await loadAbecedarioImageByLetter(letter);
+      }
+    }
+
+    // Crear las 10 lecciones
+    final lessons = <Lesson>[];
+
+    for (var entry in _wordBuilderLessons.asMap().entries) {
+      final index = entry.key;
+      final lessonData = entry.value;
+      final lessonId = 69 + index; // Lecciones 69-78
+      final targetWord = lessonData['targetWord'] as String;
+
+      // Crear un solo ejercicio de tipo wordBuilder por lección
+      final exercise = Exercise(
+        id: 1,
+        type: ExerciseType.wordBuilder,
+        question: 'Forma la palabra usando las letras del alfabeto en lenguaje de señas',
+        correctAnswer: targetWord,
+        options: _alphabetData.map((e) => e['letter'] as String).toList(), // Todas las letras disponibles
+        imageUrl: lessonData['emoji'],
+        imageBase64: '',
+        hintText: lessonData['hint'],
+        points: 25,
+      );
+
+      lessons.add(Lesson(
+        id: lessonId,
+        title: 'Lección $lessonId',
+        category: 'Word Builder',
+        letter: targetWord,
+        description: lessonData['title'],
+        imageUrl: lessonData['emoji'],
+        imageBase64: '',
+        order: lessonId,
+        experiencePoints: 25,
+        difficulty: DifficultyLevel.intermediate,
+        estimatedMinutes: 5,
+        exercises: [exercise],
+        learningTips: [
+          '🔤 Observa cada letra del alfabeto cuidadosamente',
+          '👆 Toca las letras en el orden correcto para formar la palabra',
+          '💡 Usa la pista si necesitas ayuda',
+          '🎯 Puedes ver el GIF de cada letra antes de seleccionarla',
+        ],
+      ));
+    }
+
+    return lessons;
+  }
+
   /// Generar todas las lecciones de gestos con sus ejercicios
   static Future<List<Lesson>> generateGestureLessons() async {
     // Los GIFs deberían estar precargados en background
@@ -1762,6 +1898,16 @@ class LessonData {
       }
     }
 
+    // Lecciones de Armar Palabras (IDs 69-78)
+    if (id >= 69 && id <= 78) {
+      final lessons = await generateWordBuilderLessons();
+      try {
+        return lessons[id - 69]; // Índice 0-9 para IDs 69-78
+      } catch (e) {
+        return null;
+      }
+    }
+
     // Buscar en gestos (IDs 38-58)
     if (id >= 38 && id <= 58) {
       // Los GIFs deberían estar precargados en background
@@ -1857,6 +2003,10 @@ class LessonData {
     if (category.toLowerCase() == 'basic words' || category.toLowerCase() == 'palabras básicas' || category.toLowerCase() == 'palabras basicas') {
       // Lecciones 59-68: Palabras Básicas
       return await generateBasicWordLessons();
+    }
+    if (category.toLowerCase() == 'word builder' || category.toLowerCase() == 'armar palabras') {
+      // Lecciones 69-78: Armar Palabras
+      return await generateWordBuilderLessons();
     }
     return [];
   }

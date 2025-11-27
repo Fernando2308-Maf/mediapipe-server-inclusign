@@ -242,6 +242,200 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showDailyGoalDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Row(
+          children: [
+            Text(
+              '🎯',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(width: 10),
+            Text(
+              'Meta Diaria',
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Título de la meta
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.star, color: AppColors.experienceGold, size: 28),
+                    SizedBox(width: 10),
+                    Text(
+                      'Tu meta: 5 lecciones diarias',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Mensaje motivador
+              Text(
+                '¡Sigue adelante!',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Cada lección que completas te acerca más a dominar la Lengua de Señas Mexicana. Tu dedicación y esfuerzo están construyendo puentes de comunicación que transformarán vidas.',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 20),
+
+              Divider(color: AppColors.border),
+              SizedBox(height: 15),
+
+              // Importancia del lenguaje de señas
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('💙', style: TextStyle(fontSize: 24)),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '¿Por qué es importante?',
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Aprender lenguaje de señas es más que adquirir una nueva habilidad:',
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodySmall?.color,
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+
+              // Lista de beneficios
+              _buildBenefitItem('🤝', 'Inclusión Social', 'Rompes barreras de comunicación y promueves la inclusión de la comunidad sorda.'),
+              _buildBenefitItem('🌍', 'Mundo Accesible', 'Contribuyes a crear una sociedad más accesible y comprensiva para todos.'),
+              _buildBenefitItem('❤️', 'Empatía', 'Desarrollas mayor sensibilidad y comprensión hacia las personas con discapacidad auditiva.'),
+              _buildBenefitItem('🎓', 'Crecimiento Personal', 'Expandes tus habilidades de comunicación y enriqueces tu perspectiva del mundo.'),
+
+              SizedBox(height: 20),
+
+              // Mensaje final motivador
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Text('💪', style: TextStyle(fontSize: 24)),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        '¡Tú puedes lograrlo! Cada lección cuenta. Juntos construimos un mundo más inclusivo.',
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          fontSize: 13,
+                          height: 1.4,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('¡Entendido!', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 15)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBenefitItem(String emoji, String title, String description) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(emoji, style: TextStyle(fontSize: 20)),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -507,8 +701,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildOptionCard(
             '🎯',
             'Meta Diaria',
-            'Cambia tu objetivo de lecciones diarias',
-            () => _showAlert('Meta Diaria', 'Esta función estará disponible pronto.'),
+            'Tu objetivo: 5 lecciones diarias',
+            () => _showDailyGoalDialog(),
           ),
           SizedBox(height: 10),
           _buildThemeCard(),

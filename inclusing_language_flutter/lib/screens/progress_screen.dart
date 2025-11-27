@@ -23,6 +23,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
   int _totalGestures = 21;
   int _completedBasicWords = 0;
   int _totalBasicWords = 10;
+  int _completedWordBuilder = 0;
+  int _totalWordBuilder = 10;
 
   @override
   void initState() {
@@ -36,12 +38,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
       final numbersCount = await _lessonService.getCompletedLessonsCountByCategory('Numbers');
       final gesturesCount = await _lessonService.getCompletedLessonsCountByCategory('Gestures');
       final basicWordsCount = await _lessonService.getCompletedLessonsCountByCategory('Basic Words');
+      final wordBuilderCount = await _lessonService.getCompletedLessonsCountByCategory('Word Builder');
 
       setState(() {
         _completedAlphabet = alphabetCount;
         _completedNumbers = numbersCount;
         _completedGestures = gesturesCount;
         _completedBasicWords = basicWordsCount;
+        _completedWordBuilder = wordBuilderCount;
         _isLoading = false;
       });
     } catch (e) {
@@ -111,6 +115,16 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     total: _totalBasicWords,
                     color: const Color(0xFFFF6B6B),
                   ),
+                  SizedBox(height: 25),
+
+                  // Word Builder progress
+                  _buildCategoryProgress(
+                    title: 'Armar Palabras',
+                    emoji: '🔤',
+                    completed: _completedWordBuilder,
+                    total: _totalWordBuilder,
+                    color: AppColors.info,
+                  ),
                   SizedBox(height: 30),
 
                   // Overall pie chart
@@ -122,8 +136,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildOverallSummary() {
-    final totalCompleted = _completedAlphabet + _completedNumbers + _completedGestures + _completedBasicWords;
-    final totalLessons = _totalAlphabet + _totalNumbers + _totalGestures + _totalBasicWords;
+    final totalCompleted = _completedAlphabet + _completedNumbers + _completedGestures + _completedBasicWords + _completedWordBuilder;
+    final totalLessons = _totalAlphabet + _totalNumbers + _totalGestures + _totalBasicWords + _totalWordBuilder;
     final percentage = totalLessons > 0 ? (totalCompleted / totalLessons * 100).round() : 0;
 
     return Container(
@@ -336,8 +350,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildOverallPieChart() {
-    final totalCompleted = _completedAlphabet + _completedNumbers + _completedGestures + _completedBasicWords;
-    final totalLessons = _totalAlphabet + _totalNumbers + _totalGestures + _totalBasicWords;
+    final totalCompleted = _completedAlphabet + _completedNumbers + _completedGestures + _completedBasicWords + _completedWordBuilder;
+    final totalLessons = _totalAlphabet + _totalNumbers + _totalGestures + _totalBasicWords + _totalWordBuilder;
     final pending = totalLessons - totalCompleted;
 
     return Container(
@@ -410,6 +424,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       color: Colors.white,
                     ),
                   ),
+                  PieChartSectionData(
+                    value: _completedWordBuilder.toDouble(),
+                    title: '$_completedWordBuilder\nArmar',
+                    color: AppColors.info,
+                    radius: 60,
+                    titleStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   if (pending > 0)
                     PieChartSectionData(
                       value: pending.toDouble(),
@@ -437,6 +462,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
               _buildLegendItem('🔢 Números', AppColors.success),
               _buildLegendItem('👋 Gestos', AppColors.accent),
               _buildLegendItem('💬 Palabras Básicas', const Color(0xFFFF6B6B)),
+              _buildLegendItem('🔤 Armar Palabras', AppColors.info),
               if (pending > 0)
                 _buildLegendItem('Pendientes', AppColors.borderDark),
             ],

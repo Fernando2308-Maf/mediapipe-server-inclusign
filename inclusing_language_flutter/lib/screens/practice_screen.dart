@@ -27,10 +27,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
   // Estados del ejercicio
   String? _selectedAnswer;
   List<String> _selectedGestures = [];
+  List<String> _selectedLetters = []; // Para Word Builder
   bool _hasAnswered = false;
 
   // Cache de GIFs
   Map<String, String> _gestureGifs = {};
+  Map<String, String> _letterGifs = {}; // Para Word Builder
 
   // Mapeo de índice de ejercicio -> categoría
   Map<int, String> _exerciseCategories = {};
@@ -42,13 +44,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   Future<void> _loadGifsForExercises(List<Exercise> exercises) async {
-    // Cargar GIFs para ejercicios de Palabras Básicas
-    // Estos ejercicios muestran las opciones como GIFs en cuadrícula
+    // Cargar GIFs para ejercicios de Palabras Básicas y Word Builder
     for (int i = 0; i < exercises.length; i++) {
       final exercise = exercises[i];
       final category = _exerciseCategories[i];
 
-      // Solo para ejercicios de Basic Words
+      // Para ejercicios de Basic Words (gestos)
       if (category == 'Basic Words') {
         for (var gestureName in exercise.options) {
           if (!_gestureGifs.containsKey(gestureName)) {
@@ -60,6 +61,27 @@ class _PracticeScreenState extends State<PracticeScreen> {
               }
             } catch (e) {
               print('⚠️ No se pudo cargar GIF para $gestureName: $e');
+            }
+          }
+        }
+      }
+
+      // Para ejercicios de Word Builder (letras del alfabeto)
+      if (category == 'Word Builder') {
+        // Cargar GIFs de las letras necesarias para formar la palabra
+        final targetWord = exercise.correctAnswer.toUpperCase();
+        final uniqueLetters = targetWord.split('').toSet();
+
+        for (var letter in uniqueLetters) {
+          if (!_letterGifs.containsKey(letter)) {
+            try {
+              final gifBase64 = await LessonData.loadAbecedarioImageByLetter(letter);
+              if (gifBase64.isNotEmpty) {
+                _letterGifs[letter] = gifBase64;
+                print('✅ GIF de letra cargado: $letter');
+              }
+            } catch (e) {
+              print('⚠️ No se pudo cargar GIF para letra $letter: $e');
             }
           }
         }
@@ -139,11 +161,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
         return selectedExercises;
       }
 
-      // Obtener 2 ejercicios aleatorios de cada categoría
+      // Obtener 2 ejercicios aleatorios de cada categoría (1 para Word Builder)
       final alphabetExercises = await getRandomExercisesFromCategory('Alphabet', 2);
       final numberExercises = await getRandomExercisesFromCategory('Numbers', 2);
       final gestureExercises = await getRandomExercisesFromCategory('Gestures', 2);
       final wordsExercises = await getRandomExercisesFromCategory('Basic Words', 2);
+      final wordBuilderExercises = await getRandomExercisesFromCategory('Word Builder', 1);
 
       // Rastrear la categoría de cada ejercicio
       int currentIndex = 0;
@@ -159,11 +182,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
       for (var _ in wordsExercises) {
         _exerciseCategories[currentIndex++] = 'Basic Words';
       }
+      for (var _ in wordBuilderExercises) {
+        _exerciseCategories[currentIndex++] = 'Word Builder';
+      }
 
       allExercises.addAll(alphabetExercises);
       allExercises.addAll(numberExercises);
       allExercises.addAll(gestureExercises);
       allExercises.addAll(wordsExercises);
+      allExercises.addAll(wordBuilderExercises);
 
       // Mezclar todos los ejercicios y reconstruir el mapeo
       final tempMap = <int, String>{};
@@ -195,6 +222,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
       }
       for (var ex in wordsExercises) {
         exerciseToCategory[ex] = 'Basic Words';
+      }
+      for (var ex in wordBuilderExercises) {
+        exerciseToCategory[ex] = 'Word Builder';
       }
 
       // Reconstruir el mapeo basado en el orden mezclado
@@ -421,6 +451,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
       // Ejercicio de selección de GIF (Palabras Básicas)
       correct = _selectedGestures.length == 1 &&
                 _selectedGestures[0] == currentExercise.correctAnswer;
+    } else if (currentCategory == 'Word Builder') {
+      // Ejercicio de armar palabras
+      final formedWord = _selectedLetters.join('');
+      correct = formedWord == currentExercise.correctAnswer;
+      print('🔍 Word Builder - Palabra formada: "$formedWord", Correcta: "${currentExercise.correctAnswer}", ¿Igual? $correct');
     } else {
       // Ejercicio de opción múltiple normal (Alfabeto, Números, Gestos)
       correct = _selectedAnswer == currentExercise.correctAnswer;
@@ -446,6 +481,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
         _currentExerciseIndex++;
         _selectedAnswer = null;
         _selectedGestures.clear();
+        _selectedLetters.clear();
         _hasAnswered = false;
       });
     } else {
@@ -573,8 +609,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 _showingIntro = true;
                 _selectedAnswer = null;
                 _selectedGestures.clear();
+                _selectedLetters.clear();
                 _hasAnswered = false;
                 _gestureGifs.clear(); // Limpiar cache de GIFs
+                _letterGifs.clear(); // Limpiar cache de letras
                 _exerciseCategories.clear(); // Limpiar mapeo de categorías
               });
               _loadPracticeExercises(); // Esto generará nuevos ejercicios aleatorios
@@ -618,9 +656,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
     final currentExercise = _practiceExercises[_currentExerciseIndex];
 
-    // Los ejercicios de Palabras Básicas usan selección de GIFs
+    // Detectar el tipo de ejercicio según la categoría
     final currentCategory = _exerciseCategories[_currentExerciseIndex] ?? '';
     final isBasicWordsExercise = currentCategory == 'Basic Words';
+    final isWordBuilderExercise = currentCategory == 'Word Builder';
 
 
     return Scaffold(
@@ -792,7 +831,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     // Botón verificar
                     if (!_hasAnswered)
                       ElevatedButton(
-                        onPressed: (_selectedAnswer != null || _selectedGestures.isNotEmpty)
+                        onPressed: (_selectedAnswer != null || _selectedGestures.isNotEmpty || _selectedLetters.isNotEmpty)
                             ? _checkAnswer
                             : null,
                         style: ElevatedButton.styleFrom(
@@ -813,54 +852,49 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       ),
                     // Feedback
                     if (_hasAnswered)
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: (_selectedAnswer == currentExercise.correctAnswer ||
+                      Builder(
+                        builder: (context) {
+                          // Determinar si la respuesta es correcta según el tipo de ejercicio
+                          final bool isCorrect = _selectedAnswer == currentExercise.correctAnswer ||
                                   (_selectedGestures.isNotEmpty &&
-                                      _selectedGestures[0] == currentExercise.correctAnswer))
-                              ? AppColors.success.withOpacity(0.2)
-                              : AppColors.error.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: (_selectedAnswer == currentExercise.correctAnswer ||
-                                    (_selectedGestures.isNotEmpty &&
-                                        _selectedGestures[0] == currentExercise.correctAnswer))
-                                ? AppColors.success
-                                : AppColors.error,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              (_selectedAnswer == currentExercise.correctAnswer ||
-                                      (_selectedGestures.isNotEmpty &&
-                                          _selectedGestures[0] == currentExercise.correctAnswer))
-                                  ? Icons.check_circle
-                                  : Icons.cancel,
-                              color: (_selectedAnswer == currentExercise.correctAnswer ||
-                                      (_selectedGestures.isNotEmpty &&
-                                          _selectedGestures[0] == currentExercise.correctAnswer))
-                                  ? AppColors.success
-                                  : AppColors.error,
-                              size: 32,
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                (_selectedAnswer == currentExercise.correctAnswer ||
-                                        (_selectedGestures.isNotEmpty &&
-                                            _selectedGestures[0] == currentExercise.correctAnswer))
-                                    ? '¡Correcto! +${currentExercise.points} XP'
-                                    : 'Incorrecto. La respuesta era: ${currentExercise.correctAnswer}',
-                                style: TextStyle(
-                                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                      _selectedGestures[0] == currentExercise.correctAnswer) ||
+                                  (_selectedLetters.isNotEmpty &&
+                                      _selectedLetters.join('') == currentExercise.correctAnswer);
+
+                          return Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: isCorrect
+                                  ? AppColors.success.withOpacity(0.2)
+                                  : AppColors.error.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isCorrect ? AppColors.success : AppColors.error,
                               ),
                             ),
-                          ],
-                        ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isCorrect ? Icons.check_circle : Icons.cancel,
+                                  color: isCorrect ? AppColors.success : AppColors.error,
+                                  size: 32,
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    isCorrect
+                                        ? '¡Correcto! +${currentExercise.points} XP'
+                                        : 'Incorrecto. La respuesta era: ${currentExercise.correctAnswer}',
+                                    style: TextStyle(
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                   ],
                 ),

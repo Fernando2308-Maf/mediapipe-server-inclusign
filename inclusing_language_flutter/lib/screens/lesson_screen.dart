@@ -31,6 +31,11 @@ class _LessonScreenState extends State<LessonScreen> {
   List<String> _selectedGestures = []; // Gestos seleccionados en orden
   Map<String, String> _gestureGifs = {}; // Mapeo de nombre -> base64 GIF
 
+  // Para las lecciones 69-78: Armar Palabras
+  List<String> _selectedLetters = []; // Letras seleccionadas en orden
+  Map<String, String> _letterGifs = {}; // Mapeo de letra -> base64 GIF
+  List<String> _keyboardLetters = []; // Orden fijo del teclado (no cambia durante el ejercicio)
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +76,13 @@ class _LessonScreenState extends State<LessonScreen> {
 
     // Para otros ejercicios, primero verificar
     if (!_answerVerified) {
-      if (_selectedAnswer == null) {
+      // Para lecciones 69-78 (armar palabras), verificar que hay letras seleccionadas
+      if (widget.lessonId >= 69 && widget.lessonId <= 78) {
+        if (_selectedLetters.isEmpty) {
+          _showAlert('Forma una palabra', 'Por favor selecciona letras para formar la palabra');
+          return;
+        }
+      } else if (_selectedAnswer == null && (widget.lessonId < 59 || widget.lessonId > 68)) {
         _showAlert('Selecciona una opción', 'Por favor selecciona una respuesta antes de continuar');
         return;
       }
@@ -98,6 +109,14 @@ class _LessonScreenState extends State<LessonScreen> {
     if (widget.lessonId >= 59 && widget.lessonId <= 68) {
       // Solo hay 1 gesto correcto por ejercicio
       correct = _selectedGestures.length == 1 && _selectedGestures[0] == exercise.correctAnswer;
+    } else if (widget.lessonId >= 69 && widget.lessonId <= 78) {
+      // Para lecciones 69-78 (armar palabras), verificar que formó la palabra correcta
+      final formedWord = _selectedLetters.join();
+      print('🔍 DEBUG Word Builder:');
+      print('   Palabra formada: "$formedWord"');
+      print('   Palabra correcta: "${exercise.correctAnswer}"');
+      print('   ¿Son iguales? ${formedWord == exercise.correctAnswer}');
+      correct = formedWord == exercise.correctAnswer;
     } else {
       // Lecciones normales
       correct = _selectedAnswer == exercise.correctAnswer;
@@ -119,6 +138,8 @@ class _LessonScreenState extends State<LessonScreen> {
       _isCorrect = false;
       _showHint = false;
       _selectedGestures.clear(); // Para lección 59
+      _selectedLetters.clear(); // Para lecciones 69-78
+      _keyboardLetters.clear(); // Limpiar el orden del teclado para regenerarlo
     });
   }
 
@@ -836,6 +857,8 @@ class _LessonScreenState extends State<LessonScreen> {
         return _buildMultipleChoiceExercise(exercise);
       case ExerciseType.matching:
         return _buildGestureSelectionExercise(exercise);
+      case ExerciseType.wordBuilder:
+        return _buildWordBuilderExercise(exercise);
       default:
         return SizedBox();
     }
@@ -1568,6 +1591,300 @@ class _LessonScreenState extends State<LessonScreen> {
     }
 
     return gifs;
+  }
+
+  // Helper para cargar GIFs del alfabeto
+  Future<Map<String, String>> _loadAlphabetGifs(List<String> letters) async {
+    final Map<String, String> gifs = {};
+
+    for (final letter in letters) {
+      try {
+        final gif = await LessonData.loadAbecedarioImageByLetter(letter);
+        if (gif.isNotEmpty) {
+          gifs[letter] = gif;
+        }
+      } catch (e) {
+        print('Error cargando GIF para letra $letter: $e');
+      }
+    }
+
+    return gifs;
+  }
+
+  // Método para construir el ejercicio de Armar Palabras (lecciones 69-78)
+  Widget _buildWordBuilderExercise(Exercise exercise) {
+    return FutureBuilder<Map<String, String>>(
+      future: _loadAlphabetGifs(exercise.options),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: AppColors.primary),
+                SizedBox(height: 20),
+                Text(
+                  'Cargando alfabeto...',
+                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Center(
+            child: Text(
+              'Error cargando alfabeto',
+              style: TextStyle(color: AppColors.error),
+            ),
+          );
+        }
+
+        final letterGifs = snapshot.data!;
+        final targetWord = exercise.correctAnswer;
+
+        return Column(
+          children: [
+            // Instrucciones y palabra objetivo
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, AppColors.accent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.construction, color: Colors.white, size: 24),
+                      SizedBox(width: 10),
+                      Text(
+                        'Arma la palabra',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                    ),
+                    child: Text(
+                      targetWord,
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 8,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  if (exercise.hintText.isNotEmpty)
+                    Text(
+                      '💡 ${exercise.hintText}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                        fontStyle: FontStyle.italic,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Letras seleccionadas (vista previa de la palabra que está formando)
+            if (_selectedLetters.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardTheme.color,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '✅ Tu palabra:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _selectedLetters.map((letter) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [AppColors.primary, AppColors.accent],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            letter,
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 10),
+                    if (!_answerVerified)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                if (_selectedLetters.isNotEmpty) {
+                                  _selectedLetters.removeLast();
+                                }
+                              });
+                            },
+                            icon: Icon(Icons.backspace, size: 16, color: AppColors.warning),
+                            label: Text(
+                              'Borrar última',
+                              style: TextStyle(fontSize: 12, color: AppColors.warning),
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _selectedLetters.clear();
+                              });
+                            },
+                            icon: Icon(Icons.refresh, size: 16, color: AppColors.error),
+                            label: Text(
+                              'Reiniciar',
+                              style: TextStyle(fontSize: 12, color: AppColors.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            if (_selectedLetters.isNotEmpty) SizedBox(height: 20),
+
+            // Teclado de alfabeto (cuadrícula de letras)
+            _buildAlphabetKeyboard(letterGifs, targetWord),
+
+            SizedBox(height: 20),
+
+            // Feedback
+            if (_answerVerified) _buildFeedback(),
+
+            // Hint
+            if (_showHint && !_answerVerified) _buildHint(exercise.hintText),
+          ],
+        );
+      },
+    );
+  }
+
+  // Teclado de alfabeto como cuadrícula
+  Widget _buildAlphabetKeyboard(Map<String, String> letterGifs, String targetWord) {
+    // Si ya tenemos el orden del teclado guardado, usarlo
+    // Si no, generarlo y guardarlo (solo la primera vez para cada ejercicio)
+    if (_keyboardLetters.isEmpty) {
+      // Obtener solo las letras únicas necesarias para formar la palabra
+      final uniqueLetters = targetWord.split('').toSet().toList();
+      // Agregar algunas letras adicionales como distracción
+      final allLetters = letterGifs.keys.toList()..shuffle();
+      _keyboardLetters = [
+        ...uniqueLetters,
+        ...allLetters.take(10).where((l) => !uniqueLetters.contains(l)),
+      ]..shuffle();
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: _keyboardLetters.length,
+      itemBuilder: (context, index) {
+        final letter = _keyboardLetters[index];
+        final gifBase64 = letterGifs[letter] ?? '';
+        final isInTarget = targetWord.contains(letter);
+
+        Color borderColor = AppColors.border;
+        Color backgroundColor = AppColors.cardBackground;
+
+        if (_answerVerified) {
+          if (isInTarget) {
+            borderColor = AppColors.success;
+            backgroundColor = AppColors.success.withOpacity(0.1);
+          }
+        }
+
+        return GestureDetector(
+          onTap: _answerVerified
+              ? null
+              : () {
+                  setState(() {
+                    _selectedLetters.add(letter);
+                  });
+                },
+          child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 2),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: gifBase64.isNotEmpty
+                  ? MediaDisplay(
+                      base64Content: gifBase64,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 30,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
+                      ),
+                    ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildFeedback() {
