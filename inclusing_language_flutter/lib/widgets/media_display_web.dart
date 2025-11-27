@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+// ignore: deprecated_member_use
 import 'dart:html' as html;
 import 'package:video_player/video_player.dart';
 
