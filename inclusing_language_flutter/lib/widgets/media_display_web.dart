@@ -10,8 +10,6 @@ Future<VideoPlayerController> createVideoController(Uint8List bytes) async {
   // Crear una URL objeto desde el blob
   final url = html.Url.createObjectUrlFromBlob(blob);
 
-  print('🌐 [Web] Video URL creada: ${url.substring(0, 50)}...');
-
   // Usar VideoPlayerController.network con la URL del blob
   return VideoPlayerController.networkUrl(Uri.parse(url));
 }

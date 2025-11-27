@@ -107,51 +107,38 @@ class LessonService {
 
   /// Obtener usuario ID desde el email (helper)
   Future<String?> getUsuarioID() async {
-    print('🔍 [LessonService] Buscando usuarioID...');
-
     // Primero intentar desde storage
     var usuarioID = await _storageService.getSecure('usuario_id');
     if (usuarioID != null && usuarioID.isNotEmpty) {
-      print('✓ [LessonService] UsuarioID encontrado en storage: $usuarioID');
       return usuarioID;
     }
 
-    print('⚠️ [LessonService] No se encontró usuarioID en storage');
-
     // Si no está en storage, verificar email
     final email = await _authService.getUserEmail();
-    print('📧 [LessonService] Email del usuario: $email');
 
     if (email == null) {
-      print('❌ [LessonService] No se pudo obtener email');
       return null;
     }
 
     // Para invitados, retornar null para que no intenten guardar
     if (email == 'guest@signlearn.com') {
-      print('👤 [LessonService] Usuario invitado detectado');
       return null;
     }
 
     // MIGRATION: Para usuarios existentes sin usuarioID almacenado,
     // buscarlo en la colección Usuarios por correo
-    print('🔄 [LessonService] Intentando obtener usuarioID desde API por email...');
     try {
       final usuario = await _apiService.getUsuarioByEmail(email);
       if (usuario != null && usuario['usuarioID'] != null) {
         usuarioID = usuario['usuarioID'] as String;
         // Guardar en storage para futuras consultas
         await _storageService.setSecure('usuario_id', usuarioID);
-        print('✅ [LessonService] UsuarioID obtenido y guardado: $usuarioID');
         return usuarioID;
-      } else {
-        print('❌ [LessonService] Usuario no encontrado en API');
       }
     } catch (e) {
-      print('❌ [LessonService] Error al buscar usuarioID: $e');
+      // Error handled silently
     }
 
-    print('❌ [LessonService] No se pudo obtener usuarioID');
     return null;
   }
 
@@ -235,36 +222,27 @@ class LessonService {
     required int score,
     required int totalPoints,
   }) async {
-    print('📚 [LessonService] Iniciando completar lección $lessonId');
-
     final usuarioID = await getUsuarioID();
-    print('👤 [LessonService] UsuarioID obtenido: $usuarioID');
 
     if (usuarioID == null || usuarioID.isEmpty) {
-      print('❌ [LessonService] ERROR: No se pudo obtener usuarioID');
       return false;
     }
 
     // Determinar si fue exitoso (100% = todas las preguntas correctas)
-    final percentage = (score / totalPoints * 100).round();
     final exito = score == totalPoints; // Requiere 100% (3/3 correctas)
-    print('📊 [LessonService] Porcentaje: $percentage% - Éxito: $exito - Score: $score/$totalPoints');
 
     // Registrar el intento
-    print('📝 [LessonService] Registrando intento...');
     try {
-      final intentoRegistrado = await registrarIntento(
+      await registrarIntento(
         usuarioID: usuarioID,
         nivel: lessonId,
         exito: exito,
       );
-      print('✓ [LessonService] Intento registrado: $intentoRegistrado');
     } catch (e) {
-      print('❌ [LessonService] Error registrando intento: $e');
+      // Error handled silently
     }
 
     // Acumular experiencia siempre (incluso si no fue exitoso)
-    print('💫 [LessonService] Llamando a completarNivel con experiencia: $score XP');
     Map<String, dynamic>? metaDiariaInfo;
     try {
       final resultado = await _apiService.completarNivel(
@@ -273,7 +251,6 @@ class LessonService {
         exito ? 'exito' : 'fallo',
         experienciaGanada: score,
       );
-      print('✓ [LessonService] completarNivel ejecutado: $resultado');
 
       // Verificar si se completó la meta diaria
       if (resultado && exito) {
@@ -287,16 +264,14 @@ class LessonService {
         }
       }
     } catch (e) {
-      print('❌ [LessonService] Error en completarNivel: $e');
+      // Error handled silently
     }
 
     // Actualizar el perfil del usuario con la nueva experiencia
-    print('🔄 [LessonService] Actualizando perfil del usuario...');
     try {
       await AuthService().refreshUserProfile();
-      print('✓ [LessonService] Perfil actualizado');
     } catch (e) {
-      print('❌ [LessonService] Error actualizando perfil: $e');
+      // Error handled silently
     }
 
     // Si se completó la meta diaria, retornar info adicional

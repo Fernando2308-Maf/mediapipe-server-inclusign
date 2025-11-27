@@ -10,8 +10,6 @@ Future<VideoPlayerController> createVideoController(Uint8List bytes) async {
   final tempFile = File('${tempDir.path}/temp_video_${DateTime.now().millisecondsSinceEpoch}.mp4');
   await tempFile.writeAsBytes(bytes);
 
-  print('📱 [Native] Video guardado temporalmente en: ${tempFile.path}');
-
   // Usar VideoPlayerController.file con el archivo temporal
   return VideoPlayerController.file(tempFile);
 }

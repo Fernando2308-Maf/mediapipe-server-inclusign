@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 // Conditional imports - solo se usa el apropiado para cada plataforma
 import 'media_display_stub.dart'
@@ -59,7 +58,6 @@ class _MediaDisplayState extends State<MediaDisplay> {
         });
       }
     } catch (e) {
-      print('❌ Error al decodificar contenido: $e');
       setState(() {
         _hasError = true;
         _isInitialized = true;
@@ -74,7 +72,6 @@ class _MediaDisplayState extends State<MediaDisplay> {
     if (bytes.length >= 6) {
       final gifSignature = String.fromCharCodes(bytes.sublist(0, 3));
       if (gifSignature == 'GIF') {
-        print('✅ GIF detectado - será mostrado como imagen animada');
         return false; // GIFs se manejan como imágenes en Flutter
       }
     }
@@ -115,8 +112,6 @@ class _MediaDisplayState extends State<MediaDisplay> {
         _isInitialized = true;
       });
     } catch (e) {
-      print('❌ Error al inicializar video: $e');
-      print('Stack trace: ${StackTrace.current}');
       setState(() {
         _hasError = true;
         _isInitialized = true;
