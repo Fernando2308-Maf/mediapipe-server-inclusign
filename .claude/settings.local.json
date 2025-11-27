@@ -46,7 +46,12 @@
       "Bash(node -e:*)",
       "Bash(netstat:*)",
       "Bash(cmd.exe /c \"taskkill /PID 30168 /F && taskkill /PID 2364 /F\")",
-      "Bash(powershell -Command \"Stop-Process -Id 30168 -Force; Stop-Process -Id 2364 -Force\")"
+      "Bash(powershell -Command \"Stop-Process -Id 30168 -Force; Stop-Process -Id 2364 -Force\")",
+      "WebSearch",
+      "WebFetch(domain:lsm.indiscapacidad.cdmx.gob.mx)",
+      "Bash(node download_numeros.js:*)",
+      "Bash(dir /b C:UsersfernaOneDriveEscritorioInclusigninclusing_language_flutterassetsgifsnumeros*.gif)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

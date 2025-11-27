@@ -85,10 +85,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # Assets de la aplicación - GIFs del abecedario y gestos
+  # Assets de la aplicación - GIFs del abecedario, gestos y números
   assets:
     - assets/gifs/abecedario/
     - assets/gifs/gestos/
+    - assets/gifs/numeros/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -245,8 +245,8 @@ class SignDetailScreen extends StatelessWidget {
         }
         return 'assets/gifs/abecedario/$letter.gif';
       case 'numbers':
-        // Numbers don't have GIF files, will use emoji instead
-        return '';
+        final number = item['number']?.toString() ?? '';
+        return number.isNotEmpty ? 'assets/gifs/numeros/$number.gif' : '';
       case 'gestures':
         final name = (item['gesture'] ?? item['name']) as String;
         final normalizedName = name.toUpperCase().replaceAll(' ', '_');

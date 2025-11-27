@@ -83,6 +83,165 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showAboutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).cardTheme.color,
+        title: Row(
+          children: [
+            Text(
+              'ℹ️',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(width: 10),
+            Text(
+              'Acerca de Inclusign',
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Descripción de la aplicación
+              Text(
+                'Inclusign es una aplicación móvil innovadora diseñada para facilitar el aprendizaje de la Lengua de Señas Mexicana (LSM). A través de lecciones interactivas, ejercicios prácticos y material visual, ayudamos a construir puentes de comunicación entre la comunidad sorda y oyente.',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Versión
+              Text(
+                'Versión 1.0.0',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+
+              Divider(color: AppColors.border),
+              SizedBox(height: 15),
+
+              // Créditos - Empresa FARO
+              Text(
+                '🏢 Empresa Colaboradora',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'FARO',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'Por su invaluable apoyo y colaboración en el desarrollo de este proyecto.',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: 20),
+
+              Divider(color: AppColors.border),
+              SizedBox(height: 15),
+
+              // Créditos - Estudiantes
+              Text(
+                '🎓 Equipo de Desarrollo',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Instituto Tecnológico Superior de Guasave',
+                style: TextStyle(
+                  color: AppColors.accent,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Ingeniería en Sistemas Computacionales',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              SizedBox(height: 12),
+
+              // Lista de estudiantes
+              _buildDeveloperName('• Jose Fernando Alvarez Valdez'),
+              _buildDeveloperName('• Francisco Orlando Berrelleza Melendrez'),
+              _buildDeveloperName('• Ramon Antonio de Jesus Carrillo Rivera'),
+              _buildDeveloperName('• Angel Arturo Gomez Moreno'),
+
+              SizedBox(height: 20),
+
+              // Footer
+              Center(
+                child: Text(
+                  '© 2025 Inclusign\nDesarrollado con ❤️ para la comunidad sorda',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    fontSize: 12,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cerrar', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeveloperName(String name) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 3),
+      child: Text(
+        name,
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodySmall?.color,
+          fontSize: 13,
+          height: 1.4,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -358,12 +517,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'ℹ️',
             'Acerca de',
             'Información de la aplicación',
-            () => _showAlert(
-              'Inclusign v1.0.0',
-              'Aplicación para aprender lenguaje de señas.\n\n'
-              'Desarrollado con ❤️ para la comunidad sorda.\n\n'
-              '© 2024 Inclusign',
-            ),
+            () => _showAboutDialog(),
           ),
           SizedBox(height: 20),
           _buildOptionCard(

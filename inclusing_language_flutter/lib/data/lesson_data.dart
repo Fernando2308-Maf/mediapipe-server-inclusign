@@ -17,6 +17,7 @@ class LessonData {
   // Caché en memoria para evitar recargas
   static final Map<String, String> _abecedarioCache = {};
   static final Map<String, String> _gestosCache = {};
+  static final Map<String, String> _numerosCache = {};
 
   /// Métodos públicos para acceder a los datos desde el diccionario
   static List<Map<String, dynamic>> getAlphabetData() => _alphabetData;
@@ -1099,6 +1100,43 @@ class LessonData {
     return ''; // Retornar vacío si falla
   }
 
+  /// Cargar un GIF de número desde assets locales
+  static Future<String> loadNumeroImage(String numero, {bool silent = false}) async {
+    // Si ya está en caché, retornar inmediatamente
+    if (_numerosCache.containsKey(numero)) {
+      if (!silent) print('✅ GIF encontrado en caché para número: "$numero"');
+      return _numerosCache[numero]!;
+    }
+
+    try {
+      // El nombre del archivo es simplemente el número (0.gif, 1.gif, etc.)
+      final path = 'assets/gifs/numeros/$numero.gif';
+
+      if (!silent) print('🔄 Cargando GIF de número desde assets: $path');
+
+      // Cargar GIF desde assets locales
+      final ByteData data = await rootBundle.load(path);
+      final bytes = data.buffer.asUint8List();
+
+      // Convertir a base64 para mantener compatibilidad
+      final base64String = base64Encode(bytes);
+
+      // Guardar en caché con el número original
+      _numerosCache[numero] = base64String;
+
+      if (!silent) print('✅ GIF cargado desde assets para número: "$numero"');
+
+      return base64String;
+    } catch (e) {
+      if (!silent) {
+        print('❌ Error cargando GIF de número "$numero" desde assets: $e');
+        print('   Verifica que el archivo assets/gifs/numeros/$numero.gif exista');
+      }
+    }
+
+    return ''; // Retornar vacío si falla
+  }
+
   /// Inicializar sistema de lecciones
   /// Los GIFs ahora se cargan desde assets locales (rápido e instantáneo)
   static Future<void> initializeAllData() async {
@@ -1262,27 +1300,34 @@ class LessonData {
 
   /// Generar todas las lecciones de números con sus ejercicios
   static Future<List<Lesson>> generateNumberLessons() async {
-    return _numbersData.asMap().entries.map((entry) {
+    final lessons = <Lesson>[];
+
+    for (var entry in _numbersData.asMap().entries) {
       final index = entry.key;
       final data = entry.value;
       final number = data['number'] as String;
 
-      return Lesson(
+      // Cargar el GIF del número desde assets
+      final imageBase64 = await loadNumeroImage(number, silent: true);
+
+      lessons.add(Lesson(
         id: 28 + index, // Empezar después de las 27 lecciones del alfabeto
         title: 'Lección ${28 + index}',
         category: 'Numbers',
         letter: number,
         description: data['description'],
         imageUrl: data['emoji'],
-        imageBase64: '', // Los números usan emojis por ahora
+        imageBase64: imageBase64, // GIF cargado desde assets
         order: index + 1,
         experiencePoints: 25, // 5 + 10 + 10 = 25 puntos totales
         difficulty: DifficultyLevel.basic,
         estimatedMinutes: 5,
-        exercises: _generateNumberExercises(data, 28 + index),
+        exercises: _generateNumberExercises(data, 28 + index, imageBase64),
         learningTips: _generateNumberTips(number),
-      );
-    }).toList();
+      ));
+    }
+
+    return lessons;
   }
 
   /// Generar las 10 lecciones de palabras básicas (59-68)
@@ -1429,7 +1474,7 @@ class LessonData {
   }
 
   /// Generar los 3 ejercicios para una lección de números
-  static List<Exercise> _generateNumberExercises(Map<String, dynamic> data, int lessonId) {
+  static List<Exercise> _generateNumberExercises(Map<String, dynamic> data, int lessonId, String imageBase64) {
     final number = data['number'];
     final emoji = data['emoji'];
     final description = data['description'];
@@ -1443,7 +1488,7 @@ class LessonData {
         question: '¡Aprende esta seña! (Número $number)',
         correctAnswer: description,
         imageUrl: emoji,
-        imageBase64: '',
+        imageBase64: imageBase64,
         hintText: 'Observa cuidadosamente cómo se forma esta seña con las manos.',
         points: 5,
       ),
@@ -1456,7 +1501,7 @@ class LessonData {
         correctAnswer: number,
         options: _generateNumberOptions(number),
         imageUrl: emoji,
-        imageBase64: '',
+        imageBase64: imageBase64,
         hintText: 'Recuerda la posición de los dedos que acabas de aprender.',
         points: 10,
       ),
@@ -1469,7 +1514,7 @@ class LessonData {
         correctAnswer: description,
         options: [description, ...wrongOptions]..shuffle(),
         imageUrl: emoji,
-        imageBase64: '',
+        imageBase64: imageBase64,
         hintText: 'Piensa en la descripción que leíste en el primer ejercicio.',
         points: 10,
       ),
