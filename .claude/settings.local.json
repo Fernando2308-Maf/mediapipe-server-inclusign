@@ -52,7 +52,10 @@
       "Bash(node download_numeros.js:*)",
       "Bash(dir /b C:UsersfernaOneDriveEscritorioInclusigninclusing_language_flutterassetsgifsnumeros*.gif)",
       "Bash(dir:*)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(for file in home_screen.dart edit_profile_screen.dart login_screen.dart register_screen.dart profile_screen.dart progress_screen.dart dictionary_screen.dart dictionary_category_screen.dart sign_detail_screen.dart)",
+      "Bash(do sed -i 's/withOpacity(/withValues(alpha:/g' \"$file\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

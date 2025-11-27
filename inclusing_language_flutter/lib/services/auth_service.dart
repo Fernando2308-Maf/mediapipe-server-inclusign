@@ -187,6 +187,7 @@ class AuthService {
         }
       }
     } catch (e) {
+      // Error silenciado intencionalmente - retornar null si falla
     }
 
     return null;

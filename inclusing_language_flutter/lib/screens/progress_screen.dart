@@ -16,15 +16,15 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
   // Progress data by category
   int _completedAlphabet = 0;
-  int _totalAlphabet = 27;
+  final int _totalAlphabet = 27;
   int _completedNumbers = 0;
-  int _totalNumbers = 10;
+  final int _totalNumbers = 10;
   int _completedGestures = 0;
-  int _totalGestures = 21;
+  final int _totalGestures = 21;
   int _completedBasicWords = 0;
-  int _totalBasicWords = 10;
+  final int _totalBasicWords = 10;
   int _completedWordBuilder = 0;
-  int _totalWordBuilder = 10;
+  final int _totalWordBuilder = 10;
 
   @override
   void initState() {
@@ -150,7 +150,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha:0.3),
             blurRadius: 15,
             spreadRadius: 3,
           ),

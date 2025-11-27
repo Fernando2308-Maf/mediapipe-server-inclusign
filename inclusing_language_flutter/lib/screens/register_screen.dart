@@ -117,6 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
 
         // Volver al login
+        if (!mounted) return;
         Navigator.of(context).pop();
       }
     } else {
@@ -244,7 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha:0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -370,7 +371,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             border: Border.all(color: AppColors.border),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha:0.2),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

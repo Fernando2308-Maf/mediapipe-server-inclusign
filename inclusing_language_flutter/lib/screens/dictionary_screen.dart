@@ -18,7 +18,7 @@ class DictionaryScreen extends StatelessWidget {
                 color: Theme.of(context).cardTheme.color,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha:0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -123,7 +123,7 @@ class DictionaryScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                        border: Border.all(color: AppColors.primary.withValues(alpha:0.3)),
                       ),
                       child: Row(
                         children: [
@@ -184,7 +184,7 @@ class DictionaryScreen extends StatelessWidget {
           border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha:0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -200,7 +200,7 @@ class DictionaryScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(35),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.3),
+                    color: color.withValues(alpha:0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

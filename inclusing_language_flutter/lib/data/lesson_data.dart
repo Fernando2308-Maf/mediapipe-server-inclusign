@@ -1029,6 +1029,7 @@ class LessonData {
 
       return base64String;
     } catch (e) {
+      // Error silenciado intencionalmente - se retorna vacío si falla
     }
 
     return ''; // Retornar vacío si falla
@@ -1044,7 +1045,6 @@ class LessonData {
       for (var item in abecedario) {
         final letra = item['nombre'] as String?;
         final contenido = item['contenido'] as String?;
-        final convertidoAGif = item['convertidoAGif'] as bool? ?? false;
 
         if (letra != null && contenido != null) {
           _abecedarioCache[letra] = contenido;
@@ -1068,18 +1068,12 @@ class LessonData {
         return;
       }
 
-      final nombresEncontrados = <String>[];
-      int gifsCargados = 0;
-
       for (var item in gestos) {
         final nombre = item['nombre'] as String?;
         final contenido = item['contenido'] as String?;
-        final convertidoAGif = item['convertidoAGif'] as bool? ?? false;
-        final extension = item['extension'] as String? ?? '';
 
         if (nombre != null && contenido != null) {
           final nombreLimpio = nombre.trim();
-          nombresEncontrados.add(nombreLimpio);
 
           // Guardar con TODAS las variaciones para máxima compatibilidad
           final variaciones = [
@@ -1095,8 +1089,6 @@ class LessonData {
           for (final v in variaciones) {
             _gestosCache[v] = contenido;
           }
-
-          gifsCargados++;
         }
       }
 
@@ -1130,6 +1122,7 @@ class LessonData {
 
       return base64String;
     } catch (e) {
+      // Error silenciado intencionalmente - se retorna vacío si falla
     }
 
     return ''; // Retornar vacío si falla
@@ -1158,6 +1151,7 @@ class LessonData {
 
       return base64String;
     } catch (e) {
+      // Error silenciado intencionalmente - se retorna vacío si falla
     }
 
     return ''; // Retornar vacío si falla
@@ -1169,80 +1163,22 @@ class LessonData {
     // No se necesita precarga - los assets locales cargan instantáneamente
   }
 
-  /// Sistema de precarga en background - carga todos los GIFs uno por uno
-  /// sin bloquear la UI del usuario
-  static Future<void> _preloadAllMediaInBackground() async {
-    // Ejecutar en background sin bloquear
-    Future.microtask(() async {
-      try {
-        // 1. Precargar abecedario (27 letras)
-        await _preloadAbecedario();
-
-        // 2. Precargar gestos (21 gestos)
-        await _preloadGestos();
-
-      } catch (e) {
-      }
-    });
-  }
 
   /// Precargar todas las letras del abecedario una por una
-  static Future<void> _preloadAbecedario() async {
-    if (_abecedarioCache.isNotEmpty) {
-      return;
-    }
-
-    final letras = _alphabetData.map((d) => d['letter'] as String).toList();
-
-    int cargadas = 0;
-    for (final letra in letras) {
-      try {
-        final contenido = await loadAbecedarioImageByLetter(letra);
-        if (contenido.isNotEmpty) {
-          cargadas++;
-        }
-      } catch (e) {
-      }
-    }
-
-  }
-
-  /// Precargar todos los gestos uno por uno
-  static Future<void> _preloadGestos() async {
-    if (_gestosCache.isNotEmpty) {
-      return;
-    }
-
-    final gestos = _gesturesData.map((d) => d['gesture'] as String).toList();
-
-    int cargados = 0;
-    for (final gesto in gestos) {
-      try {
-        // Usar silent: true para reducir logs durante precarga
-        final contenido = await loadSingleGestoVideo(gesto, silent: true);
-        if (contenido.isNotEmpty) {
-          cargados++;
-        }
-      } catch (e) {
-      }
-    }
-
-  }
 
   /// Debug: Comparar gestos esperados vs. gestos en MongoDB
   static Future<void> debugCompareGestos() async {
     // Obtener todos los gestos de MongoDB
     final gestos = await _apiService.getGestos();
-    final nombresEnMongoDB = gestos
+    gestos
         .map((g) => (g['nombre'] as String?)?.trim() ?? '')
         .where((n) => n.isNotEmpty)
         .toList();
 
     // Obtener todos los gestos esperados en el código
-    final nombresEsperados = _gesturesData
+    _gesturesData
         .map((g) => g['gesture'] as String)
         .toList();
-
   }
 
   /// Generar todas las lecciones del alfabeto con sus ejercicios
@@ -1451,7 +1387,6 @@ class LessonData {
       final index = entry.key;
       final data = entry.value;
       final gesture = data['gesture'] as String;
-      final lessonId = 38 + index;
 
       // Buscar el GIF correspondiente en el cache
       // Primero intentar búsqueda exacta, luego variaciones

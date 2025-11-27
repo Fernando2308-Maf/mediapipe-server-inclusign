@@ -29,7 +29,7 @@ class SignDetailScreen extends StatelessWidget {
                 color: Theme.of(context).cardTheme.color,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha:0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -79,7 +79,7 @@ class SignDetailScreen extends StatelessWidget {
                         border: Border.all(color: AppColors.border),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha:0.2),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -141,7 +141,7 @@ class SignDetailScreen extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: _getCategoryColor().withOpacity(0.2),
+                                  color: _getCategoryColor().withValues(alpha:0.2),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
@@ -180,7 +180,7 @@ class SignDetailScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardTheme.color,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                        border: Border.all(color: AppColors.primary.withValues(alpha:0.3)),
                       ),
                       child: Row(
                         children: [

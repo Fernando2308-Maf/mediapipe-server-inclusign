@@ -21,19 +21,18 @@ class _HomeScreenState extends State<HomeScreen> {
   final _authService = AuthService();
   final _lessonService = LessonService();
   UserProfile? _currentUser;
-  int _selectedIndex = 0;
 
   // Lesson data
   int _completedLessonsCount = 0;
-  int _totalLessons = 27;
+  final int _totalLessons = 27;
   int _completedNumbersCount = 0;
-  int _totalNumbers = 10;
+  final int _totalNumbers = 10;
   int _completedGesturesCount = 0;
-  int _totalGestures = 21;
+  final int _totalGestures = 21;
   int _completedWordsCount = 0;
-  int _totalWords = 10;
+  final int _totalWords = 10;
   int _completedWordBuilderCount = 0;
-  int _totalWordBuilder = 10;
+  final int _totalWordBuilder = 10;
   Lesson? _nextLesson;
   bool _loadingLessons = true;
 
@@ -46,12 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadUserData() async {
     try {
-      print('🏠 [HomeScreen] Iniciando carga de datos del usuario...');
       // Forzar actualización del perfil desde el backend
       await _authService.refreshUserProfile();
 
       final user = await _authService.getCurrentUser();
-      print('🏠 [HomeScreen] Usuario obtenido: ${user?.firstName}, Progreso hoy: ${user?.todayProgress}/${user?.dailyGoal}');
       setState(() => _currentUser = user);
 
       // Check if new user
@@ -60,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _showWelcomeTutorial();
       }
     } catch (e) {
-      print('❌ [HomeScreen] Error cargando usuario: $e');
       _showAlert('Error', 'No se pudo cargar la información del usuario');
     }
   }
@@ -170,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -379,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
+              color: AppColors.primary.withValues(alpha:0.4),
               blurRadius: 15,
               offset: const Offset(0, 6),
             ),
@@ -401,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
               nextLessonTitle,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha:0.9),
               ),
             ),
           ],
@@ -433,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha:0.4),
               blurRadius: 15,
               offset: const Offset(0, 6),
             ),
@@ -455,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
               subtitle,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha:0.9),
               ),
             ),
           ],
@@ -998,114 +994,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _buildAdvancedLessonInfo(Lesson lesson) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.purple.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.purple.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.star, color: AppColors.purple, size: 20),
-              SizedBox(width: 8),
-              Text(
-                '¡Lección Especial Desbloqueada!',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.purple,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            lesson.description,
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodySmall?.color,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              _buildInfoChip('⏱️', '${lesson.estimatedMinutes} min'),
-              _buildInfoChip('⭐', '${lesson.experiencePoints} XP'),
-              _buildInfoChip('💡', 'Intermedio'),
-              _buildInfoChip('🎯', '10 Situaciones'),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardTheme.color,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '💡 Consejos:',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '• Selecciona solo 1 GIF por pregunta\n'
-                  '• Lee la situación con atención antes de elegir\n'
-                  '• Cada intento te presenta situaciones diferentes',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).textTheme.bodySmall?.color,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(String icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(icon, style: TextStyle(fontSize: 14)),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).textTheme.bodySmall?.color,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildLessonListItem(Lesson lesson, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1191,7 +1079,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha:0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -1209,7 +1097,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? []
                     : [
                         BoxShadow(
-                          color: color.withOpacity(0.3),
+                          color: color.withValues(alpha:0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -1279,7 +1167,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -1319,7 +1207,6 @@ class _HomeScreenState extends State<HomeScreen> {
             'Esta sección estará disponible pronto.',
           );
         }
-        setState(() => _selectedIndex = index);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

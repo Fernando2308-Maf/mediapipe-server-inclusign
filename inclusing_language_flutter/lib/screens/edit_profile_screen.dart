@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
-import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../utils/colors.dart';
@@ -53,9 +52,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return;
       }
 
-      print('🔐 [EditProfile] Actualizando contraseña para usuario: $usuarioID');
-      print('🔐 [EditProfile] Contraseña actual: ${_currentPasswordController.text}');
-      print('🔐 [EditProfile] Nueva contraseña: ${_newPasswordController.text}');
 
       // Llamar a la API para actualizar la contraseña
       final success = await _apiService.updatePassword(
@@ -64,7 +60,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _newPasswordController.text,
       );
 
-      print('🔐 [EditProfile] Respuesta del API: $success');
 
       setState(() => _isLoading = false);
 
@@ -234,10 +229,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color?.withOpacity(0.5),
+        color: Theme.of(context).cardTheme.color?.withValues(alpha:0.5),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: AppColors.border.withOpacity(0.3),
+          color: AppColors.border.withValues(alpha:0.3),
         ),
       ),
       child: Column(
@@ -277,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

@@ -109,7 +109,7 @@ class _InclusignAppState extends State<InclusignApp> {
           backgroundColor: AppColors.primaryLight,
           foregroundColor: Colors.white,
           elevation: 3,
-          shadowColor: AppColors.primaryLight.withOpacity(0.3),
+          shadowColor: AppColors.primaryLight.withValues(alpha:0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),

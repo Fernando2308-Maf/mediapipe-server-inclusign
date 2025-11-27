@@ -26,16 +26,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   // Estados del ejercicio
   String? _selectedAnswer;
-  List<String> _selectedGestures = [];
-  List<String> _selectedLetters = []; // Para Word Builder
+  final List<String> _selectedGestures = [];
+  final List<String> _selectedLetters = []; // Para Word Builder
   bool _hasAnswered = false;
 
   // Cache de GIFs
-  Map<String, String> _gestureGifs = {};
-  Map<String, String> _letterGifs = {}; // Para Word Builder
+  final Map<String, String> _gestureGifs = {};
+  final Map<String, String> _letterGifs = {}; // Para Word Builder
 
   // Mapeo de índice de ejercicio -> categoría
-  Map<int, String> _exerciseCategories = {};
+  final Map<int, String> _exerciseCategories = {};
 
   @override
   void initState() {
@@ -57,10 +57,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               final gifBase64 = await LessonData.loadSingleGestoVideo(gestureName, silent: true);
               if (gifBase64.isNotEmpty) {
                 _gestureGifs[gestureName] = gifBase64;
-                print('✅ GIF cargado para opción: $gestureName');
               }
             } catch (e) {
-              print('⚠️ No se pudo cargar GIF para $gestureName: $e');
+              // Error silenciado intencionalmente - continuar con otros gestos
             }
           }
         }
@@ -78,10 +77,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               final gifBase64 = await LessonData.loadAbecedarioImageByLetter(letter);
               if (gifBase64.isNotEmpty) {
                 _letterGifs[letter] = gifBase64;
-                print('✅ GIF de letra cargado: $letter');
               }
             } catch (e) {
-              print('⚠️ No se pudo cargar GIF para letra $letter: $e');
+              // Error silenciado intencionalmente - continuar con otras letras
             }
           }
         }
@@ -109,11 +107,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
       // Función helper para obtener ejercicios de lecciones completadas
       // Los ejercicios vienen EXACTAMENTE como están en las lecciones
       Future<List<Exercise>> getRandomExercisesFromCategory(String category, int count) async {
-        print('📚 Cargando lecciones de categoría: $category');
         final lessons = await LessonData.getLessonsByCategory(category);
         final completedLessonsInCategory = lessons.where((l) => completedLessons.contains(l.id)).toList();
-
-        print('✅ Lecciones completadas en $category: ${completedLessonsInCategory.length}');
 
         if (completedLessonsInCategory.isEmpty) return [];
 
@@ -148,15 +143,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
           }
         }
 
-        print('📝 Ejercicios evaluables en $category: ${exercises.length}');
-
         if (exercises.isEmpty) return [];
 
         // Mezclar y tomar los primeros 'count' ejercicios
         exercises.shuffle(random);
         final selectedExercises = exercises.take(count).toList();
-
-        print('🎯 Ejercicios seleccionados de $category: ${selectedExercises.length}');
 
         return selectedExercises;
       }
@@ -245,7 +236,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
         _showNoExercisesDialog();
       }
     } catch (e) {
-      print('❌ Error cargando ejercicios de repaso: $e');
       setState(() => _loadingExercises = false);
       _showErrorDialog();
     }
@@ -349,9 +339,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha:0.3)),
                 ),
                 child: Text(
                   '💡 Tip: No te preocupes si fallas, esto es solo para practicar. ¡Lo importante es seguir aprendiendo!',
@@ -455,7 +445,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
       // Ejercicio de armar palabras
       final formedWord = _selectedLetters.join('');
       correct = formedWord == currentExercise.correctAnswer;
-      print('🔍 Word Builder - Palabra formada: "$formedWord", Correcta: "${currentExercise.correctAnswer}", ¿Igual? $correct');
     } else {
       // Ejercicio de opción múltiple normal (Alfabeto, Números, Gestos)
       correct = _selectedAnswer == currentExercise.correctAnswer;
@@ -494,8 +483,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final usuarioID = await _lessonService.getUsuarioID();
 
     if (usuarioID != null && _score > 0) {
-      print('💾 Guardando ${_score} XP de modo repaso al perfil del usuario...');
-
       try {
         // Usar completarNivel con nivel 0 y resultado 'fallo' para solo agregar XP
         // sin marcar ninguna lección como completada
@@ -508,10 +495,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
         // Actualizar el perfil para reflejar la nueva experiencia
         await _authService.refreshUserProfile();
-
-        print('✅ XP de repaso guardado exitosamente');
       } catch (e) {
-        print('❌ Error guardando XP de repaso: $e');
+        // Error silenciado intencionalmente - continuar mostrando resultados
       }
     }
 
@@ -573,7 +558,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
+                color: AppColors.success.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -659,8 +644,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
     // Detectar el tipo de ejercicio según la categoría
     final currentCategory = _exerciseCategories[_currentExerciseIndex] ?? '';
     final isBasicWordsExercise = currentCategory == 'Basic Words';
-    final isWordBuilderExercise = currentCategory == 'Word Builder';
-
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -716,9 +699,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           width: double.infinity,
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.purple.withOpacity(0.2),
+                            color: AppColors.purple.withValues(alpha:0.2),
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: AppColors.purple.withOpacity(0.5)),
+                            border: Border.all(color: AppColors.purple.withValues(alpha:0.5)),
                           ),
                           child: Column(
                             children: [
@@ -865,8 +848,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: isCorrect
-                                  ? AppColors.success.withOpacity(0.2)
-                                  : AppColors.error.withOpacity(0.2),
+                                  ? AppColors.success.withValues(alpha:0.2)
+                                  : AppColors.error.withValues(alpha:0.2),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isCorrect ? AppColors.success : AppColors.error,
@@ -927,11 +910,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: showCorrect
-                    ? AppColors.success.withOpacity(0.2)
+                    ? AppColors.success.withValues(alpha:0.2)
                     : showIncorrect
-                        ? AppColors.error.withOpacity(0.2)
+                        ? AppColors.error.withValues(alpha:0.2)
                         : isSelected
-                            ? AppColors.primary.withOpacity(0.2)
+                            ? AppColors.primary.withValues(alpha:0.2)
                             : AppColors.cardBackground,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
@@ -1033,11 +1016,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: showCorrect
-                  ? AppColors.success.withOpacity(0.2)
+                  ? AppColors.success.withValues(alpha:0.2)
                   : showIncorrect
-                      ? AppColors.error.withOpacity(0.2)
+                      ? AppColors.error.withValues(alpha:0.2)
                       : isSelected
-                          ? AppColors.primary.withOpacity(0.2)
+                          ? AppColors.primary.withValues(alpha:0.2)
                           : AppColors.cardBackground,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -1074,7 +1057,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.cardBackground.withOpacity(0.5),
+                    color: AppColors.cardBackground.withValues(alpha:0.5),
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(12),
                       bottomRight: Radius.circular(12),

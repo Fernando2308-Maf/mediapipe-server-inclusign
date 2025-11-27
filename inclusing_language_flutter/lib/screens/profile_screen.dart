@@ -273,9 +273,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha:0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -364,9 +364,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: AppColors.success.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.success.withValues(alpha:0.3)),
                 ),
                 child: Row(
                   children: [
@@ -478,7 +478,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -495,7 +495,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(50),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha:0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -537,7 +537,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha:0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -630,7 +630,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -742,14 +742,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: isDestructive
-                ? AppColors.error.withOpacity(0.5)
+                ? AppColors.error.withValues(alpha:0.5)
                 : (Theme.of(context).brightness == Brightness.dark
                     ? AppColors.border
                     : AppColors.borderLight),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha:0.1),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -847,7 +847,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await _themeService.toggleTheme();
                 setState(() {});
               },
-              activeColor: AppColors.primary,
+              activeTrackColor: AppColors.primary,
             ),
           ],
         ),

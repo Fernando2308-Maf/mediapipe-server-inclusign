@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import '../services/lesson_service.dart';
@@ -28,12 +27,10 @@ class _LessonScreenState extends State<LessonScreen> {
   bool _showHint = false;
 
   // Para la lección 59: Constructor de Frases
-  List<String> _selectedGestures = []; // Gestos seleccionados en orden
-  Map<String, String> _gestureGifs = {}; // Mapeo de nombre -> base64 GIF
+  final List<String> _selectedGestures = []; // Gestos seleccionados en orden
 
   // Para las lecciones 69-78: Armar Palabras
-  List<String> _selectedLetters = []; // Letras seleccionadas en orden
-  Map<String, String> _letterGifs = {}; // Mapeo de letra -> base64 GIF
+  final List<String> _selectedLetters = []; // Letras seleccionadas en orden
   List<String> _keyboardLetters = []; // Orden fijo del teclado (no cambia durante el ejercicio)
 
   @override
@@ -112,10 +109,6 @@ class _LessonScreenState extends State<LessonScreen> {
     } else if (widget.lessonId >= 69 && widget.lessonId <= 78) {
       // Para lecciones 69-78 (armar palabras), verificar que formó la palabra correcta
       final formedWord = _selectedLetters.join();
-      print('🔍 DEBUG Word Builder:');
-      print('   Palabra formada: "$formedWord"');
-      print('   Palabra correcta: "${exercise.correctAnswer}"');
-      print('   ¿Son iguales? ${formedWord == exercise.correctAnswer}');
       correct = formedWord == exercise.correctAnswer;
     } else {
       // Lecciones normales
@@ -147,22 +140,16 @@ class _LessonScreenState extends State<LessonScreen> {
     final totalPoints = _currentLesson!.experiencePoints;
     final percentage = (_score / totalPoints * 100).round();
 
-    // Guardar en API
-    print('🎯 Intentando guardar lección ${_currentLesson!.id} - Score: $_score/$totalPoints ($percentage%)');
-
     final resultado = await _lessonService.completeLesson(
       lessonId: _currentLesson!.id,
       score: _score,
       totalPoints: totalPoints,
     );
 
-    print('💾 Resultado de guardado: $resultado');
-
     // Verificar si se completó la meta diaria
     bool metaDiariaCompletada = false;
     if (resultado is Map && resultado['metaDiariaCompletada'] == true) {
       metaDiariaCompletada = true;
-      print('🎉 ¡META DIARIA COMPLETADA!');
     }
 
     // Verificar si se completó toda la categoría
@@ -261,14 +248,9 @@ class _LessonScreenState extends State<LessonScreen> {
           if (percentage == 100)
             TextButton(
               onPressed: () async {
-                print('🔍 Buscando siguiente lección...');
-                print('📚 Lección actual: ID=${_currentLesson!.id}, Categoría=${_currentLesson!.category}');
-
                 // Obtener todas las lecciones de la categoría actual
                 final currentCategory = _currentLesson!.category;
                 final allLessons = await _lessonService.getAllLessons(category: currentCategory);
-
-                print('📋 Total lecciones en categoría "$currentCategory": ${allLessons.length}');
 
                 // Buscar la siguiente lección por ID (no por índice)
                 Lesson? nextLesson;
@@ -277,21 +259,12 @@ class _LessonScreenState extends State<LessonScreen> {
                 if (currentCategory == 'Basic Words' && _currentLesson!.id >= 59 && _currentLesson!.id <= 67) {
                   // Buscar la siguiente lección por ID consecutivo
                   final nextId = _currentLesson!.id + 1;
-                  print('🔄 Buscando siguiente lección de Basic Words: ID $nextId');
                   nextLesson = await _lessonService.getLessonById(nextId);
-
-                  if (nextLesson != null) {
-                    print('✅ Siguiente lección encontrada: ${nextLesson.title}');
-                  } else {
-                    print('❌ No se encontró la lección con ID $nextId');
-                  }
                 } else {
-                  print('🔍 Buscando en array de lecciones (método estándar)');
                   // Para otras categorías, buscar en el array
                   for (int i = 0; i < allLessons.length; i++) {
                     if (allLessons[i].id == _currentLesson!.id && i + 1 < allLessons.length) {
                       nextLesson = allLessons[i + 1];
-                      print('✅ Siguiente lección encontrada: ${nextLesson!.title}');
                       break;
                     }
                   }
@@ -308,7 +281,6 @@ class _LessonScreenState extends State<LessonScreen> {
                 if (!mounted) return;
 
                 if (nextLesson != null) {
-                  print('➡️ Navegando a siguiente lección: ${nextLesson.title}');
                   // Reemplazar la pantalla actual con la siguiente lección
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
@@ -316,7 +288,6 @@ class _LessonScreenState extends State<LessonScreen> {
                     ),
                   );
                 } else {
-                  print('🏠 No hay más lecciones, regresando al home');
                   // No hay más lecciones en esta categoría, regresar al home
                   Navigator.of(context).pop();
                 }
@@ -425,7 +396,7 @@ class _LessonScreenState extends State<LessonScreen> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: AppColors.experienceGold.withOpacity(0.2),
+                color: AppColors.experienceGold.withValues(alpha:0.2),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.experienceGold, width: 2),
               ),
@@ -500,11 +471,8 @@ class _LessonScreenState extends State<LessonScreen> {
       final completedCount = await _lessonService.getCompletedLessonsCountByCategory(category);
       final allLessons = await _lessonService.getAllLessons(category: category);
 
-      print('🎓 Verificando categoría $category: $completedCount/${allLessons.length}');
-
       return completedCount == allLessons.length;
     } catch (e) {
-      print('❌ Error verificando categoría: $e');
       return false;
     }
   }
@@ -578,7 +546,7 @@ class _LessonScreenState extends State<LessonScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withValues(alpha:0.3),
                       blurRadius: 15,
                       spreadRadius: 3,
                     ),
@@ -634,10 +602,10 @@ class _LessonScreenState extends State<LessonScreen> {
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: AppColors.success.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.success.withOpacity(0.3),
+                    color: AppColors.success.withValues(alpha:0.3),
                     width: 2,
                   ),
                 ),
@@ -655,7 +623,7 @@ class _LessonScreenState extends State<LessonScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.accent.withOpacity(0.2),
+                  color: AppColors.accent.withValues(alpha:0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
@@ -1045,7 +1013,7 @@ class _LessonScreenState extends State<LessonScreen> {
               showAsWrong,
             ),
           );
-        }).toList(),
+        }),
         SizedBox(height: 20),
         // Feedback
         if (_answerVerified) _buildFeedback(),
@@ -1109,7 +1077,7 @@ class _LessonScreenState extends State<LessonScreen> {
               showAsWrong,
             ),
           );
-        }).toList(),
+        }),
         SizedBox(height: 20),
         // Feedback
         if (_answerVerified) _buildFeedback(),
@@ -1256,9 +1224,9 @@ class _LessonScreenState extends State<LessonScreen> {
               width: double.infinity,
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.purple.withOpacity(0.2),
+                color: AppColors.purple.withValues(alpha:0.2),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: AppColors.purple.withOpacity(0.5)),
+                border: Border.all(color: AppColors.purple.withValues(alpha:0.5)),
               ),
               child: Column(
                 children: [
@@ -1323,7 +1291,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         return Container(
                           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.2),
+                            color: AppColors.primary.withValues(alpha:0.2),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: AppColors.primary),
                           ),
@@ -1426,16 +1394,16 @@ class _LessonScreenState extends State<LessonScreen> {
 
         if (showAsCorrect) {
           borderColor = AppColors.success;
-          backgroundColor = AppColors.success.withOpacity(0.1);
+          backgroundColor = AppColors.success.withValues(alpha:0.1);
         } else if (showAsWrong) {
           borderColor = AppColors.error;
-          backgroundColor = AppColors.error.withOpacity(0.1);
+          backgroundColor = AppColors.error.withValues(alpha:0.1);
         } else if (showAsMissed) {
           borderColor = AppColors.warning;
-          backgroundColor = AppColors.warning.withOpacity(0.1);
+          backgroundColor = AppColors.warning.withValues(alpha:0.1);
         } else if (isSelected) {
           borderColor = AppColors.primary;
-          backgroundColor = AppColors.primary.withOpacity(0.1);
+          backgroundColor = AppColors.primary.withValues(alpha:0.1);
         }
 
         return GestureDetector(
@@ -1487,7 +1455,7 @@ class _LessonScreenState extends State<LessonScreen> {
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                       decoration: BoxDecoration(
-                        color: backgroundColor.withOpacity(0.9),
+                        color: backgroundColor.withValues(alpha:0.9),
                         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
                       ),
                       child: Text(
@@ -1520,7 +1488,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha:0.3),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -1586,7 +1554,7 @@ class _LessonScreenState extends State<LessonScreen> {
           gifs[name] = gif;
         }
       } catch (e) {
-        print('Error cargando GIF para $name: $e');
+        // Error silenciado intencionalmente - continuar con otros gestos
       }
     }
 
@@ -1604,7 +1572,7 @@ class _LessonScreenState extends State<LessonScreen> {
           gifs[letter] = gif;
         }
       } catch (e) {
-        print('Error cargando GIF para letra $letter: $e');
+        // Error silenciado intencionalmente - continuar con otras letras
       }
     }
 
@@ -1679,9 +1647,9 @@ class _LessonScreenState extends State<LessonScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha:0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                      border: Border.all(color: Colors.white.withValues(alpha:0.5), width: 2),
                     ),
                     child: Text(
                       targetWord,
@@ -1699,7 +1667,7 @@ class _LessonScreenState extends State<LessonScreen> {
                       '💡 ${exercise.hintText}',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha:0.9),
                         fontStyle: FontStyle.italic,
                       ),
                       textAlign: TextAlign.center,
@@ -1846,7 +1814,7 @@ class _LessonScreenState extends State<LessonScreen> {
         if (_answerVerified) {
           if (isInTarget) {
             borderColor = AppColors.success;
-            backgroundColor = AppColors.success.withOpacity(0.1);
+            backgroundColor = AppColors.success.withValues(alpha:0.1);
           }
         }
 
@@ -1968,7 +1936,7 @@ class _LessonScreenState extends State<LessonScreen> {
         color: Theme.of(context).cardTheme.color,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
