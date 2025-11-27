@@ -51,7 +51,8 @@
       "WebFetch(domain:lsm.indiscapacidad.cdmx.gob.mx)",
       "Bash(node download_numeros.js:*)",
       "Bash(dir /b C:UsersfernaOneDriveEscritorioInclusigninclusing_language_flutterassetsgifsnumeros*.gif)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(flutter test:*)"
     ],
     "deny": [],
     "ask": []

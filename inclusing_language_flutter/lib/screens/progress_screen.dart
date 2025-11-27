@@ -49,7 +49,6 @@ class _ProgressScreenState extends State<ProgressScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error cargando progreso: $e');
       setState(() => _isLoading = false);
     }
   }

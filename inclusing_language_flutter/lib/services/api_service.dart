@@ -215,9 +215,6 @@ class ApiService {
         },
       );
 
-      print('🔐 [ApiService] Status Code: ${response.statusCode}');
-      print('🔐 [ApiService] Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         _log('Password updated successfully');
         return true;

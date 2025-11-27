@@ -96,17 +96,13 @@ class AuthService {
     try {
       final usuarioID = await _storageService.getSecure('usuario_id');
       if (usuarioID == null || usuarioID.isEmpty) {
-        print('⚠️ No se encontró usuarioID para refrescar perfil');
         return;
       }
 
       final isGuest = await _storageService.getSecure(AppConstants.keyIsGuest);
       if (isGuest == 'true') {
-        print('👤 Usuario invitado - omitiendo refresh de perfil');
         return; // Los invitados no tienen progresión
       }
-
-      print('🔄 Actualizando perfil para usuario: $usuarioID');
 
       // Obtener progresión actualizada del backend
       final progresion = await _apiService.getProgresion(usuarioID);
@@ -116,8 +112,6 @@ class AuthService {
         final nivelesCompletados = progresion['nivelesCompletados'] ?? [];
         final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
 
-        print('✅ Progresión obtenida - Nivel: $nivelActual, Experiencia: $experienciaTotal, Completados: ${(nivelesCompletados as List).length}, Hoy: $leccionesHoy/5');
-
         if (_currentUser != null) {
           _currentUser = _currentUser!.copyWith(
             level: nivelActual,
@@ -125,10 +119,8 @@ class AuthService {
             completedLessons: (nivelesCompletados as List).map((e) => e.toString()).toList(),
             todayProgress: leccionesHoy,
           );
-          print('✅ Usuario actualizado: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
         } else {
           // Si no hay currentUser, cargar datos completos
-          print('📥 Cargando datos completos del usuario...');
           final usuario = await _apiService.getUsuario(usuarioID);
           if (usuario != null) {
             final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
@@ -143,23 +135,16 @@ class AuthService {
               todayProgress: leccionesHoy,
               dailyGoal: 5,
             );
-            print('✅ Usuario creado: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
-          } else {
-            print('❌ No se pudo obtener datos del usuario desde la API');
           }
         }
-      } else {
-        print('❌ No se pudo obtener progresión desde la API');
       }
     } catch (e) {
-      print('❌ Error en refreshUserProfile: $e');
       // No lanzamos el error para que la app pueda continuar
     }
   }
 
   Future<UserProfile?> getCurrentUser() async {
     if (_currentUser != null) {
-      print('✅ Usuario en caché: ${_currentUser!.firstName}');
       return _currentUser;
     }
 
@@ -168,7 +153,6 @@ class AuthService {
       final isGuest = await _storageService.getSecure(AppConstants.keyIsGuest);
 
       if (isGuest == 'true') {
-        print('👤 Retornando usuario invitado');
         _currentUser = UserProfile(
           email: AppConstants.guestEmail,
           firstName: 'Invitado',
@@ -178,18 +162,13 @@ class AuthService {
       }
 
       if (usuarioID != null && usuarioID.isNotEmpty) {
-        print('🔍 Obteniendo usuario desde API - ID: $usuarioID');
-
         // Obtener datos de usuario y progresión
         final usuario = await _apiService.getUsuario(usuarioID);
         final progresion = await _apiService.getProgresion(usuarioID);
 
-        print('📊 [AuthService] Progresión recibida del API: $progresion');
-
         if (usuario != null) {
           final nivelesCompletados = progresion?['nivelesCompletados'];
           final leccionesHoy = progresion?['leccionesCompletadasHoy'] ?? 0;
-          print('📊 [AuthService] leccionesCompletadasHoy desde API: $leccionesHoy');
 
           _currentUser = UserProfile(
             email: usuario['correo'] ?? '',
@@ -204,16 +183,10 @@ class AuthService {
             todayProgress: leccionesHoy,
             dailyGoal: 5,
           );
-          print('✅ Usuario obtenido: ${_currentUser!.firstName}, Nivel: ${_currentUser!.level}, XP: ${_currentUser!.experience}, Hoy: $leccionesHoy/5');
           return _currentUser;
-        } else {
-          print('❌ No se encontró usuario en la API');
         }
-      } else {
-        print('⚠️ No se encontró usuarioID en storage');
       }
     } catch (e) {
-      print('❌ Error en getCurrentUser: $e');
     }
 
     return null;

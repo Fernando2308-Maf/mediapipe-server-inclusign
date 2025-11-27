@@ -1026,12 +1026,9 @@ class LessonData {
       final base64String = base64Encode(bytes);
 
       _abecedarioCache[letra] = base64String;
-      print('✅ GIF cargado desde assets para letra: $letra');
 
       return base64String;
     } catch (e) {
-      print('❌ Error cargando GIF de letra "$letra" desde assets: $e');
-      print('   Verifica que el archivo assets/gifs/abecedario/$letra.gif exista');
     }
 
     return ''; // Retornar vacío si falla
@@ -1043,7 +1040,6 @@ class LessonData {
     if (_abecedarioCache.isNotEmpty) return; // Ya están cargadas
 
     try {
-      print('🔄 Cargando GIFs del abecedario desde MongoDB...');
       final abecedario = await _apiService.getAbecedario();
       for (var item in abecedario) {
         final letra = item['nombre'] as String?;
@@ -1052,16 +1048,9 @@ class LessonData {
 
         if (letra != null && contenido != null) {
           _abecedarioCache[letra] = contenido;
-          if (convertidoAGif) {
-            print('✅ GIF cargado para letra: $letra');
-          } else {
-            print('✅ Media cargado para letra: $letra');
-          }
         }
       }
-      print('✅ Medios del abecedario cargados: ${_abecedarioCache.length}');
     } catch (e) {
-      print('❌ Error cargando medios del abecedario: $e');
       // No lanzar error - continuar con emojis si falla
     }
   }
@@ -1069,23 +1058,16 @@ class LessonData {
   /// Cargar TODOS los GIFs de gestos desde MongoDB de una sola vez
   static Future<void> loadGestosVideos() async {
     if (_gestosCache.isNotEmpty) {
-      print('ℹ️ GIFs de gestos ya están cargados en caché (${_gestosCache.length ~/ 7} gestos)');
       return; // Ya están cargados
     }
 
     try {
-      print('🔄 ==========================================');
-      print('🔄 CARGANDO TODOS LOS GIFs DE GESTOS DESDE MONGODB');
-      print('🔄 ==========================================');
-
       final gestos = await _apiService.getGestos();
 
       if (gestos.isEmpty) {
-        print('❌ NO SE ENCONTRARON GESTOS EN MONGODB');
         return;
       }
 
-      print('📋 Total de gestos encontrados en MongoDB: ${gestos.length}');
       final nombresEncontrados = <String>[];
       int gifsCargados = 0;
 
@@ -1114,23 +1096,11 @@ class LessonData {
             _gestosCache[v] = contenido;
           }
 
-          if (convertidoAGif) {
-            print('  ✅ GIF #${gifsCargados + 1}: "$nombreLimpio" ($extension)');
-          } else {
-            print('  ✅ Media #${gifsCargados + 1}: "$nombreLimpio" ($extension)');
-          }
           gifsCargados++;
         }
       }
 
-      print('');
-      print('📝 Nombres cargados: ${nombresEncontrados.join(", ")}');
-      print('✅ TOTAL: $gifsCargados GIFs cargados exitosamente');
-      print('✅ Entradas en caché: ${_gestosCache.length} (con variaciones)');
-      print('🔄 ==========================================');
     } catch (e) {
-      print('❌ ERROR CARGANDO GIFs DE GESTOS: $e');
-      print('❌ Stack trace: ${StackTrace.current}');
       // No lanzar error - continuar con emojis si falla
     }
   }
@@ -1139,7 +1109,6 @@ class LessonData {
   static Future<String> loadSingleGestoVideo(String gestoNombre, {bool silent = false}) async {
     // Si ya está en caché, retornar inmediatamente
     if (_gestosCache.containsKey(gestoNombre)) {
-      if (!silent) print('✅ GIF encontrado en caché para: "$gestoNombre"');
       return _gestosCache[gestoNombre]!;
     }
 
@@ -1148,8 +1117,6 @@ class LessonData {
       // "BUENOS DIAS" -> "BUENOS_DIAS.gif"
       final nombreArchivo = gestoNombre.replaceAll(' ', '_').toUpperCase();
       final path = 'assets/gifs/gestos/$nombreArchivo.gif';
-
-      if (!silent) print('🔄 Cargando GIF desde assets: $path');
 
       // Cargar GIF desde assets locales
       final ByteData data = await rootBundle.load(path);
@@ -1161,15 +1128,8 @@ class LessonData {
       // Guardar en caché con el nombre original
       _gestosCache[gestoNombre] = base64String;
 
-      if (!silent) print('✅ GIF cargado desde assets para gesto: "$gestoNombre"');
-
       return base64String;
     } catch (e) {
-      if (!silent) {
-        print('❌ Error cargando GIF de gesto "$gestoNombre" desde assets: $e');
-        final nombreArchivo = gestoNombre.replaceAll(' ', '_').toUpperCase();
-        print('   Verifica que el archivo assets/gifs/gestos/$nombreArchivo.gif exista');
-      }
     }
 
     return ''; // Retornar vacío si falla
@@ -1179,15 +1139,12 @@ class LessonData {
   static Future<String> loadNumeroImage(String numero, {bool silent = false}) async {
     // Si ya está en caché, retornar inmediatamente
     if (_numerosCache.containsKey(numero)) {
-      if (!silent) print('✅ GIF encontrado en caché para número: "$numero"');
       return _numerosCache[numero]!;
     }
 
     try {
       // El nombre del archivo es simplemente el número (0.gif, 1.gif, etc.)
       final path = 'assets/gifs/numeros/$numero.gif';
-
-      if (!silent) print('🔄 Cargando GIF de número desde assets: $path');
 
       // Cargar GIF desde assets locales
       final ByteData data = await rootBundle.load(path);
@@ -1199,14 +1156,8 @@ class LessonData {
       // Guardar en caché con el número original
       _numerosCache[numero] = base64String;
 
-      if (!silent) print('✅ GIF cargado desde assets para número: "$numero"');
-
       return base64String;
     } catch (e) {
-      if (!silent) {
-        print('❌ Error cargando GIF de número "$numero" desde assets: $e');
-        print('   Verifica que el archivo assets/gifs/numeros/$numero.gif exista');
-      }
     }
 
     return ''; // Retornar vacío si falla
@@ -1215,18 +1166,12 @@ class LessonData {
   /// Inicializar sistema de lecciones
   /// Los GIFs ahora se cargan desde assets locales (rápido e instantáneo)
   static Future<void> initializeAllData() async {
-    print('✅ Sistema de lecciones inicializado');
-    print('📦 Los GIFs se cargarán desde assets locales cuando se necesiten');
     // No se necesita precarga - los assets locales cargan instantáneamente
   }
 
   /// Sistema de precarga en background - carga todos los GIFs uno por uno
   /// sin bloquear la UI del usuario
   static Future<void> _preloadAllMediaInBackground() async {
-    print('🚀 ==========================================');
-    print('🚀 INICIANDO PRECARGA EN BACKGROUND');
-    print('🚀 ==========================================');
-
     // Ejecutar en background sin bloquear
     Future.microtask(() async {
       try {
@@ -1236,12 +1181,7 @@ class LessonData {
         // 2. Precargar gestos (21 gestos)
         await _preloadGestos();
 
-        print('🎉 ==========================================');
-        print('🎉 PRECARGA COMPLETADA EXITOSAMENTE');
-        print('🎉 Total: ${_abecedarioCache.length} letras + ${_gestosCache.length ~/ 7} gestos');
-        print('🎉 ==========================================');
       } catch (e) {
-        print('❌ Error en precarga background: $e');
       }
     });
   }
@@ -1249,11 +1189,9 @@ class LessonData {
   /// Precargar todas las letras del abecedario una por una
   static Future<void> _preloadAbecedario() async {
     if (_abecedarioCache.isNotEmpty) {
-      print('ℹ️ Abecedario ya está en caché, omitiendo precarga');
       return;
     }
 
-    print('📚 Precargando ABECEDARIO (27 letras)...');
     final letras = _alphabetData.map((d) => d['letter'] as String).toList();
 
     int cargadas = 0;
@@ -1262,26 +1200,19 @@ class LessonData {
         final contenido = await loadAbecedarioImageByLetter(letra);
         if (contenido.isNotEmpty) {
           cargadas++;
-          print('  📝 [$cargadas/${letras.length}] "$letra" ✅');
-        } else {
-          print('  📝 [$cargadas/${letras.length}] "$letra" ⚠️ (vacío)');
         }
       } catch (e) {
-        print('  📝 [$cargadas/${letras.length}] "$letra" ❌ (error: $e)');
       }
     }
 
-    print('✅ Abecedario completado: $cargadas/${letras.length} letras cargadas');
   }
 
   /// Precargar todos los gestos uno por uno
   static Future<void> _preloadGestos() async {
     if (_gestosCache.isNotEmpty) {
-      print('ℹ️ Gestos ya están en caché, omitiendo precarga');
       return;
     }
 
-    print('🎭 Precargando GESTOS (21 gestos)...');
     final gestos = _gesturesData.map((d) => d['gesture'] as String).toList();
 
     int cargados = 0;
@@ -1291,22 +1222,15 @@ class LessonData {
         final contenido = await loadSingleGestoVideo(gesto, silent: true);
         if (contenido.isNotEmpty) {
           cargados++;
-          print('  🎬 [$cargados/${gestos.length}] "$gesto" ✅');
-        } else {
-          print('  🎬 [$cargados/${gestos.length}] "$gesto" ⚠️ (vacío)');
         }
       } catch (e) {
-        print('  🎬 [$cargados/${gestos.length}] "$gesto" ❌ (error: $e)');
       }
     }
 
-    print('✅ Gestos completados: $cargados/${gestos.length} gestos cargados');
   }
 
   /// Debug: Comparar gestos esperados vs. gestos en MongoDB
   static Future<void> debugCompareGestos() async {
-    print('\n🔍 === DEBUG: COMPARACIÓN DE GESTOS ===');
-
     // Obtener todos los gestos de MongoDB
     final gestos = await _apiService.getGestos();
     final nombresEnMongoDB = gestos
@@ -1319,30 +1243,6 @@ class LessonData {
         .map((g) => g['gesture'] as String)
         .toList();
 
-    print('📝 Gestos esperados en el código (${nombresEsperados.length}):');
-    for (int i = 0; i < nombresEsperados.length; i++) {
-      print('   Lección ${38 + i}: "${nombresEsperados[i]}"');
-    }
-
-    print('\n📚 Gestos en MongoDB (${nombresEnMongoDB.length}):');
-    for (final nombre in nombresEnMongoDB) {
-      print('   - "$nombre"');
-    }
-
-    print('\n❌ Gestos que faltan en MongoDB:');
-    for (int i = 0; i < nombresEsperados.length; i++) {
-      final esperado = nombresEsperados[i];
-      final found = nombresEnMongoDB.any((mongo) =>
-          mongo.toUpperCase() == esperado.toUpperCase() ||
-          mongo.replaceAll(' ', '_').toUpperCase() == esperado.replaceAll(' ', '_').toUpperCase() ||
-          mongo.replaceAll(' ', '').toUpperCase() == esperado.replaceAll(' ', '').toUpperCase());
-
-      if (!found) {
-        print('   Lección ${38 + i}: "$esperado" ⚠️');
-      }
-    }
-
-    print('\n✅ === FIN DEBUG ===\n');
   }
 
   /// Generar todas las lecciones del alfabeto con sus ejercicios
@@ -1409,7 +1309,6 @@ class LessonData {
   /// Cada lección ahora tiene 3 ejercicios con DIFERENTES respuestas correctas
   static Future<List<Lesson>> generateBasicWordLessons() async {
     // Cargar TODOS los GIFs disponibles para tener opciones
-    print('💬 Cargando GIFs para Palabras Básicas...');
     final allGestureNames = _gesturesData.map((g) => g['gesture'] as String).toList();
     for (var gesture in allGestureNames) {
       if (!_gestosCache.containsKey(gesture)) {
@@ -1486,7 +1385,6 @@ class LessonData {
   /// El usuario forma palabras seleccionando letras del alfabeto
   static Future<List<Lesson>> generateWordBuilderLessons() async {
     // Cargar TODOS los GIFs del alfabeto para el teclado
-    print('🔤 Cargando GIFs del alfabeto para Armar Palabras...');
 
     // Cargar todos los GIFs del alfabeto (A-Z, Ñ)
     for (var letterData in _alphabetData) {
@@ -1548,9 +1446,6 @@ class LessonData {
     // Los GIFs deberían estar precargados en background
     // Si el caché está vacío, el usuario verá emojis temporalmente
 
-    if (_gestosCache.isEmpty) {
-      print('⚠️ Caché de gestos aún vacío (precarga en progreso...)');
-    }
 
     return _gesturesData.asMap().entries.map((entry) {
       final index = entry.key;
@@ -1576,19 +1471,9 @@ class LessonData {
         for (final variacion in variaciones) {
           if (_gestosCache.containsKey(variacion)) {
             videoBase64 = _gestosCache[variacion]!;
-            print('📌 Lección $lessonId - GIF encontrado con variación "$variacion" para gesto "$gesture"');
             break;
           }
         }
-      }
-
-      if (videoBase64.isEmpty) {
-        print('❌ Lección $lessonId - NO SE ENCONTRÓ GIF PARA: "$gesture"');
-        print('   Claves en caché (primeras 10): ${_gestosCache.keys.take(10).join(", ")}');
-        print('   Total claves en caché: ${_gestosCache.length}');
-        print('   Se usará emoji como fallback 😔');
-      } else {
-        print('✅ Lección $lessonId - GIF asignado para: "$gesture"');
       }
 
       return Lesson(
@@ -1937,7 +1822,6 @@ class LessonData {
 
           // Si no está en caché, cargar individualmente (fallback)
           if (videoBase64.isEmpty) {
-            print('⚠️ GIF no encontrado en caché, intentando carga individual...');
             videoBase64 = await loadSingleGestoVideo(lesson.letter);
           }
 
