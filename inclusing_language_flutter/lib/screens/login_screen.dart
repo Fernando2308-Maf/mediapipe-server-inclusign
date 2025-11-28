@@ -148,7 +148,12 @@ class _LoginScreenState extends State<LoginScreen> {
         final isConnectionError = result.errorMessage.contains('Error de conexión:') ||
             result.errorMessage.contains('failed to fetch') ||
             result.errorMessage.contains('ClientException') ||
-            result.errorMessage.contains('SocketException');
+            result.errorMessage.contains('SocketException') ||
+            result.errorMessage.contains('TimeoutException') ||
+            result.errorMessage.contains('timed out') ||
+            result.errorMessage.contains('timeout') ||
+            result.errorMessage.contains('Error en el login:') ||
+            result.errorMessage.contains('Error en el registro:');
 
         if (isConnectionError && mounted) {
           // Ofrecer modo invitado cuando no hay conexión al servidor

@@ -9,6 +9,7 @@ import 'lesson_screen.dart';
 import 'dictionary_screen.dart';
 import 'practice_screen.dart';
 import 'progress_screen.dart';
+import 'gesture_camera_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -335,6 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(child: _buildActionCard('💪', 'Practicar', 'Repaso', AppColors.accent)),
           ],
         ),
+        const SizedBox(height: 15),
+        // Tarjeta de reconocimiento de gestos
+        _buildGestureRecognitionCard(),
       ],
     );
   }
@@ -453,6 +457,82 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 13,
                 color: Colors.white.withValues(alpha:0.9),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGestureRecognitionCard() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const GestureCameraScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.accent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Icono de cámara
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(
+                Icons.videocam,
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 20),
+            // Texto
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Reconocimiento de Gestos',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Practica con IA en tiempo real',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Flecha
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 20,
             ),
           ],
         ),
