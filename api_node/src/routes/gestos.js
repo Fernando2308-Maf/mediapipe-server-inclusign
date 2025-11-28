@@ -6,7 +6,7 @@ const router = express.Router();
 // GET /api/gestos
 router.get('/', async (req, res) => {
   try {
-    const db = getDB();
+    const db = await getDB();
     const gestosCollection = db.collection('Gestos');
 
     // No devolver el contenido (GIFs), solo metadata

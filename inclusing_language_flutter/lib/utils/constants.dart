@@ -1,16 +1,10 @@
 class AppConstants {
   // API Configuration
-  // Production (Railway): 'https://inclusing-lenguage-api-production.up.railway.app/api'
+  // Production (Vercel): 'https://despliegeapiinclusign.vercel.app/api'
   // Windows/Web: 'http://localhost:5246/api'
   // Android Emulator: 'http://10.0.2.2:5246/api'
   // Android Physical Device on same network: 'http://192.168.43.19:5246/api'
-  // API Configuration
-  // NOTA: Antes de generar el APK, actualiza esto a la URL de producción
-  // Opciones:
-  // - Local: 'http://192.168.43.19:5246/api' (solo funciona en tu red)
-  // - Vercel: 'https://tu-app.vercel.app/api' (después de desplegar)
-  // - Railway: 'https://tu-app.up.railway.app/api' (después de desplegar)
-  static const String baseUrl = 'http://localhost:5246/api';
+  static const String baseUrl = 'https://despliegeapiinclusign.vercel.app/api';
 
   // Storage Keys
   static const String keyUserToken = 'user_token';

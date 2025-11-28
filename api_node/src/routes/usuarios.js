@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/:usuarioID', async (req, res) => {
   try {
     const { usuarioID } = req.params;
-    const db = getDB();
+    const db = await getDB();
     const usuariosCollection = db.collection('Usuarios');
 
     const usuario = await usuariosCollection.findOne({ usuarioID });
@@ -32,7 +32,7 @@ router.get('/:usuarioID', async (req, res) => {
 router.get('/by-email/:email', async (req, res) => {
   try {
     const { email } = req.params;
-    const db = getDB();
+    const db = await getDB();
     const usuariosCollection = db.collection('Usuarios');
 
     const usuario = await usuariosCollection.findOne({ correo: email });
@@ -65,7 +65,7 @@ router.put('/:usuarioID/password', async (req, res) => {
       });
     }
 
-    const db = getDB();
+    const db = await getDB();
     const usuariosCollection = db.collection('Usuarios');
 
     // Obtener el usuario

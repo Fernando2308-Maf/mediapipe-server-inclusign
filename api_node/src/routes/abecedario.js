@@ -6,7 +6,7 @@ const router = express.Router();
 // GET /api/abecedario
 router.get('/', async (req, res) => {
   try {
-    const db = getDB();
+    const db = await getDB();
     const abecedarioCollection = db.collection('Abecedario');
 
     // No devolver el contenido (GIFs), solo metadata

@@ -6,7 +6,7 @@ const router = express.Router();
 // GET /api/niveles
 router.get('/', async (req, res) => {
   try {
-    const db = getDB();
+    const db = await getDB();
     const nivelesCollection = db.collection('Niveles');
 
     const niveles = await nivelesCollection.find({}).sort({ nivelID: 1 }).toArray();
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 router.get('/:nivelID', async (req, res) => {
   try {
     const nivelID = parseInt(req.params.nivelID);
-    const db = getDB();
+    const db = await getDB();
     const nivelesCollection = db.collection('Niveles');
 
     const nivel = await nivelesCollection.findOne({ nivelID });

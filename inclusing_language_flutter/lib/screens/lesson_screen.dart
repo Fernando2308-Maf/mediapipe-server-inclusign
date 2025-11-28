@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/lesson.dart';
 import '../services/lesson_service.dart';
@@ -109,6 +110,13 @@ class _LessonScreenState extends State<LessonScreen> {
     } else if (widget.lessonId >= 69 && widget.lessonId <= 78) {
       // Para lecciones 69-78 (armar palabras), verificar que formó la palabra correcta
       final formedWord = _selectedLetters.join();
+      // Debug: Imprimir para verificar comparación
+      if (kDebugMode) {
+        debugPrint('🔍 [WordBuilder] Palabra formada: "$formedWord" (length: ${formedWord.length})');
+        debugPrint('🔍 [WordBuilder] Respuesta correcta: "${exercise.correctAnswer}" (length: ${exercise.correctAnswer.length})');
+        debugPrint('🔍 [WordBuilder] Letras seleccionadas: $_selectedLetters');
+        debugPrint('🔍 [WordBuilder] ¿Son iguales? ${formedWord == exercise.correctAnswer}');
+      }
       correct = formedWord == exercise.correctAnswer;
     } else {
       // Lecciones normales
@@ -1287,7 +1295,6 @@ class _LessonScreenState extends State<LessonScreen> {
                       runSpacing: 8,
                       children: _selectedGestures.asMap().entries.map((entry) {
                         final index = entry.key;
-                        final gesture = entry.value;
                         return Container(
                           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
@@ -1295,37 +1302,23 @@ class _LessonScreenState extends State<LessonScreen> {
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: AppColors.primary),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    '${index + 1}',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                gesture,
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         );
                       }).toList(),
@@ -1430,47 +1423,22 @@ class _LessonScreenState extends State<LessonScreen> {
             ),
             child: Stack(
               children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                        child: gifBase64.isNotEmpty
-                            ? MediaDisplay(
-                                base64Content: gifBase64,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                              )
-                            : Center(
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  size: 40,
-                                  color: Theme.of(context).textTheme.bodySmall?.color,
-                                ),
-                              ),
-                      ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: backgroundColor.withValues(alpha:0.9),
-                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
-                      ),
-                      child: Text(
-                        gestureName,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: gifBase64.isNotEmpty
+                      ? MediaDisplay(
+                          base64Content: gifBase64,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 40,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
                 ),
                 if (selectionOrder != null)
                   Positioned(
@@ -1703,8 +1671,10 @@ class _LessonScreenState extends State<LessonScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: _selectedLetters.map((letter) {
+                        final gifBase64 = _currentLetterGifs[letter] ?? '';
                         return Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [AppColors.primary, AppColors.accent],
@@ -1712,14 +1682,27 @@ class _LessonScreenState extends State<LessonScreen> {
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.white, width: 2),
                           ),
-                          child: Text(
-                            letter,
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: gifBase64.isNotEmpty
+                                ? MediaDisplay(
+                                    base64Content: gifBase64,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Center(
+                                    child: Text(
+                                      letter,
+                                      style: TextStyle(
+                                        fontSize: 32,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         );
                       }).toList(),
@@ -1778,8 +1761,12 @@ class _LessonScreenState extends State<LessonScreen> {
     );
   }
 
+  // Guardar referencia a los GIFs para usarlos en la vista de letras seleccionadas
+  Map<String, String> _currentLetterGifs = {};
+
   // Teclado de alfabeto como cuadrícula
   Widget _buildAlphabetKeyboard(Map<String, String> letterGifs, String targetWord) {
+    _currentLetterGifs = letterGifs; // Guardar referencia
     // Si ya tenemos el orden del teclado guardado, usarlo
     // Si no, generarlo y guardarlo (solo la primera vez para cada ejercicio)
     if (_keyboardLetters.isEmpty) {

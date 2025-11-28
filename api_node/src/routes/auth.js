@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, username, firstName } = req.body;
 
-    const db = getDB();
+    const db = await getDB();
     const usuariosCollection = db.collection('Usuarios');
 
     // Verificar si el correo ya existe
@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
 
     console.log('📧 Intentando login para:', email);
 
-    const db = getDB();
+    const db = await getDB();
     const usuariosCollection = db.collection('Usuarios');
 
     // Buscar usuario por correo

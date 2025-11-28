@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/:usuarioID', async (req, res) => {
   try {
     const { usuarioID } = req.params;
-    const db = getDB();
+    const db = await getDB();
     const progresionesCollection = db.collection('Progresion');
 
     let progresion = await progresionesCollection.findOne({ usuarioID });
@@ -103,7 +103,7 @@ router.put('/:usuarioID', async (req, res) => {
     const { usuarioID } = req.params;
     const { nivelActual, nivelesCompletados } = req.body;
 
-    const db = getDB();
+    const db = await getDB();
     const progresionesCollection = db.collection('Progresion');
 
     const updateDoc = {
@@ -143,7 +143,7 @@ router.post('/completar-nivel', async (req, res) => {
       `📥 Completando nivel - Usuario: ${usuarioID}, Nivel: ${nivel}, Resultado: ${resultado}, Experiencia: ${experienciaGanada}`
     );
 
-    const db = getDB();
+    const db = await getDB();
     const progresionesCollection = db.collection('Progresion');
 
     const progresion = await progresionesCollection.findOne({ usuarioID });
@@ -264,7 +264,7 @@ router.post('/registrar-intento', async (req, res) => {
 
     console.log(`📥 Registrando intento - Usuario: ${usuarioID}, Nivel: ${nivel}, Resultado: ${resultado}`);
 
-    const db = getDB();
+    const db = await getDB();
     const progresionesCollection = db.collection('Progresion');
 
     const progresion = await progresionesCollection.findOne({ usuarioID });

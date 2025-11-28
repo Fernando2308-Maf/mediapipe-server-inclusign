@@ -33,9 +33,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
   // Cache de GIFs
   final Map<String, String> _gestureGifs = {};
   final Map<String, String> _letterGifs = {}; // Para Word Builder
+  Map<String, String> _currentLetterGifs = {}; // Para mostrar letras seleccionadas en Word Builder
 
   // Mapeo de índice de ejercicio -> categoría
   final Map<int, String> _exerciseCategories = {};
+
+  // Orden del teclado para Word Builder (se mantiene durante el ejercicio)
+  List<String> _keyboardLetters = [];
 
   @override
   void initState() {
@@ -67,11 +71,14 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
       // Para ejercicios de Word Builder (letras del alfabeto)
       if (category == 'Word Builder') {
-        // Cargar GIFs de las letras necesarias para formar la palabra
-        final targetWord = exercise.correctAnswer.toUpperCase();
-        final uniqueLetters = targetWord.split('').toSet();
+        // Cargar GIFs de TODAS las letras del alfabeto (A-Z + Ñ)
+        // para poder mostrar letras de distracción
+        final allAlphabetLetters = [
+          'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+          'N', 'Ñ', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        ];
 
-        for (var letter in uniqueLetters) {
+        for (var letter in allAlphabetLetters) {
           if (!_letterGifs.containsKey(letter)) {
             try {
               final gifBase64 = await LessonData.loadAbecedarioImageByLetter(letter);
@@ -471,6 +478,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
         _selectedAnswer = null;
         _selectedGestures.clear();
         _selectedLetters.clear();
+        _keyboardLetters.clear(); // Resetear teclado para nuevo ejercicio
         _hasAnswered = false;
       });
     } else {
@@ -644,6 +652,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
     // Detectar el tipo de ejercicio según la categoría
     final currentCategory = _exerciseCategories[_currentExerciseIndex] ?? '';
     final isBasicWordsExercise = currentCategory == 'Basic Words';
+    final isWordBuilderExercise = currentCategory == 'Word Builder';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -770,6 +779,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         // Cuadrícula de GIFs
                         _buildGestureOptions(currentExercise),
                       ]
+                    else if (isWordBuilderExercise)
+                      // Para Word Builder: teclado de alfabeto para armar palabras
+                      ..._buildWordBuilderExercise(currentExercise)
                     else
                       // Para Alfabeto, Números, Gestos: imagen + pregunta + opciones
                       ...[
@@ -1034,48 +1046,275 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 width: 2,
               ),
             ),
-            child: Column(
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: _gestureGifs.containsKey(gesture)
+                  ? MediaDisplay(
+                      base64Content: _gestureGifs[gesture]!,
+                      fit: BoxFit.contain,
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                        strokeWidth: 2,
+                      ),
+                    ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Método para construir el ejercicio de Word Builder (armar palabras)
+  List<Widget> _buildWordBuilderExercise(Exercise exercise) {
+    final targetWord = exercise.correctAnswer.toUpperCase();
+
+    return [
+      // Instrucciones y palabra objetivo
+      Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.accent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: _gestureGifs.containsKey(gesture)
-                        ? MediaDisplay(
-                            base64Content: _gestureGifs[gesture]!,
-                            fit: BoxFit.contain,
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.primary,
-                              strokeWidth: 2,
-                            ),
-                          ),
-                  ),
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardBackground.withValues(alpha:0.5),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    gesture,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Icon(Icons.construction, color: Colors.white, size: 24),
+                SizedBox(width: 10),
+                Text(
+                  'Arma la palabra',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 15),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
+              ),
+              child: Text(
+                targetWord,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 8,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            if (exercise.hintText.isNotEmpty)
+              Text(
+                '💡 ${exercise.hintText}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.center,
+              ),
+          ],
+        ),
+      ),
+      SizedBox(height: 20),
+
+      // Letras seleccionadas (vista previa de la palabra que está formando)
+      if (_selectedLetters.isNotEmpty)
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.primary),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '✅ Tu palabra:',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.secondary,
+                ),
+              ),
+              SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _selectedLetters.map((letter) {
+                  final gifBase64 = _currentLetterGifs[letter] ?? '';
+                  return Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppColors.primary, AppColors.accent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: gifBase64.isNotEmpty
+                          ? MediaDisplay(
+                              base64Content: gifBase64,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            )
+                          : Center(
+                              child: Text(
+                                letter,
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 10),
+              if (!_hasAnswered)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          if (_selectedLetters.isNotEmpty) {
+                            _selectedLetters.removeLast();
+                          }
+                        });
+                      },
+                      icon: Icon(Icons.backspace, size: 16, color: AppColors.warning),
+                      label: Text(
+                        'Borrar última',
+                        style: TextStyle(fontSize: 12, color: AppColors.warning),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _selectedLetters.clear();
+                        });
+                      },
+                      icon: Icon(Icons.refresh, size: 16, color: AppColors.error),
+                      label: Text(
+                        'Reiniciar',
+                        style: TextStyle(fontSize: 12, color: AppColors.error),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      if (_selectedLetters.isNotEmpty) SizedBox(height: 20),
+
+      // Teclado de alfabeto (cuadrícula de letras)
+      _buildAlphabetKeyboard(_letterGifs, targetWord),
+    ];
+  }
+
+  // Teclado de alfabeto como cuadrícula
+  Widget _buildAlphabetKeyboard(Map<String, String> letterGifs, String targetWord) {
+    _currentLetterGifs = letterGifs; // Guardar referencia
+
+    // Si ya tenemos el orden del teclado guardado, usarlo
+    // Si no, generarlo y guardarlo (solo la primera vez para cada ejercicio)
+    if (_keyboardLetters.isEmpty) {
+      // En modo repaso: mostrar las letras necesarias + letras de distracción
+      // Esto crea confusión y hace el ejercicio más desafiante
+      final uniqueLetters = targetWord.split('').toSet().toList();
+      final allLetters = letterGifs.keys.toList()..shuffle();
+
+      // Agregar letras de distracción (aproximadamente 10 letras adicionales)
+      final distractorLetters = allLetters
+          .where((letter) => !uniqueLetters.contains(letter))
+          .take(10)
+          .toList();
+
+      _keyboardLetters = [...uniqueLetters, ...distractorLetters]..shuffle();
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: _keyboardLetters.length,
+      itemBuilder: (context, index) {
+        final letter = _keyboardLetters[index];
+        final gifBase64 = letterGifs[letter] ?? '';
+        final isInTarget = targetWord.contains(letter);
+
+        Color borderColor = AppColors.border;
+        Color backgroundColor = AppColors.cardBackground;
+
+        if (_hasAnswered) {
+          if (isInTarget) {
+            borderColor = AppColors.success;
+            backgroundColor = AppColors.success.withValues(alpha: 0.1);
+          }
+        }
+
+        return GestureDetector(
+          onTap: _hasAnswered
+              ? null
+              : () {
+                  setState(() {
+                    _selectedLetters.add(letter);
+                  });
+                },
+          child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 2),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: gifBase64.isNotEmpty
+                  ? MediaDisplay(
+                      base64Content: gifBase64,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 30,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
+                      ),
+                    ),
             ),
           ),
         );

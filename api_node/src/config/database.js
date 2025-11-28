@@ -30,9 +30,11 @@ async function connectDB() {
   }
 }
 
-function getDB() {
+async function getDB() {
   if (!db) {
-    throw new Error('Base de datos no inicializada. Llama a connectDB() primero.');
+    // En Vercel serverless, auto-conectar si no hay conexión
+    console.log('⚠️ DB no inicializada, conectando automáticamente...');
+    await connectDB();
   }
   return db;
 }

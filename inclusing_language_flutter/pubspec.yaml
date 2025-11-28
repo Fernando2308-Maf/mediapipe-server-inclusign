@@ -73,6 +73,7 @@ dev_dependencies:
   # JSON code generation
   build_runner: ^2.4.7
   json_serializable: ^6.7.1
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -90,6 +91,7 @@ flutter:
     - assets/gifs/abecedario/
     - assets/gifs/gestos/
     - assets/gifs/numeros/
+    - assets/icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -116,3 +118,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Configuración del icono de la aplicación
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#0B3D73"
+  adaptive_icon_foreground: "assets/icon.png"
