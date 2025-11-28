@@ -43,21 +43,18 @@ app.use('/api/niveles', nivelesRoutes);
 app.use('/api/abecedario', abecedarioRoutes);
 app.use('/api/gestos', gestosRoutes);
 
-// Iniciar servidor
-async function startServer() {
-  try {
-    // Conectar a MongoDB
-    await connectDB();
+// Conectar a MongoDB al iniciar
+connectDB().catch(err => {
+  console.error('❌ Error conectando a MongoDB:', err);
+});
 
-    // Iniciar servidor Express
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`📡 API disponible en http://localhost:${PORT}/api`);
-    });
-  } catch (error) {
-    console.error('❌ Error iniciando el servidor:', error);
-    process.exit(1);
-  }
+// Iniciar servidor solo si no estamos en Vercel
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📡 API disponible en http://localhost:${PORT}/api`);
+  });
 }
 
-startServer();
+// Exportar para Vercel
+module.exports = app;
