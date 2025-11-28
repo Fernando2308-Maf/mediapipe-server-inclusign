@@ -11,10 +11,5 @@
       "src": "/(.*)",
       "dest": "index.js"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "DATABASE_NAME": "inclusign",
-    "PORT": "5246"
-  }
+  ]
 }
