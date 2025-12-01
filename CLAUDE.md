@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `api_dart/` - Dart/Shelf REST API (production backend, deployed on Railway)
 - `api_node/` - Node.js/Express API (alternative implementation)
 - `django-rest-framework/` - Django API (alternative implementation)
+- **Python ML Scripts** - MediaPipe landmark extraction and gesture recognition testing
 
 **Current Production Architecture:**
 ```
@@ -18,12 +19,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
      ^                                                    |
      |                                                    |
      +-------- Local GIF Assets (assets/gifs/) ----------+
+
+Gesture Recognition Pipeline (Experimental):
+[Flutter Camera] → [MediaPipe Server (Python)] → [Django API (TensorFlow)] → [Prediction]
+                    Extract 81 landmarks           Accumulate 65 frames
+                    (81×3 = 243 values)            Classify gesture
 ```
 
 **Key Technologies:**
 - Flutter 3.35.7 / Dart 3.9.2
 - Dart Shelf framework (production API)
 - MongoDB Atlas (5 collections: Usuarios, Progresion, Niveles, Abecedario, Gestos)
+- **MediaPipe Python** (Holistic landmark extraction for gesture recognition)
+- **TensorFlow/Keras** (Gesture classification model in Django API)
+- **Flask** (MediaPipe landmark extraction server)
 
 **Lesson Content:**
 - 58 lessons total: 27 alphabet (A-Z + Ñ), 10 numbers (0-9), 21 gestures (greetings/phrases)
@@ -104,6 +113,36 @@ npm start
 # API runs at:
 # - Local: http://localhost:5246
 ```
+
+### MediaPipe Server (Gesture Recognition)
+
+```bash
+# Install Python dependencies
+pip install -r requirements_mediapipe.txt
+
+# Test MediaPipe with webcam
+python mediapipe_landmark_extractor.py
+
+# Run the landmark extraction server
+python mediapipe_server.py
+
+# Test the complete pipeline (MediaPipe + Django API)
+python test_complete_pipeline.py
+
+# Quick test (single frame)
+python test_complete_pipeline.py quick
+
+# Server runs at:
+# - Local: http://localhost:5000
+# - Django API: https://django-rest-framework-uc05.onrender.com
+```
+
+**MediaPipe Dependencies:**
+- `opencv-python==4.8.1.78` - Image processing
+- `mediapipe==0.10.8` - Holistic landmark extraction
+- `numpy==1.24.3` - Array operations
+- `flask==3.0.0` - HTTP server
+- `flask-cors==4.0.0` - CORS support for Flutter
 
 ## Critical Architecture Concepts
 
@@ -221,6 +260,44 @@ inclusing_language_flutter/assets/gifs/
 4. `LessonService` → `ApiService._makeRequest()` → Dart API
 5. Dart API → `progresion_routes.dart` handler → `DatabaseService` (MongoDB)
 6. MongoDB updates `Progresion.nivelesCompletados[]` and `Progresion.intentos[]`
+
+### Data Flow: Gesture Recognition (Experimental)
+
+**Note:** This feature is now fully integrated and functional. The app can recognize 21 sign language gestures in real-time using MediaPipe + TensorFlow.
+
+1. **Capture Frame** - Flutter Camera captures YUV420 frame
+2. **Convert & Encode** - Convert to JPEG, encode as base64
+3. **Extract Landmarks** - Send to MediaPipe Server (`POST /extract`)
+   - Server decodes image
+   - MediaPipe Holistic processes frame
+   - Extracts 81 landmarks: 33 pose + 6 face + 21 left hand + 21 right hand
+   - Returns flat array of 243 values (81 × 3 coordinates)
+4. **Accumulate Sequence** - Send landmarks to Django API (`POST /api/predict/`)
+   - Django buffers frames until 65 frames collected
+   - Returns `{"estado": "esperando N frames"}` while buffering
+5. **Classify Gesture** - Once 65 frames ready:
+   - TensorFlow model predicts gesture from sequence
+   - Returns `{"gesto": "HOLA", "confianza": 0.95, "top_3": [...]}`
+6. **Update UI** - Flutter updates recognition overlay and history
+
+**Key Files:**
+- `mediapipe_landmark_extractor.py` - Core MediaPipe wrapper class
+- `mediapipe_server.py` - Flask server with `/extract` endpoint
+- `test_complete_pipeline.py` - End-to-end testing script
+- `lib/screens/gesture_camera_screen.dart` - Flutter camera UI
+- `lib/services/gesture_recognition_service.dart` - API communication
+- `label_encoder.pkl` - Gesture label encoder (21 gesture classes)
+
+**Landmark Structure:**
+```python
+# 81 landmarks × 3 coordinates (x, y, z) = 243 values
+landmarks = [
+    # Pose (33 points): nose, eyes, shoulders, elbows, wrists, hips, knees, ankles, etc.
+    # Face (6 specific points): indices 1, 33, 263, 61, 291, 199
+    # Left Hand (21 points): wrist, thumb (4), index (4), middle (4), ring (4), pinky (4)
+    # Right Hand (21 points): same structure as left hand
+]
+```
 
 ## Configuration
 
@@ -533,31 +610,103 @@ Consider: Provider, Riverpod, or Bloc pattern.
 3. Verify `Progresion` document exists for user in MongoDB
 4. Check `estadisticas` fields are updating correctly
 
+### MediaPipe Server Issues
+
+**Symptom:** MediaPipe server not starting or crashes
+
+**Causes:**
+- Missing Python dependencies
+- Camera already in use
+- Port 5000 already occupied
+- Incompatible library versions
+
+**Solutions:**
+1. Install dependencies: `pip install -r requirements_mediapipe.txt`
+2. Close other apps using camera (Zoom, Teams, etc.)
+3. Check port availability: `netstat -ano | findstr :5000` (Windows)
+4. Verify MediaPipe version: `pip show mediapipe` (should be 0.10.8)
+5. Test camera access: `python mediapipe_landmark_extractor.py`
+
+**Debugging checklist:**
+```bash
+# 1. Check Python version (3.8-3.11 recommended)
+python --version
+
+# 2. Verify dependencies
+pip list | findstr "mediapipe opencv flask"
+
+# 3. Test server health
+curl http://localhost:5000/health
+
+# 4. Check for errors in server logs
+python mediapipe_server.py
+```
+
+### Gesture Recognition Not Working
+
+**Symptom:** No landmarks detected or predictions always fail
+
+**Causes:**
+- Poor lighting conditions
+- Body not fully visible in frame
+- Django API cold start (30+ seconds on Render)
+- Insufficient frames buffered (need 65)
+
+**Solutions:**
+1. Ensure good lighting and full body visibility
+2. Wait for Django API warm-up on first request
+3. Check MediaPipe detections in test script:
+   ```python
+   python test_complete_pipeline.py
+   # Watch console for "Pose ✓", "Mano Izq ✓", "Mano Der ✓"
+   ```
+4. Verify landmark count: Should output "243 valores" in logs
+5. Check Django API directly:
+   ```bash
+   curl -X POST https://django-rest-framework-uc05.onrender.com/api/predict/ \
+     -H "Content-Type: application/json" \
+     -d '{"landmarks": [... 243 values ...]}'
+   ```
+
+**Note:** Django API on Render free tier has cold starts. First request may take 30+ seconds.
+
 ## Quick Reference
 
 ### Essential File Locations
 
-| Purpose | Flutter Path | API Path |
-|---------|-------------|----------|
-| API calls | `lib/services/api_service.dart` | - |
-| Lesson logic | `lib/services/lesson_service.dart` | - |
-| Lesson content | `lib/data/lesson_data.dart` | - |
-| Auth logic | `lib/services/auth_service.dart` | `lib/services/auth_service.dart` |
-| Progress tracking | - | `lib/routes/progresion_routes.dart` |
-| MongoDB connection | - | `lib/services/database_service.dart` |
-| API URL config | `lib/utils/constants.dart` | - |
-| Theme colors | `lib/utils/colors.dart` | - |
-| Main lesson UI | `lib/screens/lesson_screen.dart` | - |
-| MongoDB models | `lib/models/mongodb_models.dart` | `lib/models/*.dart` |
+| Purpose | Flutter Path | API Path | Python/ML Path |
+|---------|-------------|----------|----------------|
+| API calls | `lib/services/api_service.dart` | - | - |
+| Lesson logic | `lib/services/lesson_service.dart` | - | - |
+| Lesson content | `lib/data/lesson_data.dart` | - | - |
+| Auth logic | `lib/services/auth_service.dart` | `lib/services/auth_service.dart` | - |
+| Progress tracking | - | `lib/routes/progresion_routes.dart` | - |
+| MongoDB connection | - | `lib/services/database_service.dart` | - |
+| API URL config | `lib/utils/constants.dart` | - | - |
+| Theme colors | `lib/utils/colors.dart` | - | - |
+| Main lesson UI | `lib/screens/lesson_screen.dart` | - | - |
+| Gesture recognition UI | `lib/screens/gesture_camera_screen.dart` | - | - |
+| Gesture service | `lib/services/gesture_recognition_service.dart` | - | - |
+| MongoDB models | `lib/models/mongodb_models.dart` | `lib/models/*.dart` | - |
+| MediaPipe extraction | - | - | `mediapipe_landmark_extractor.py` |
+| MediaPipe server | - | - | `mediapipe_server.py` |
+| Pipeline testing | - | - | `test_complete_pipeline.py` |
+| ML label encoder | - | - | `label_encoder.pkl` |
 
 ### Key Constants
 
-- **API Port:** 5246
+- **API Port:** 5246 (Dart API)
+- **MediaPipe Port:** 5000 (Flask server)
+- **Django API:** https://django-rest-framework-uc05.onrender.com
 - **Request Timeout:** 120 seconds (2 minutes)
 - **Database Name:** `inclusign`
 - **Total Lessons:** 58 (27 alphabet + 10 numbers + 21 gestures)
 - **XP per Lesson:** 25 (5 + 10 + 10)
 - **GIF Assets:** 48 required (27 abecedario + 21 gestos)
+- **ML Model Requirements:**
+  - Landmarks per frame: 81 (243 values flattened)
+  - Sequence length: 65 frames
+  - Gesture classes: 21
 
 ### MongoDB Collections at a Glance
 
@@ -582,6 +731,12 @@ flutter analyze                    # Check for errors
 cd api_dart && dart run bin/server.dart
 dart analyze && dart format .      # Check and format code
 
+# MediaPipe/ML development
+pip install -r requirements_mediapipe.txt  # Install dependencies
+python mediapipe_server.py                 # Start MediaPipe server
+python test_complete_pipeline.py           # Test full pipeline
+python test_complete_pipeline.py quick     # Quick single-frame test
+
 # Verify GIF assets (Windows)
 dir /b assets\gifs\abecedario\*.gif | find /c ".gif"
 dir /b assets\gifs\gestos\*.gif | find /c ".gif"
@@ -589,4 +744,39 @@ dir /b assets\gifs\gestos\*.gif | find /c ".gif"
 # Test API endpoints
 curl http://localhost:5246/api/niveles
 curl -X POST http://localhost:5246/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"test@example.com\",\"password\":\"pass123\"}"
+
+# Test MediaPipe server
+curl http://localhost:5000/health
+curl -X POST http://localhost:5000/extract -H "Content-Type: application/json" -d "{\"image\":\"base64_encoded_image\"}"
 ```
+
+## Additional Documentation
+
+For more detailed information on specific features, refer to these documentation files:
+
+### Gesture Recognition System (Real-time)
+- **`GUIA_RECONOCIMIENTO_GESTOS_TIEMPO_REAL.md`** - ⭐ COMPLETE USER GUIDE
+  - Step-by-step usage instructions
+  - 21 recognizable gestures
+  - Troubleshooting guide
+  - Technical specifications
+- **`RESUMEN_INTEGRACION_COMPLETA.md`** - Integration summary
+  - What was changed and why
+  - File-by-file modifications
+  - Performance statistics
+- **`README_MEDIAPIPE.md`** - MediaPipe technical details
+  - System architecture
+  - Landmark structure (81 points)
+  - Data flow pipeline
+- **`INICIAR_MEDIAPIPE_SERVER.bat`** - Quick start script for MediaPipe server
+
+### GIF Assets & Lessons
+- **`INSTRUCCIONES_GIFS_LOCALES.md`** - GIF assets migration guide
+  - How to export GIFs from MongoDB
+  - Asset structure requirements
+  - Verification and troubleshooting
+
+### API Documentation
+- **`inclusing_language_flutter/README.md`** - Flutter app specific documentation
+- **`api_dart/README.md`** - Dart API documentation
+- **`inclusing_language_flutter/assets/gifs/README.md`** - GIF asset management instructions

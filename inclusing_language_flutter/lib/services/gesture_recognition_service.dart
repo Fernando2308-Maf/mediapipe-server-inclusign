@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class GestureRecognitionService {
@@ -6,18 +7,68 @@ class GestureRecognitionService {
   factory GestureRecognitionService() => _instance;
   GestureRecognitionService._internal();
 
+  // URL del servidor MediaPipe local
+  static const String _mediapipeUrl = 'http://localhost:5000';
+  static const String _extractEndpoint = '/extract';
+
   // URL de la API de Django en Render
-  static const String _baseUrl = 'https://django-rest-framework-uc05.onrender.com';
+  static const String _djangoUrl = 'https://django-rest-framework-uc05.onrender.com';
   static const String _predictEndpoint = '/api/predict/';
 
-  // Enviar landmarks de una mano para reconocimiento de gesto
-  // Los landmarks deben ser una lista de coordenadas [x, y, z] para cada punto de la mano
-  Future<GestureRecognitionResult?> sendLandmarks(List<List<double>> landmarks) async {
+  /// Envía una imagen al servidor MediaPipe para extraer landmarks
+  /// y luego envía los landmarks al Django API para predicción
+  Future<GestureRecognitionResult?> sendImageForRecognition(Uint8List imageBytes) async {
     try {
-      final url = Uri.parse('$_baseUrl$_predictEndpoint');
+      // PASO 1: Extraer landmarks con MediaPipe Server
+      final mediapipeUrl = Uri.parse('$_mediapipeUrl$_extractEndpoint');
 
-      // Aplanar la lista de landmarks para enviar como array unidimensional
-      final flatLandmarks = landmarks.expand((point) => point).toList();
+      // Convertir imagen a base64
+      final base64Image = base64Encode(imageBytes);
+
+      print('📤 Enviando imagen a MediaPipe server...');
+
+      final mediapipeResponse = await http.post(
+        mediapipeUrl,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'image': base64Image}),
+      ).timeout(const Duration(seconds: 10));
+
+      if (mediapipeResponse.statusCode != 200) {
+        print('❌ Error en MediaPipe server: ${mediapipeResponse.statusCode}');
+        return null;
+      }
+
+      final mediapipeData = jsonDecode(mediapipeResponse.body);
+
+      if (mediapipeData['success'] != true) {
+        print('❌ MediaPipe no pudo procesar la imagen');
+        return null;
+      }
+
+      // Obtener landmarks (ya viene como lista plana de 243 valores)
+      final List<dynamic> flatLandmarks = mediapipeData['landmarks'];
+
+      print('✅ Landmarks extraídos: ${flatLandmarks.length} valores');
+      print('   Detecciones: ${mediapipeData['detections']}');
+
+      // Convertir a List<double> explícitamente
+      final List<double> landmarksDoubles = flatLandmarks
+          .map<double>((e) => (e as num).toDouble())
+          .toList();
+
+      // PASO 2: Enviar landmarks al Django API para predicción
+      return await _sendLandmarksToAPI(landmarksDoubles);
+
+    } catch (e) {
+      print('❌ Error en pipeline: $e');
+      return null;
+    }
+  }
+
+  /// Envía landmarks directamente al Django API (método antiguo, ahora interno)
+  Future<GestureRecognitionResult?> _sendLandmarksToAPI(List<double> flatLandmarks) async {
+    try {
+      final url = Uri.parse('$_djangoUrl$_predictEndpoint');
 
       final response = await http.post(
         url,
@@ -51,13 +102,20 @@ class GestureRecognitionService {
               .toList(),
         );
       } else {
-        print('❌ Error en API: ${response.statusCode} - ${response.body}');
+        print('❌ Error en Django API: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      print('❌ Error enviando landmarks: $e');
+      print('❌ Error enviando landmarks a Django: $e');
       return null;
     }
+  }
+
+  /// Método antiguo para compatibilidad - ahora usa el pipeline completo
+  Future<GestureRecognitionResult?> sendLandmarks(List<List<double>> landmarks) async {
+    // Aplanar landmarks
+    final flatLandmarks = landmarks.expand((point) => point).toList();
+    return await _sendLandmarksToAPI(flatLandmarks);
   }
 
   // Resetear el buffer de frames en el servidor (no disponible en API actual)
