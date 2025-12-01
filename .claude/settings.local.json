@@ -12,7 +12,22 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(flutter clean:*)",
-      "Bash(flutter pub add:*)"
+      "Bash(flutter pub add:*)",
+      "Bash(flutter:*)",
+      "Bash(timeout /t 30 /nobreak)",
+      "Bash(dart analyze:*)",
+      "Bash(findstr:*)",
+      "Bash(cmd /c dir /b \"C:\\Users\\ferna\\OneDrive\\Escritorio\\Inclusign\\*.pkl\")",
+      "Bash(cmd /c dir /b \"C:\\Users\\ferna\\OneDrive\\Escritorio\\Inclusign\")",
+      "Bash(python:*)",
+      "Bash(venvScriptspython.exe -c \"import pickle; import sys; sys.path.append(''.''); le = pickle.load(open(''../label_encoder.pkl'', ''rb'')); print(''Clases del modelo:''); print(le.classes_); print(''\\nTotal de clases:'', len(le.classes_))\")",
+      "Bash(venv/Scripts/python.exe:*)",
+      "Bash(pip install:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(cmd /c \"venv\\Scripts\\activate.bat && python manage.py runserver 8000 --noreload\")",
+      "Bash(git pull:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

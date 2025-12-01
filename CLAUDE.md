@@ -4,12 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Inclusign** (SignLearn) is a cross-platform mobile application for teaching sign language through interactive lessons. The repository contains two Dart-based components:
+**Inclusign** (SignLearn) is a cross-platform mobile application for teaching sign language through interactive lessons.
 
-1. **Flutter Mobile App** (`inclusing_language_flutter/`) - Multi-platform client (Android, iOS, Web, Windows)
-2. **Dart API Backend** (`api_dart/`) - REST API using Shelf framework
+**Repository Structure:**
+- `inclusing_language_flutter/` - Flutter mobile app (primary client)
+- `api_dart/` - Dart/Shelf REST API (production backend, deployed on Railway)
+- `api_node/` - Node.js/Express API (alternative implementation)
+- `django-rest-framework/` - Django API (alternative implementation)
 
-**Current Architecture:**
+**Current Production Architecture:**
 ```
 [Flutter App] <--> [Dart/Shelf API (Railway)] <--> [MongoDB Atlas]
      ^                                                    |
@@ -19,15 +22,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Key Technologies:**
 - Flutter 3.35.7 / Dart 3.9.2
-- Shelf (Dart HTTP server framework)
+- Dart Shelf framework (production API)
 - MongoDB Atlas (5 collections: Usuarios, Progresion, Niveles, Abecedario, Gestos)
 
 **Lesson Content:**
 - 58 lessons total: 27 alphabet (A-Z + Ñ), 10 numbers (0-9), 21 gestures (greetings/phrases)
 - Lesson definitions hardcoded in `lib/data/lesson_data.dart` (local, instant access)
 - User progress tracked remotely in MongoDB (Progresion collection)
-
-**Note:** There is a legacy reference to an ASP.NET Core API in the Flutter app's existing CLAUDE.md file. The actual backend is the Dart API in `api_dart/`.
+- GIF assets bundled locally in app (migrated from MongoDB for performance)
 
 ## Running the Application
 
@@ -48,13 +50,19 @@ flutter run -d windows         # Windows
 flutter run -d chrome          # Web
 flutter run -d android         # Android
 
+# Build for release
+flutter build apk              # Android APK (debug)
+flutter build apk --release    # Android APK (release)
+flutter build appbundle        # Android App Bundle (for Play Store)
+flutter build windows          # Windows executable
+
 # Development commands
 flutter analyze                # Static analysis
 flutter test                   # Run tests
 flutter clean                  # Clean build artifacts
 ```
 
-### Dart API Backend
+### Dart API Backend (Production)
 
 ```bash
 cd api_dart
@@ -64,6 +72,10 @@ dart pub get
 
 # Run the server (development)
 dart run bin/server.dart
+
+# Analyze and format
+dart analyze
+dart format .
 
 # API runs at:
 # - Local: http://localhost:5246
@@ -76,6 +88,21 @@ Create `.env` file in `api_dart/`:
 MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/
 DATABASE_NAME=inclusign
 PORT=5246
+```
+
+### Node.js API (Alternative)
+
+```bash
+cd api_node
+
+# Install dependencies
+npm install
+
+# Run the server
+npm start
+
+# API runs at:
+# - Local: http://localhost:5246
 ```
 
 ## Critical Architecture Concepts
@@ -327,14 +354,18 @@ if (result.isSuccess) {
 - No JWT validation (tokens are simple Base64, not cryptographically secure)
 
 **Deployment:**
-- API hosted on Railway with auto-deploy from git push
+- **API (Dart):** Hosted on Railway with auto-deploy from git push
   - Production URL: https://inclusing-lenguage-api-production.up.railway.app
   - Railway detects Dockerfile automatically
   - Environment variables configured in Railway dashboard (.env not committed)
-- MongoDB Atlas free tier (M0) has connection limits
-  - Connection string stored in .env file (api_dart/.env)
+- **API (Node):** Can be deployed on Vercel or Railway (see `INSTRUCCIONES_APK_Y_DESPLIEGUE.md`)
+- **MongoDB Atlas:** Free tier (M0) connection string in .env
   - Database name: `inclusign`
-- Flutter app needs GIF assets to be bundled (see `INSTRUCCIONES_GIFS_LOCALES.md`)
+  - Network Access should allow Railway/Vercel IPs or 0.0.0.0/0
+- **Flutter APK:** Build with `flutter build apk --release`
+  - Output: `build/app/outputs/flutter-apk/app-release.apk`
+  - Size: ~120-130 MB (includes bundled GIF assets)
+  - GitHub workflow: `.github/workflows/build-apk.yml` (automated builds)
 
 **Platform-Specific:**
 - Android emulator uses `10.0.2.2` to access host `localhost`

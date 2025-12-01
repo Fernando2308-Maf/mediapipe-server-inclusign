@@ -302,14 +302,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
-  flutter_mediapipe:
-    dependency: "direct main"
-    description:
-      name: flutter_mediapipe
-      sha256: "6893450578145e558ac0fbc3e5389b8e007867c22a91f9f92fc7c9c21b2ccaba"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.7"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -720,14 +712,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.3"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   provider:
     dependency: "direct main"
     description:
