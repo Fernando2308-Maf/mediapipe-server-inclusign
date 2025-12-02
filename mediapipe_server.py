@@ -209,6 +209,16 @@ def extract_and_predict():
 
 
 if __name__ == '__main__':
+    import sys
+    import io
+    import os
+
+    # Configurar salida UTF-8 para Windows
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    except:
+        pass
+
     print('=' * 60)
     print('🚀 MediaPipe Server - Inclusign')
     print('=' * 60)
@@ -219,7 +229,10 @@ if __name__ == '__main__':
     print('  POST /extract ........... Extrae landmarks')
     print('  POST /extract-and-predict  Extrae y predice')
     print()
-    print('Servidor corriendo en: http://localhost:5000')
+
+    # Obtener puerto de variable de entorno (para Render/Heroku)
+    port = int(os.environ.get('PORT', 5000))
+    print(f'Servidor corriendo en puerto: {port}')
     print('Presiona Ctrl+C para detener')
     print('=' * 60)
     print()
@@ -227,6 +240,6 @@ if __name__ == '__main__':
     # Ejecutar servidor
     app.run(
         host='0.0.0.0',
-        port=5000,
-        debug=True
+        port=port,
+        debug=False  # False en producción
     )

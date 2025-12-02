@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+**/venv/
+**/.venv/
+ENV/
+env/
+**/.Python
+**/site-packages/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archivos específicos del proyecto
+python-3.11*.exe
+test_*.py
+DIAGNOSTICO_CAMARA.bat
+EJECUTAR_EN_CELULAR.bat
+INICIAR_MEDIAPIPE_SERVER.bat
+DEPLOY_MEDIAPIPE_RENDER.bat
+
+# Flutter/Dart (no necesarios para MediaPipe server)
+inclusing_language_flutter/
+api_dart/
+api_node/
+django-rest-framework/
+Proyecto integrador - copia/
+
+# Documentación (opcional, pero mejor no subir todo)
+*.md
+!README.md
+
+# Archivos grandes
+*.apk
+*.pkl
+*.h5
+*.keras
+*.exe
+
+# Node modules
+node_modules/
