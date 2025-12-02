@@ -9,6 +9,11 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Ignorar deprecation warnings temporalmente
+    deprecated_member_use: ignore
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -24,6 +29,7 @@ linter:
     # Deshabilitadas temporalmente para compatibilidad con lógica existente
     use_build_context_synchronously: false  # BuildContext usado correctamente con mounted checks
     avoid_web_libraries_in_flutter: false   # dart:html necesario para soporte web en media_display_web.dart
+    avoid_print: false                       # print usado para debugging en desarrollo
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
