@@ -35,6 +35,15 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+
+            // ProGuard rules for TensorFlow Lite and ML Kit
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // Deshabilitado para permitir que TFLite funcione correctamente
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

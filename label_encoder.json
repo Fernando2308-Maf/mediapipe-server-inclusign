@@ -1,0 +1,26 @@
+{
+  "classes": [
+    "buenas_noches",
+    "buenos_dias",
+    "como_estas",
+    "cual_es_tu_nombre",
+    "cuidate_mucho",
+    "entiendo",
+    "eres_sordo",
+    "gracias",
+    "hola",
+    "hola_gusto_conocerte",
+    "mi_nombre_es",
+    "no",
+    "no_entiendo",
+    "oyente",
+    "podemos_hablar",
+    "porfavor",
+    "porque",
+    "puedo_ayudarte",
+    "quien",
+    "si",
+    "sordo"
+  ],
+  "num_classes": 21
+}

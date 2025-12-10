@@ -1,0 +1,9 @@
+{
+  "mean": 0.2683946105701099,
+  "std": 0.5111609154397959,
+  "num_frames": 65,
+  "num_landmarks": 81,
+  "num_features": 243,
+  "umbral_ceros": 1e-06,
+  "preprocessing": "zeros_replaced_with_unique_noise"
+}

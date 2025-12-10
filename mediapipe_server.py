@@ -101,7 +101,7 @@ def extract_landmarks():
             }), 400
 
         # Procesar con MediaPipe
-        landmarks, results, _ = extractor.process_frame(frame)
+        landmarks, results, annotated_frame = extractor.process_frame(frame)
 
         # Convertir a lista plana (243 valores)
         flat_landmarks = extractor.landmarks_to_flat_list(landmarks)
@@ -114,11 +114,16 @@ def extract_landmarks():
             'right_hand': results.right_hand_landmarks is not None
         }
 
+        # Convertir frame anotado a base64 para enviarlo a Flutter
+        _, buffer = cv2.imencode('.jpg', annotated_frame)
+        annotated_image_base64 = base64.b64encode(buffer).decode('utf-8')
+
         return jsonify({
             'landmarks': flat_landmarks,
             'success': True,
             'detections': detections,
-            'landmarks_count': len(flat_landmarks)
+            'landmarks_count': len(flat_landmarks),
+            'annotated_image': annotated_image_base64  # Imagen con landmarks dibujados
         })
 
     except Exception as e:

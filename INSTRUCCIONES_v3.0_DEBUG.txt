@@ -1,0 +1,171 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║        INCLUSIGN v3.0 - VERSIÓN DEBUG CON LOGS               ║
+║        Para diagnosticar el problema de la cámara           ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📦 ARCHIVO A INSTALAR:
+   Inclusign_v3.0_DEBUG_CAMERA_LOGS.apk
+
+
+🔧 ¿QUÉ SE CAMBIÓ EN v3.0?
+
+Esta versión incluye LOGS DETALLADOS para entender exactamente
+qué está pasando con la cámara y el modelo.
+
+MEJORAS IMPLEMENTADAS:
+✅ Logs detallados en la inicialización de la cámara
+✅ Logs detallados en la carga del modelo de IA
+✅ Mensajes más específicos de errores
+✅ La app SIEMPRE intenta inicializar la cámara, incluso si el modelo falla
+✅ Separación clara entre fallo del modelo y fallo de cámara
+
+
+⚠️  IMPORTANTE ANTES DE INSTALAR:
+
+1. DESINSTALA COMPLETAMENTE la versión anterior:
+   - Ve a Configuración → Apps
+   - Busca "Inclusign"
+   - Desinstalar
+   - Confirma
+
+2. INSTALA esta nueva versión (v3.0)
+
+
+📱 CÓMO USAR ESTA VERSIÓN DEBUG:
+
+PASO 1: Instala el APK en tu celular
+
+PASO 2: Conecta tu celular a la PC con USB
+
+PASO 3: Activa "Depuración USB" en tu celular:
+   - Ve a Configuración → Acerca del teléfono
+   - Toca 7 veces en "Número de compilación"
+   - Vuelve a Configuración → Opciones de desarrollador
+   - Activa "Depuración USB"
+
+PASO 4: En tu PC, abre una terminal y ejecuta:
+   adb logcat | findstr "LocalGesture\|🎥"
+
+   (Si no tienes adb, descarga Android SDK Platform Tools)
+
+PASO 5: Abre la app en tu celular y ve a "Reconocimiento de Gestos"
+
+PASO 6: OBSERVA los logs en la PC. Deberías ver:
+
+   SI TODO FUNCIONA:
+   ═══════════════════════════════════════════════════
+   🎥 Iniciando inicialización de cámara...
+   🎥 Solicitando permisos de cámara...
+   🎥 Permiso de cámara: OTORGADO
+   🎥 Buscando cámaras disponibles...
+   🎥 Cámaras encontradas: 2
+   🎥 Usando cámara frontal: 0
+   🎥 Creando controlador de cámara...
+   🎥 Inicializando controlador...
+   🎥 ✅ Cámara inicializada correctamente
+
+   [LocalGesture] Inicializando servicio de reconocimiento local...
+   [LocalGesture] Cargando label encoder...
+   [LocalGesture] ✓ Label encoder cargado: 21 clases
+   [LocalGesture] Cargando scaler...
+   [LocalGesture] ✓ Scaler cargado (mean: 0.268, std: 0.511)
+   [LocalGesture] Cargando modelo TFLite...
+   [LocalGesture] ✓ Modelo cargado (método fromAsset)
+   [LocalGesture] ✅ Servicio inicializado correctamente
+   ═══════════════════════════════════════════════════
+
+   SI FALLA LA CÁMARA:
+   ═══════════════════════════════════════════════════
+   🎥 Iniciando inicialización de cámara...
+   🎥 Solicitando permisos de cámara...
+   🎥 Permiso de cámara: DENEGADO
+   ═══════════════════════════════════════════════════
+   O BIEN:
+   ═══════════════════════════════════════════════════
+   🎥 Buscando cámaras disponibles...
+   🎥 Cámaras encontradas: 0
+   ❌ No se encontraron cámaras en tu dispositivo
+   ═══════════════════════════════════════════════════
+
+   SI FALLA EL MODELO:
+   ═══════════════════════════════════════════════════
+   [LocalGesture] Cargando modelo TFLite...
+   [LocalGesture] ⚠️ fromAsset falló: [error]
+   [LocalGesture] Intentando método alternativo...
+   [LocalGesture] ❌ fromBuffer también falló: [error]
+   ═══════════════════════════════════════════════════
+
+
+🔍 QUÉ HACER DESPUÉS:
+
+1. COPIA TODOS LOS LOGS que veas en la terminal
+
+2. TOMA UNA CAPTURA DE PANTALLA de lo que aparece en la app
+
+3. ENVÍAME:
+   - Los logs completos
+   - La captura de pantalla
+   - Modelo de tu celular
+   - Versión de Android
+
+Con esa información sabré EXACTAMENTE qué está fallando.
+
+
+💡 CAMBIOS TÉCNICOS EN ESTA VERSIÓN:
+
+1. Cámara:
+   - Logs antes y después de cada paso
+   - Verifica permisos explícitamente
+   - Muestra número de cámaras encontradas
+   - Indica qué cámara se está usando
+   - Captura errores específicos
+
+2. Modelo de IA:
+   - Logs detallados de cada asset cargado
+   - Intenta dos métodos diferentes
+   - No bloquea la inicialización de cámara
+
+3. UI:
+   - Mensajes diferentes para fallo de modelo vs fallo de cámara
+   - Indicador visual más claro del estado
+
+
+📊 INFORMACIÓN DEL APK:
+
+Tamaño: 230 MB
+Versión: 3.0 DEBUG
+Build: Release con logs
+Fecha: 10 de Diciembre 2025
+
+
+🎯 OBJETIVO:
+
+Identificar exactamente cuál de estos problemas tienes:
+❓ Permisos de cámara denegados
+❓ Cámara no encontrada
+❓ Error al inicializar cámara
+❓ Modelo de IA no carga
+❓ Otro error desconocido
+
+
+───────────────────────────────────────────────────────────────
+
+RESUMEN DE PASOS:
+
+1. Desinstalar versión anterior
+2. Instalar v3.0
+3. Activar depuración USB
+4. Conectar a PC
+5. Ejecutar: adb logcat | findstr "LocalGesture\|🎥"
+6. Abrir la app
+7. Copiar todos los logs
+8. Enviarme los logs + captura de pantalla
+
+───────────────────────────────────────────────────────────────
+
+Fecha: 10 de Diciembre 2025
+Versión DEBUG para diagnóstico
+
+───────────────────────────────────────────────────────────────

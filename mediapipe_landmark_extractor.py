@@ -27,6 +27,7 @@ class MediaPipeLandmarkExtractor:
         self.mp_drawing_styles = mp.solutions.drawing_styles
 
         # Configurar Holistic (detecta pose, manos y cara en una sola pasada)
+        # CONFIGURACIÓN IDÉNTICA al código de escritorio que funciona correctamente
         self.holistic = self.mp_holistic.Holistic(
             static_image_mode=False,
             model_complexity=1,  # 0=Lite, 1=Full, 2=Heavy
@@ -35,8 +36,9 @@ class MediaPipeLandmarkExtractor:
             smooth_segmentation=False,
             refine_face_landmarks=True,  # Más landmarks de cara
             min_detection_confidence=0.5,
-            min_tracking_confidence=0.5
+            min_tracking_confidence=0.5  # CORREGIDO: era 0.8, debe ser 0.5
         )
+
 
     def extract_keypoints(self, results):
         """

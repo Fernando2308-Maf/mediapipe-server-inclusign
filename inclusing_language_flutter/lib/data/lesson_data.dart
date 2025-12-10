@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' show Random;
 import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/lesson.dart';
@@ -1269,11 +1270,18 @@ class LessonData {
 
         // Crear opciones diferentes para cada ejercicio (respuesta correcta + 3 incorrectas)
         final wrongGestures = allGestureNames.where((g) => g != correctGesture).toList();
-        wrongGestures.shuffle();
+
+        // Usar Random con semilla basada en lessonId y exerciseId para aleatoriedad real
+        final random = Random(DateTime.now().millisecondsSinceEpoch + lessonId * 1000 + i);
+        wrongGestures.shuffle(random);
+
         final List<String> gestureOptions = [
           correctGesture,
           ...wrongGestures.take(3),
-        ]..shuffle();
+        ];
+
+        // Shuffle con semilla aleatoria para variar la posición de la respuesta correcta
+        gestureOptions.shuffle(Random(DateTime.now().millisecondsSinceEpoch + lessonId * 100 + i * 10));
 
         exercises.add(Exercise(
           id: i + 1,
@@ -1468,7 +1476,7 @@ class LessonData {
         type: ExerciseType.multipleChoice,
         question: '¿Cómo se hace esta seña? (Número $number)',
         correctAnswer: description,
-        options: [description, ...wrongOptions]..shuffle(),
+        options: ([description, ...wrongOptions]..shuffle(Random(DateTime.now().millisecondsSinceEpoch + lessonId))),
         imageUrl: emoji,
         imageBase64: imageBase64,
         hintText: 'Piensa en la descripción que leíste en el primer ejercicio.',
@@ -1481,10 +1489,13 @@ class LessonData {
   static List<String> _generateNumberOptions(String correctNumber) {
     final allNumbers = _numbersData.map((d) => d['number'] as String).toList();
     allNumbers.remove(correctNumber);
-    allNumbers.shuffle();
+
+    // Usar Random para shuffle verdadero
+    final random = Random(DateTime.now().millisecondsSinceEpoch + correctNumber.hashCode);
+    allNumbers.shuffle(random);
 
     final options = [correctNumber, ...allNumbers.take(3)];
-    options.shuffle();
+    options.shuffle(Random(DateTime.now().millisecondsSinceEpoch + correctNumber.hashCode * 2));
 
     return options;
   }
@@ -1552,10 +1563,13 @@ class LessonData {
   static List<String> _generateGestureOptions(String correctGesture) {
     final allGestures = _gesturesData.map((d) => d['gesture'] as String).toList();
     allGestures.remove(correctGesture);
-    allGestures.shuffle();
+
+    // Usar Random para shuffle verdadero
+    final random = Random(DateTime.now().millisecondsSinceEpoch + correctGesture.hashCode);
+    allGestures.shuffle(random);
 
     final options = [correctGesture, ...allGestures.take(3)];
-    options.shuffle();
+    options.shuffle(Random(DateTime.now().millisecondsSinceEpoch + correctGesture.hashCode * 2));
 
     return options;
   }
@@ -1610,7 +1624,7 @@ class LessonData {
         type: ExerciseType.multipleChoice,
         question: '¿Cómo se hace esta seña? (Letra $letter)',
         correctAnswer: description,
-        options: [description, ...wrongOptions]..shuffle(),
+        options: ([description, ...wrongOptions]..shuffle(Random(DateTime.now().millisecondsSinceEpoch + lessonId))),
         imageUrl: emoji,
         imageBase64: imageBase64,
         hintText: 'Piensa en la descripción que leíste en el primer ejercicio.',
@@ -1623,10 +1637,13 @@ class LessonData {
   static List<String> _generateLetterOptions(String correctLetter) {
     final allLetters = _alphabetData.map((d) => d['letter'] as String).toList();
     allLetters.remove(correctLetter);
-    allLetters.shuffle();
+
+    // Usar Random para shuffle verdadero
+    final random = Random(DateTime.now().millisecondsSinceEpoch + correctLetter.hashCode);
+    allLetters.shuffle(random);
 
     final options = [correctLetter, ...allLetters.take(3)];
-    options.shuffle();
+    options.shuffle(Random(DateTime.now().millisecondsSinceEpoch + correctLetter.hashCode * 2));
 
     return options;
   }

@@ -66,6 +66,12 @@ dependencies:
   # Image processing for JPEG conversion
   image: ^4.0.17
 
+  # TensorFlow Lite para reconocimiento de gestos local
+  tflite_flutter: ^0.11.0
+
+  # Google ML Kit para detección de pose y manos
+  google_mlkit_pose_detection: ^0.12.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -99,6 +105,8 @@ flutter:
     - assets/gifs/gestos/
     - assets/gifs/numeros/
     - assets/icon.png
+    # Modelo ML para reconocimiento local de gestos
+    - assets/ml/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

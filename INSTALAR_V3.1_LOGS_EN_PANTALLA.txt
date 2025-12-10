@@ -1,0 +1,155 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║      INCLUSIGN v3.1 - CON LOGS EN PANTALLA                   ║
+║      ¡Fácil de diagnosticar! Sin necesidad de PC             ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📦 ARCHIVO A INSTALAR:
+   Inclusign_v3.1_CON_LOGS_EN_PANTALLA.apk
+
+
+✨ ¿QUÉ HAY DE NUEVO EN v3.1?
+
+¡Ahora puedes ver los logs DIRECTAMENTE EN LA APP!
+No necesitas conectar el celular a la PC ni usar comandos.
+
+TODO está visible en una pantalla de la misma app.
+
+
+📱 INSTRUCCIONES SÚPER SIMPLES:
+
+1. DESINSTALA la versión anterior de Inclusign
+   (Configuración → Apps → Inclusign → Desinstalar)
+
+2. INSTALA este nuevo APK: Inclusign_v3.1_CON_LOGS_EN_PANTALLA.apk
+
+3. ABRE la app
+
+4. Ve a "Reconocimiento de Gestos"
+
+5. TOCA EL ÍCONO DE BUG (🐛) en la esquina superior derecha
+
+6. VERÁS TODOS LOS LOGS en pantalla con colores:
+
+   🟢 Verde  = Todo bien (✅)
+   🟠 Naranja = Advertencias (⚠️)
+   🔴 Rojo    = Errores (❌)
+   ⚪ Blanco  = Información general
+
+
+🔍 ¿QUÉ VAS A VER EN LOS LOGS?
+
+Si todo funciona bien:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[00:00:01] 🚀 Iniciando módulo de reconocimiento de gestos
+[00:00:01] 📦 Intentando cargar modelo de IA...
+[00:00:02] ✅ Modelo de IA cargado correctamente
+[00:00:02] 🎥 Iniciando inicialización de cámara...
+[00:00:02] 🎥 Solicitando permisos de cámara...
+[00:00:02] 🎥 Permiso: ✅ OTORGADO
+[00:00:03] 🎥 Buscando cámaras disponibles...
+[00:00:03] 🎥 Cámaras encontradas: 2
+[00:00:03] 🎥 Seleccionada cámara frontal: 0
+[00:00:03] 🎥 Creando controlador de cámara...
+[00:00:03] 🎥 Inicializando controlador...
+[00:00:04] ✅ ¡Cámara inicializada correctamente!
+[00:00:04] ✅ Sistema completo: Cámara + IA listos
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si el modelo falla pero la cámara funciona:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[00:00:01] 🚀 Iniciando módulo de reconocimiento de gestos
+[00:00:01] 📦 Intentando cargar modelo de IA...
+[00:00:02] ⚠️ Modelo de IA NO disponible
+[00:00:02] ➡️ Continuando con inicialización de cámara...
+[00:00:02] 🎥 Iniciando inicialización de cámara...
+[00:00:03] 🎥 Permiso: ✅ OTORGADO
+[00:00:04] 🎥 Cámaras encontradas: 2
+[00:00:05] ✅ ¡Cámara inicializada correctamente!
+[00:00:05] ⚠️ Cámara OK, pero IA no disponible
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si la cámara falla:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[00:00:01] 🚀 Iniciando módulo de reconocimiento de gestos
+[00:00:02] 🎥 Iniciando inicialización de cámara...
+[00:00:02] 🎥 Solicitando permisos de cámara...
+[00:00:03] 🎥 Permiso: ❌ DENEGADO
+[00:00:03] ❌ Sin permiso de cámara - deteniendo inicialización
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📸 CÓMO ENVIARME LOS LOGS:
+
+1. Abre la app
+2. Ve a "Reconocimiento de Gestos"
+3. Toca el ícono de BUG (🐛) arriba a la derecha
+4. TOMA CAPTURA DE PANTALLA de los logs
+5. ENVÍAME la captura
+
+Con eso sabré exactamente qué está pasando.
+
+
+💡 VENTAJAS DE ESTA VERSIÓN:
+
+✅ No necesitas PC
+✅ No necesitas cables USB
+✅ No necesitas comandos complicados
+✅ Todo visible en tu celular
+✅ Fácil de compartir (solo una captura)
+✅ Logs con colores para identificar problemas rápido
+
+
+🎯 ¿QUÉ VERÁS EN LA APP?
+
+Al abrir "Reconocimiento de Gestos" verás:
+
+┌──────────────────────────────────┐
+│ Reconocimiento de Gestos    🐛  │ ← Toca aquí para ver logs
+├──────────────────────────────────┤
+│                                  │
+│     [Vista de la cámara]         │
+│                                  │
+├──────────────────────────────────┤
+│ Estado: [Mensaje]                │
+│                                  │
+│ [Botón Iniciar/Detener]          │
+└──────────────────────────────────┘
+
+El ícono 🐛 en la esquina superior derecha abre la ventana de logs.
+
+
+⚠️  MUY IMPORTANTE:
+
+Esta versión tiene LOGS ADICIONALES que ocupan un poco de RAM.
+Si tu celular es muy antiguo o tiene poca memoria, puede ir más lento.
+
+Los logs se guardan solo mientras la pantalla de reconocimiento está abierta.
+Si sales y vuelves a entrar, los logs se reinician.
+
+
+📊 INFORMACIÓN DEL APK:
+
+Tamaño: 230 MB
+Versión: 3.1
+Build: Release con logs en UI
+Fecha: 10 de Diciembre 2025
+
+
+───────────────────────────────────────────────────────────────
+
+RESUMEN:
+
+1. Desinstalar versión anterior
+2. Instalar v3.1
+3. Abrir app → Reconocimiento de Gestos
+4. Tocar ícono 🐛 para ver logs
+5. Capturar pantalla
+6. Enviarme la captura
+
+───────────────────────────────────────────────────────────────
+
+¡Esta es la forma MÁS FÁCIL de diagnosticar el problema!
+
+───────────────────────────────────────────────────────────────

@@ -1,0 +1,144 @@
+╔════════════════════════════════════════════════════════════════╗
+║  INICIO RÁPIDO: Reconocimiento de Gestos en el Celular        ║
+╚════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────┐
+│ PASO 1: Conectar Celular y Laptop a la Misma Red              │
+└────────────────────────────────────────────────────────────────┘
+
+  Opción A (RECOMENDADO): Usa el celular como hotspot
+    1. Activa "Compartir Internet" en el celular
+    2. Conecta la laptop a la red del celular
+    3. Verifica IP con: ipconfig
+
+  Opción B: Conecta ambos al mismo WiFi de casa
+
+┌────────────────────────────────────────────────────────────────┐
+│ PASO 2: Iniciar Servidor MediaPipe en la Laptop               │
+└────────────────────────────────────────────────────────────────┘
+
+  Abre CMD/PowerShell y ejecuta:
+
+    cd C:\Users\ferna\OneDrive\Escritorio\Inclusign
+    python mediapipe_server.py
+
+  ✅ Deberías ver:
+    * Running on http://192.168.0.6:5000
+
+  ⚠️ NO CIERRES ESTA VENTANA - El servidor debe seguir corriendo
+
+┌────────────────────────────────────────────────────────────────┐
+│ PASO 3: Instalar la APK en el Celular                         │
+└────────────────────────────────────────────────────────────────┘
+
+  Archivo APK:
+    inclusing_language_flutter\build\app\outputs\flutter-apk\app-release.apk
+
+  Transferir al celular:
+    - USB: Copia el archivo a tu celular
+    - Email: Envíate el APK por email
+    - Google Drive: Sube y descarga en celular
+
+  Instalar:
+    1. Abre el archivo APK en el celular
+    2. Permite "Instalar desde fuentes desconocidas"
+    3. Instala
+
+┌────────────────────────────────────────────────────────────────┐
+│ PASO 4: Usar el Reconocimiento de Gestos                      │
+└────────────────────────────────────────────────────────────────┘
+
+  1. Abre la app Inclusign en el celular
+  2. Inicia sesión (o modo invitado)
+  3. Toca "Reconocimiento de Gestos"
+  4. Permite acceso a la cámara
+  5. Posiciónate frente a la cámara con buena iluminación
+  6. Realiza un gesto (ejemplos: HOLA, GRACIAS, BUENOS_DIAS)
+  7. Espera 2-3 segundos (65 frames)
+  8. ¡Verás el resultado!
+
+┌────────────────────────────────────────────────────────────────┐
+│ CONFIGURACIÓN ACTUAL                                           │
+└────────────────────────────────────────────────────────────────┘
+
+  MediaPipe Server: http://192.168.43.19:5000 ✅ (IP Hotspot - Laptop)
+  Django API: https://django-rest-framework-1.onrender.com ✅
+  Gestos Disponibles: 21
+
+  RED ACTUAL: Hotspot del Celular
+  - Celular (Gateway): 192.168.43.1
+  - Laptop (MediaPipe): 192.168.43.19
+  - Red: 192.168.43.0/24
+
+  Si tu IP cambió, actualiza en:
+    inclusing_language_flutter\lib\services\gesture_recognition_service.dart
+    Línea 13: static const String _mediapipeUrl = 'http://TU_IP:5000';
+
+┌────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                │
+└────────────────────────────────────────────────────────────────┘
+
+  ❌ "No se puede conectar al servidor"
+     → Verifica que ambos estén en la misma red
+     → Verifica que el servidor esté corriendo
+     → Desactiva firewall temporalmente
+
+  ❌ "Django API tarda mucho"
+     → Normal la primera vez (30-60 segundos)
+     → Es el "cold start" del servidor gratuito
+
+  ❌ "No detecta landmarks"
+     → Mejora la iluminación
+     → Asegúrate de estar completamente visible
+     → Mantén las manos dentro del cuadro
+
+┌────────────────────────────────────────────────────────────────┐
+│ PROBAR CONEXIÓN DESDE EL CELULAR                              │
+└────────────────────────────────────────────────────────────────┘
+
+  Abre el navegador del celular y ve a:
+    http://192.168.43.19:5000/health
+
+  Si ves JSON con "status": "healthy", ¡funciona! ✅
+
+┌────────────────────────────────────────────────────────────────┐
+│ 21 GESTOS RECONOCIBLES                                        │
+└────────────────────────────────────────────────────────────────┘
+
+  Saludos:
+    - HOLA
+    - BUENOS_DIAS
+    - BUENAS_NOCHES
+    - HOLA_GUSTO_CONOCERTE
+
+  Conversación:
+    - COMO_ESTAS
+    - GRACIAS
+    - PORFAVOR
+    - SI / NO
+    - ENTIENDO / NO_ENTIENDO
+
+  Presentación:
+    - MI_NOMBRE_ES
+    - CUAL_ES_TU_NOMBRE
+
+  Ayuda:
+    - PUEDO_AYUDARTE
+    - CUIDATE_MUCHO
+    - PODEMOS_HABLAR
+
+  Identidad:
+    - ERES_SORDO
+    - OYENTE
+    - SORDO
+
+  Preguntas:
+    - PORQUE
+    - QUIEN
+
+═══════════════════════════════════════════════════════════════════
+
+Para más detalles, consulta:
+  GUIA_RECONOCIMIENTO_GESTOS_CELULAR.md
+
+Última actualización: 2025-12-04

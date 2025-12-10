@@ -34,10 +34,24 @@ class _LessonScreenState extends State<LessonScreen> {
   final List<String> _selectedLetters = []; // Letras seleccionadas en orden
   List<String> _keyboardLetters = []; // Orden fijo del teclado (no cambia durante el ejercicio)
 
+  // Cache de imágenes para evitar recargas al seleccionar respuestas
+  Map<String, String>? _cachedGestureGifs;
+  Map<String, String>? _cachedAlphabetGifs;
+  bool _isLoadingImages = false; // Flag para indicar si se están cargando imágenes
+
   @override
   void initState() {
     super.initState();
     _loadLesson();
+  }
+
+  @override
+  void didUpdateWidget(LessonScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Si cambió la lección, recargar
+    if (oldWidget.lessonId != widget.lessonId) {
+      _loadLesson();
+    }
   }
 
   Future<void> _loadLesson() async {
@@ -50,6 +64,9 @@ class _LessonScreenState extends State<LessonScreen> {
 
       if (lesson == null) {
         _showAlert('Error', 'No se pudo cargar la lección');
+      } else {
+        // Precargar imágenes del primer ejercicio
+        _preloadExerciseImages();
       }
     } catch (e) {
       setState(() {
@@ -69,6 +86,8 @@ class _LessonScreenState extends State<LessonScreen> {
         _currentExerciseIndex++;
         _resetExerciseState();
       });
+      // Precargar imágenes del siguiente ejercicio si aplica
+      _preloadExerciseImages();
       return;
     }
 
@@ -92,9 +111,67 @@ class _LessonScreenState extends State<LessonScreen> {
           _currentExerciseIndex++;
           _resetExerciseState();
         });
+        // Precargar imágenes del siguiente ejercicio si aplica
+        _preloadExerciseImages();
       } else {
         // Finalizar lección
         _completeLesson();
+      }
+    }
+  }
+
+  // Precargar imágenes del ejercicio actual
+  Future<void> _preloadExerciseImages() async {
+    if (_currentLesson == null || _currentExerciseIndex >= _currentLesson!.exercises.length) return;
+
+    final exercise = _currentLesson!.exercises[_currentExerciseIndex];
+
+    // Para lecciones 59-68 (palabras básicas)
+    if (widget.lessonId >= 59 && widget.lessonId <= 68) {
+      if (_cachedGestureGifs == null && !_isLoadingImages) {
+        setState(() {
+          _isLoadingImages = true;
+        });
+
+        try {
+          final gifs = await _loadGestureGifs(exercise.options);
+          if (mounted) {
+            setState(() {
+              _cachedGestureGifs = gifs;
+              _isLoadingImages = false;
+            });
+          }
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _isLoadingImages = false;
+            });
+          }
+        }
+      }
+    }
+    // Para lecciones 69-78 (armar palabras)
+    else if (widget.lessonId >= 69 && widget.lessonId <= 78) {
+      if (_cachedAlphabetGifs == null && !_isLoadingImages) {
+        setState(() {
+          _isLoadingImages = true;
+        });
+
+        try {
+          final gifs = await _loadAlphabetGifs(exercise.options);
+          if (mounted) {
+            setState(() {
+              _cachedAlphabetGifs = gifs;
+              _isLoadingImages = false;
+            });
+          }
+        } catch (e) {
+          if (mounted) {
+            setState(() {
+              _isLoadingImages = false;
+            });
+          }
+        }
       }
     }
   }
@@ -106,6 +183,11 @@ class _LessonScreenState extends State<LessonScreen> {
     bool correct;
     if (widget.lessonId >= 59 && widget.lessonId <= 68) {
       // Solo hay 1 gesto correcto por ejercicio
+      if (kDebugMode) {
+        debugPrint('🔍 [BasicWords] Gesto seleccionado: ${_selectedGestures.isNotEmpty ? _selectedGestures[0] : "ninguno"}');
+        debugPrint('🔍 [BasicWords] Respuesta correcta: ${exercise.correctAnswer}');
+        debugPrint('🔍 [BasicWords] Opciones disponibles: ${exercise.options}');
+      }
       correct = _selectedGestures.length == 1 && _selectedGestures[0] == exercise.correctAnswer;
     } else if (widget.lessonId >= 69 && widget.lessonId <= 78) {
       // Para lecciones 69-78 (armar palabras), verificar que formó la palabra correcta
@@ -133,15 +215,17 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   void _resetExerciseState() {
-    setState(() {
-      _selectedAnswer = null;
-      _answerVerified = false;
-      _isCorrect = false;
-      _showHint = false;
-      _selectedGestures.clear(); // Para lección 59
-      _selectedLetters.clear(); // Para lecciones 69-78
-      _keyboardLetters.clear(); // Limpiar el orden del teclado para regenerarlo
-    });
+    _selectedAnswer = null;
+    _answerVerified = false;
+    _isCorrect = false;
+    _showHint = false;
+    _selectedGestures.clear(); // Para lección 59
+    _selectedLetters.clear(); // Para lecciones 69-78
+    _keyboardLetters.clear(); // Limpiar el orden del teclado para regenerarlo
+    // Limpiar cache de imágenes al cambiar de ejercicio
+    _cachedGestureGifs = null;
+    _cachedAlphabetGifs = null;
+    _isLoadingImages = false;
   }
 
   Future<void> _completeLesson() async {
@@ -1194,38 +1278,55 @@ class _LessonScreenState extends State<LessonScreen> {
 
   // Método especial para lección 59: Constructor de Frases
   Widget _buildGestureSelectionExercise(Exercise exercise) {
-    return FutureBuilder<Map<String, String>>(
-      future: _loadGestureGifs(exercise.options),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(color: AppColors.primary),
-                SizedBox(height: 20),
-                Text(
-                  'Cargando gestos...',
-                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
-                ),
-              ],
+    // Si ya tenemos el cache, usarlo directamente
+    if (_cachedGestureGifs != null && _cachedGestureGifs!.isNotEmpty) {
+      return _buildGestureSelectionContent(exercise, _cachedGestureGifs!);
+    }
+
+    // Si está cargando, mostrar indicador
+    if (_isLoadingImages) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: AppColors.primary),
+            SizedBox(height: 20),
+            Text(
+              'Cargando gestos...',
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
             ),
-          );
-        }
+          ],
+        ),
+      );
+    }
 
-        if (snapshot.hasError || !snapshot.hasData) {
-          return Center(
-            child: Text(
-              'Error cargando gestos',
-              style: TextStyle(color: AppColors.error),
-            ),
-          );
-        }
+    // Si no tenemos cache ni está cargando, mostrar mensaje
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image_not_supported, size: 64, color: AppColors.textSecondary),
+          SizedBox(height: 20),
+          Text(
+            'Preparando ejercicio...',
+            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+          ),
+        ],
+      ),
+    );
+  }
 
-        final gestureGifs = snapshot.data!;
-        final correctGestures = exercise.correctAnswer.split(',');
+  // Contenido de la selección de gestos (separado para reutilizar con cache)
+  Widget _buildGestureSelectionContent(Exercise exercise, Map<String, String> gestureGifs) {
+    final correctGestures = exercise.correctAnswer.split(',').map((s) => s.trim()).toList();
 
-        return Column(
+    if (kDebugMode) {
+      debugPrint('🔍 [GestureSelection] Respuesta correcta (raw): "${exercise.correctAnswer}"');
+      debugPrint('🔍 [GestureSelection] Respuestas correctas (split): $correctGestures');
+      debugPrint('🔍 [GestureSelection] Opciones disponibles: ${exercise.options}');
+    }
+
+    return Column(
           children: [
             // Pregunta y contexto
             Container(
@@ -1354,8 +1455,6 @@ class _LessonScreenState extends State<LessonScreen> {
             if (_showHint && !_answerVerified) _buildHint(exercise.hintText),
           ],
         );
-      },
-    );
   }
 
   // Cuadrícula de GIFs interactivos
@@ -1549,38 +1648,49 @@ class _LessonScreenState extends State<LessonScreen> {
 
   // Método para construir el ejercicio de Armar Palabras (lecciones 69-78)
   Widget _buildWordBuilderExercise(Exercise exercise) {
-    return FutureBuilder<Map<String, String>>(
-      future: _loadAlphabetGifs(exercise.options),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(color: AppColors.primary),
-                SizedBox(height: 20),
-                Text(
-                  'Cargando alfabeto...',
-                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
-                ),
-              ],
+    // Si ya tenemos el cache, usarlo directamente
+    if (_cachedAlphabetGifs != null && _cachedAlphabetGifs!.isNotEmpty) {
+      return _buildWordBuilderContent(exercise, _cachedAlphabetGifs!);
+    }
+
+    // Si está cargando, mostrar indicador
+    if (_isLoadingImages) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: AppColors.primary),
+            SizedBox(height: 20),
+            Text(
+              'Cargando alfabeto...',
+              style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
             ),
-          );
-        }
+          ],
+        ),
+      );
+    }
 
-        if (snapshot.hasError || !snapshot.hasData) {
-          return Center(
-            child: Text(
-              'Error cargando alfabeto',
-              style: TextStyle(color: AppColors.error),
-            ),
-          );
-        }
+    // Si no tenemos cache ni está cargando, mostrar mensaje
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image_not_supported, size: 64, color: AppColors.textSecondary),
+          SizedBox(height: 20),
+          Text(
+            'Preparando ejercicio...',
+            style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+          ),
+        ],
+      ),
+    );
+  }
 
-        final letterGifs = snapshot.data!;
-        final targetWord = exercise.correctAnswer;
+  // Contenido del Word Builder (separado para reutilizar con cache)
+  Widget _buildWordBuilderContent(Exercise exercise, Map<String, String> letterGifs) {
+    final targetWord = exercise.correctAnswer;
 
-        return Column(
+    return Column(
           children: [
             // Instrucciones y palabra objetivo
             Container(
@@ -1757,8 +1867,6 @@ class _LessonScreenState extends State<LessonScreen> {
             if (_showHint && !_answerVerified) _buildHint(exercise.hintText),
           ],
         );
-      },
-    );
   }
 
   // Guardar referencia a los GIFs para usarlos en la vista de letras seleccionadas
