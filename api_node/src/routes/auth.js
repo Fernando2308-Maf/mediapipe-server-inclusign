@@ -223,4 +223,137 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// POST /api/auth/register-google
+router.post('/register-google', async (req, res) => {
+  try {
+    const { email, nombre, photoUrl, loginMethod } = req.body;
+
+    console.log('🌍 Intentando login/registro con Google para:', email);
+
+    if (!email) {
+      return res.status(400).json({ isSuccess: false, message: 'El email es obligatorio' });
+    }
+
+    const db = await getDB();
+    const usuariosCollection = db.collection('Usuarios');
+    const progresionesCollection = db.collection('Progresion');
+
+    // 1. Buscar si el usuario ya existe
+    let usuarioDoc = await usuariosCollection.findOne({ correo: email });
+    const now = new Date();
+    
+    let usuarioID;
+    let racha = 0;
+    let progresionDoc;
+
+    if (usuarioDoc) {
+      console.log('✅ Usuario de Google ya existía. Iniciando sesión.');
+      usuarioID = usuarioDoc.usuarioID.toString();
+      
+      progresionDoc = await progresionesCollection.findOne({ usuarioID });
+      
+      if (progresionDoc) {
+        // Lógica de racha igual que en login normal
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        let ultimoAcceso = progresionDoc.ultimoAcceso ? new Date(progresionDoc.ultimoAcceso) : null;
+        racha = progresionDoc.racha || 0;
+
+        if (ultimoAcceso) {
+          const lastAccessDay = new Date(ultimoAcceso.getFullYear(), ultimoAcceso.getMonth(), ultimoAcceso.getDate());
+          const daysDifference = Math.floor((today - lastAccessDay) / (1000 * 60 * 60 * 24));
+          if (daysDifference === 1) { racha++; } 
+          else if (daysDifference > 1) { racha = 1; }
+        } else {
+          racha = 1;
+        }
+
+        await progresionesCollection.updateOne(
+          { usuarioID },
+          { $set: { racha: racha, ultimoAcceso: now.toISOString() } }
+        );
+      }
+    } else {
+      console.log('🆕 Creando nuevo usuario desde Google');
+      usuarioID = generateUsuarioID();
+      const fechaRegistro = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+      usuarioDoc = {
+        usuarioID,
+        nombre: nombre || 'Usuario de Google',
+        correo: email,
+        fotoPerfil: photoUrl,
+        loginMethod: loginMethod || 'google',
+        fechaRegistro,
+        // No guardamos contraseña porque el login es delegado a Google
+      };
+      await usuariosCollection.insertOne(usuarioDoc);
+
+      progresionDoc = {
+        usuarioID,
+        nivelActual: 1,
+        nivelesCompletados: [],
+        estadisticas: { totalExitos: 0, totalFallos: 0, totalIntentos: 0 },
+        experienciaTotal: 0,
+        ultimaActividad: fechaRegistro,
+        racha: 1,
+        ultimoAcceso: now.toISOString(),
+      };
+      await progresionesCollection.insertOne(progresionDoc);
+      racha = 1;
+    }
+
+    const token = generateToken(usuarioID);
+    
+    const completedLessons = progresionDoc && progresionDoc.nivelesCompletados 
+      ? progresionDoc.nivelesCompletados.map(e => parseInt(e) || 0) 
+      : [];
+
+    const level = progresionDoc ? (parseInt(progresionDoc.nivelActual) || 1) : 1;
+    const experience = progresionDoc ? (parseInt(progresionDoc.experienciaTotal) || 0) : 0;
+
+    res.status(200).json({
+      isSuccess: true,
+      token,
+      usuarioID,
+      userProfile: {
+        email: usuarioDoc.correo,
+        firstName: usuarioDoc.nombre,
+        level,
+        experience,
+        streak: racha,
+        completedLessons,
+      },
+    });
+
+  } catch (error) {
+    console.error('❌ Error en Google Sign In:', error);
+    res.status(500).json({
+      isSuccess: false,
+      message: `Error al conectar con Google: ${error.message}`,
+    });
+  }
+});
+
+// POST /api/auth/sync-google
+router.post('/sync-google', async (req, res) => {
+  try {
+    const { usuarioID, googleEmail, displayName } = req.body;
+    
+    if (!usuarioID || !googleEmail) {
+      return res.status(400).json({ isSuccess: false, message: 'Datos incompletos' });
+    }
+
+    const db = await getDB();
+    await db.collection('Usuarios').updateOne(
+      { usuarioID: usuarioID.toString() },
+      { $set: { googleEmail, loginMethod: 'google' } }
+    );
+    
+    res.status(200).json({ isSuccess: true });
+  } catch (error) {
+    console.error('❌ Error al sincronizar Google:', error);
+    res.status(500).json({ isSuccess: false });
+  }
+});
+
 module.exports = router;
