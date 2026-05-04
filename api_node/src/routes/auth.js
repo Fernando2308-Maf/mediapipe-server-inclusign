@@ -245,6 +245,7 @@ router.post('/register-google', async (req, res) => {
     let usuarioID;
     let racha = 0;
     let progresionDoc;
+    let isNewUser = false;
 
     if (usuarioDoc) {
       console.log('✅ Usuario de Google ya existía. Iniciando sesión.');
@@ -274,6 +275,7 @@ router.post('/register-google', async (req, res) => {
       }
     } else {
       console.log('🆕 Creando nuevo usuario desde Google');
+      isNewUser = true;
       usuarioID = generateUsuarioID();
       const fechaRegistro = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -315,6 +317,7 @@ router.post('/register-google', async (req, res) => {
       isSuccess: true,
       token,
       usuarioID,
+      isNewUser,
       userProfile: {
         email: usuarioDoc.correo,
         firstName: usuarioDoc.nombre,

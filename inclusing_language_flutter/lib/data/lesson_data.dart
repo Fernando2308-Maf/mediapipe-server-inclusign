@@ -1210,35 +1210,30 @@ class LessonData {
   }
 
   /// Generar todas las lecciones de números con sus ejercicios
+  /// NOTA: Los GIFs se cargan bajo demanda igual que el abecedario
   static Future<List<Lesson>> generateNumberLessons() async {
-    final lessons = <Lesson>[];
-
-    for (var entry in _numbersData.asMap().entries) {
+    return _numbersData.asMap().entries.map((entry) {
       final index = entry.key;
       final data = entry.value;
       final number = data['number'] as String;
+      final imageBase64 = _numerosCache[number] ?? '';
 
-      // Cargar el GIF del número desde assets
-      final imageBase64 = await loadNumeroImage(number, silent: true);
-
-      lessons.add(Lesson(
-        id: 28 + index, // Empezar después de las 27 lecciones del alfabeto
+      return Lesson(
+        id: 28 + index,
         title: 'Lección ${28 + index}',
         category: 'Numbers',
         letter: number,
         description: data['description'],
         imageUrl: data['emoji'],
-        imageBase64: imageBase64, // GIF cargado desde assets
+        imageBase64: imageBase64,
         order: index + 1,
-        experiencePoints: 25, // 5 + 10 + 10 = 25 puntos totales
+        experiencePoints: 25,
         difficulty: DifficultyLevel.basic,
         estimatedMinutes: 5,
         exercises: _generateNumberExercises(data, 28 + index, imageBase64),
         learningTips: _generateNumberTips(number),
-      ));
-    }
-
-    return lessons;
+      );
+    }).toList();
   }
 
   /// Generar las 10 lecciones de palabras básicas (59-68)
@@ -1702,7 +1697,49 @@ class LessonData {
     if (id >= 28 && id <= 37) {
       final lessons = await generateNumberLessons();
       try {
-        return lessons.firstWhere((lesson) => lesson.id == id);
+        final lesson = lessons.firstWhere((lesson) => lesson.id == id);
+
+        // Cargar solo el GIF de este número bajo demanda
+        if (lesson.letter.isNotEmpty) {
+          final imageBase64 = await loadNumeroImage(lesson.letter, silent: true);
+
+          if (imageBase64.isNotEmpty) {
+            final updatedExercises = lesson.exercises.map((exercise) {
+              return Exercise(
+                id: exercise.id,
+                type: exercise.type,
+                question: exercise.question,
+                correctAnswer: exercise.correctAnswer,
+                options: exercise.options,
+                imageBase64: imageBase64,
+                points: exercise.points,
+                hintText: exercise.hintText,
+              );
+            }).toList().cast<Exercise>();
+
+            return Lesson(
+              id: lesson.id,
+              title: lesson.title,
+              category: lesson.category,
+              letter: lesson.letter,
+              description: lesson.description,
+              imageUrl: lesson.imageUrl,
+              imageBase64: imageBase64,
+              videoUrl: lesson.videoUrl,
+              gifUrl: lesson.gifUrl,
+              order: lesson.order,
+              experiencePoints: lesson.experiencePoints,
+              difficulty: lesson.difficulty,
+              isCompleted: lesson.isCompleted,
+              isLocked: lesson.isLocked,
+              exercises: updatedExercises,
+              learningTips: lesson.learningTips,
+              estimatedMinutes: lesson.estimatedMinutes,
+            );
+          }
+        }
+
+        return lesson;
       } catch (e) {
         return null;
       }

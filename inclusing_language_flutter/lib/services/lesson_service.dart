@@ -46,7 +46,8 @@ class LessonService {
     int experienciaGanada = 0,
   }) async {
     final resultado = exito ? 'exito' : 'fallo';
-    return await _apiService.completarNivel(usuarioID, nivel, resultado, experienciaGanada: experienciaGanada);
+    final response = await _apiService.completarNivel(usuarioID, nivel, resultado, experienciaGanada: experienciaGanada);
+    return response != null;
   }
 
   /// Registrar un intento
@@ -228,10 +229,8 @@ class LessonService {
       return false;
     }
 
-    // Determinar si fue exitoso (100% = todas las preguntas correctas)
-    final exito = score == totalPoints; // Requiere 100% (3/3 correctas)
+    final exito = score == totalPoints;
 
-    // Registrar el intento
     try {
       await registrarIntento(
         usuarioID: usuarioID,
@@ -242,48 +241,43 @@ class LessonService {
       // Error handled silently
     }
 
-    // Acumular experiencia siempre (incluso si no fue exitoso)
-    Map<String, dynamic>? metaDiariaInfo;
+    Map<String, dynamic>? responseData;
     try {
-      final resultado = await _apiService.completarNivel(
+      responseData = await _apiService.completarNivel(
         usuarioID,
         lessonId,
         exito ? 'exito' : 'fallo',
         experienciaGanada: score,
       );
 
-      // Verificar si se completó la meta diaria
-      if (resultado && exito) {
-        // Recargar progresión para obtener info actualizada
-        final progresion = await getProgresionUsuario(usuarioID);
-        if (progresion != null) {
-          metaDiariaInfo = {
-            'leccionesCompletadasHoy': progresion.leccionesCompletadasHoy,
-            'metaDiariaCompletada': progresion.leccionesCompletadasHoy == 5,
-          };
-        }
+      // Actualizar todayProgress directamente desde la respuesta del servidor
+      if (responseData != null) {
+        final leccionesHoy = responseData['leccionesCompletadasHoy'] as int? ?? 0;
+        _authService.updateTodayProgress(leccionesHoy);
       }
     } catch (e) {
       // Error handled silently
     }
 
-    // Actualizar el perfil del usuario con la nueva experiencia
+    // Actualizar el resto del perfil (XP, nivel, racha)
     try {
-      await AuthService().refreshUserProfile();
+      await _authService.refreshUserProfile();
     } catch (e) {
       // Error handled silently
     }
 
-    // Si se completó la meta diaria, retornar info adicional
-    if (metaDiariaInfo != null && metaDiariaInfo['metaDiariaCompletada'] == true) {
+    final metaDiariaCompletada = responseData?['metaDiariaCompletada'] == true;
+    final leccionesHoy = responseData?['leccionesCompletadasHoy'] as int? ?? 0;
+
+    if (metaDiariaCompletada) {
       return {
         'exito': exito,
         'metaDiariaCompletada': true,
-        'leccionesCompletadasHoy': metaDiariaInfo['leccionesCompletadasHoy'],
+        'leccionesCompletadasHoy': leccionesHoy,
       };
     }
 
-    return exito; // Retorna true solo si fue 100% exitoso
+    return exito;
   }
 
   /// Obtener siguiente lección incompleta (busca en todas las categorías)

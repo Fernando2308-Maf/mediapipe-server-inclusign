@@ -51,22 +51,46 @@ router.get('/:usuarioID', async (req, res) => {
         needsUpdate = true;
       }
 
-      // Verificar si pasó medianoche y reiniciar contador
       const ahora = new Date();
+      const today = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+
+      // --- Racha diaria ---
+      const ultimoAcceso = progresion.ultimoAcceso ? new Date(progresion.ultimoAcceso) : null;
+      if (ultimoAcceso) {
+        const lastAccessDay = new Date(ultimoAcceso.getFullYear(), ultimoAcceso.getMonth(), ultimoAcceso.getDate());
+        const daysDiff = Math.floor((today - lastAccessDay) / (1000 * 60 * 60 * 24));
+        if (daysDiff === 1) {
+          progresion.racha = (progresion.racha || 0) + 1;
+          progresion.ultimoAcceso = ahora.toISOString();
+          needsUpdate = true;
+          console.log(`🔥 [getProgresion] Racha incrementada a ${progresion.racha}`);
+        } else if (daysDiff > 1) {
+          progresion.racha = 1;
+          progresion.ultimoAcceso = ahora.toISOString();
+          needsUpdate = true;
+          console.log(`💔 [getProgresion] Racha perdida, reiniciada a 1`);
+        }
+        // daysDiff === 0 → mismo día, no tocar la racha
+      } else {
+        // Sin acceso previo registrado → iniciar racha
+        progresion.racha = 1;
+        progresion.ultimoAcceso = ahora.toISOString();
+        needsUpdate = true;
+        console.log('🎉 [getProgresion] Racha iniciada (primer acceso)');
+      }
+
+      // --- Reiniciar contador diario si pasó medianoche ---
       const ultimaActualizacion = progresion.ultimaActualizacionDiaria
         ? new Date(progresion.ultimaActualizacionDiaria)
         : null;
 
       if (ultimaActualizacion) {
-        const medianoche = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
         const mediaNocheAnterior = new Date(
           ultimaActualizacion.getFullYear(),
           ultimaActualizacion.getMonth(),
           ultimaActualizacion.getDate()
         );
-
-        // Si ya pasó medianoche, reiniciar contador
-        if (medianoche > mediaNocheAnterior) {
+        if (today > mediaNocheAnterior) {
           progresion.leccionesCompletadasHoy = 0;
           progresion.ultimaActualizacionDiaria = ahora.toISOString();
           needsUpdate = true;
@@ -74,7 +98,7 @@ router.get('/:usuarioID', async (req, res) => {
         }
       }
 
-      // Actualizar en BD si se agregaron campos o se reinició contador
+      // Persistir cambios si los hubo
       if (needsUpdate) {
         await progresionesCollection.updateOne(
           { usuarioID },

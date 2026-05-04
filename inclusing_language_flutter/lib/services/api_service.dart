@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import '../models/auth_models.dart';
+import '../models/user_profile.dart';
 import '../utils/constants.dart';
 
 class ApiService {
@@ -11,13 +12,14 @@ class ApiService {
 
   final http.Client _client = http.Client();
   final String _baseUrl = AppConstants.baseUrl;
+  final String _googleApiUrl = AppConstants.googleApiUrl;
 
   // Helper method for logging
   void _log(String message) {
     developer.log(message, name: 'ApiService');
   }
 
-  // Helper method for making requests
+  // Helper method for making requests to Vercel API
   Future<http.Response> _makeRequest(
     String method,
     String endpoint, {
@@ -25,7 +27,29 @@ class ApiService {
     Map<String, String>? headers,
   }) async {
     final uri = Uri.parse('$_baseUrl$endpoint');
-    _log('$method Request to: $uri');
+    _log('🌐 [Vercel] $method Request to: $uri');
+    return _makeHttpRequest(method, uri, body, headers);
+  }
+
+  // Helper method for making requests to Google Sign-In API (local)
+  Future<http.Response> _makeGoogleRequest(
+    String method,
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    final uri = Uri.parse('$_googleApiUrl$endpoint');
+    _log('🔐 [Local Google API] $method Request to: $uri');
+    return _makeHttpRequest(method, uri, body, headers);
+  }
+
+  // Generic HTTP request handler
+  Future<http.Response> _makeHttpRequest(
+    String method,
+    Uri uri,
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  ) async {
 
     final Map<String, String> defaultHeaders = {
       'Content-Type': 'application/json',
@@ -294,7 +318,7 @@ class ApiService {
   }
 
   // Progresión - Completar nivel
-  Future<bool> completarNivel(String usuarioID, int nivel, String resultado, {int experienciaGanada = 0}) async {
+  Future<Map<String, dynamic>?> completarNivel(String usuarioID, int nivel, String resultado, {int experienciaGanada = 0}) async {
     try {
       _log('📤 Completando nivel - UsuarioID: $usuarioID, Nivel: $nivel, Resultado: $resultado, Experiencia: $experienciaGanada');
 
@@ -310,19 +334,18 @@ class ApiService {
         },
       );
 
-      final success = response.statusCode == 200;
-      _log('📥 Completar nivel response: ${response.statusCode} - Success: $success');
+      _log('📥 Completar nivel response: ${response.statusCode}');
 
-      if (!success) {
-        _log('❌ Error body: ${response.body}');
-      } else {
+      if (response.statusCode == 200) {
         _log('✅ Nivel completado exitosamente: ${response.body}');
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        _log('❌ Error body: ${response.body}');
+        return null;
       }
-
-      return success;
     } catch (e) {
       _log('❌ Error completando nivel: $e');
-      return false;
+      return null;
     }
   }
 
@@ -417,6 +440,84 @@ class ApiService {
     } catch (e) {
       _log('Error getting gesto by nombre: $e');
       return null;
+    }
+  }
+
+  // 🔐 GOOGLE SIGN-IN ENDPOINTS
+
+  /// Registrar o sincronizar usuario con Google
+  /// Registrar o sincronizar usuario con Google
+  Future<AuthResult> registerWithGoogle({
+    required String email,
+    required String displayName,
+    String? photoUrl,
+  }) async {
+    try {
+      final body = {
+        'email': email,
+        'nombre': displayName,
+        'photoUrl': photoUrl,
+        'loginMethod': 'google',
+      };
+
+      final response = await _makeGoogleRequest(
+        'POST',
+        '/auth/register-google',
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final json = jsonDecode(response.body);
+        return AuthResult(
+          isSuccess: true,
+          usuarioID: json['usuarioID'],
+          token: json['token'],
+          isNewUser: json['isNewUser'] ?? false,
+          userProfile: UserProfile(
+            email: email,
+            firstName: displayName,
+            photoUrl: photoUrl,
+          ),
+        );
+      } else {
+        final json = jsonDecode(response.body);
+        return AuthResult(
+          isSuccess: false,
+          errorMessage: json['message'] ?? 'Error al registrar con Google',
+        );
+      }
+    } catch (e) {
+      _log('Error registering with Google: $e');
+      return AuthResult(
+        isSuccess: false,
+        errorMessage: 'Error: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Sincronizar cuenta existente con Google
+  Future<bool> syncGoogleAccount({
+    required String usuarioID,
+    required String googleEmail,
+    required String displayName,
+  }) async {
+    try {
+      final body = {
+        'usuarioID': usuarioID,
+        'googleEmail': googleEmail,
+        'displayName': displayName,
+      };
+
+      final response = await _makeGoogleRequest(
+        'POST',
+        '/auth/sync-google',
+        body: body,
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      _log('Error syncing Google account: $e');
+      return false;
     }
   }
 }

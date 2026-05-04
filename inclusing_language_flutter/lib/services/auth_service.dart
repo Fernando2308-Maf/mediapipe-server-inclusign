@@ -1,3 +1,5 @@
+import 'package:google_sign_in/google_sign_in.dart';
+
 import '../models/auth_models.dart';
 import '../models/user_profile.dart';
 import '../utils/constants.dart';
@@ -11,6 +13,11 @@ class AuthService {
 
   final ApiService _apiService = ApiService();
   final StorageService _storageService = StorageService();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    // Web Client ID (necesario para autenticación en Android)
+    serverClientId: '530680224172-jou5gqqme28jfrsiffdvbubsvvpi0d62.apps.googleusercontent.com',
+  );
 
   UserProfile? _currentUser;
 
@@ -111,6 +118,7 @@ class AuthService {
         final nivelActual = progresion['nivelActual'] ?? 1;
         final nivelesCompletados = progresion['nivelesCompletados'] ?? [];
         final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
+        final racha = progresion['racha'] ?? 0;
 
         if (_currentUser != null) {
           _currentUser = _currentUser!.copyWith(
@@ -118,19 +126,19 @@ class AuthService {
             experience: experienciaTotal,
             completedLessons: (nivelesCompletados as List).map((e) => e.toString()).toList(),
             todayProgress: leccionesHoy,
+            streak: racha,
           );
         } else {
           // Si no hay currentUser, cargar datos completos
           final usuario = await _apiService.getUsuario(usuarioID);
           if (usuario != null) {
-            final leccionesHoy = progresion['leccionesCompletadasHoy'] ?? 0;
             _currentUser = UserProfile(
               email: usuario['correo'] ?? '',
               firstName: usuario['nombre'] ?? '',
               lastName: '',
-              level: progresion['nivelActual'] ?? 1,
+              level: nivelActual,
               experience: experienciaTotal,
-              streak: 0,
+              streak: racha,
               completedLessons: (nivelesCompletados as List).map((e) => e.toString()).toList(),
               todayProgress: leccionesHoy,
               dailyGoal: 5,
@@ -176,7 +184,7 @@ class AuthService {
             lastName: '',
             level: progresion?['nivelActual'] ?? 1,
             experience: progresion?['experienciaTotal'] ?? 0,
-            streak: 0,
+            streak: progresion?['racha'] ?? 0,
             completedLessons: nivelesCompletados != null
                 ? List<String>.from(nivelesCompletados.map((e) => e.toString()))
                 : [],
@@ -214,6 +222,17 @@ class AuthService {
   Future<void> logout() async {
     _currentUser = null;
     await _storageService.clear();
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {
+      // Ignorar error si no había sesión de Google activa
+    }
+  }
+
+  void updateTodayProgress(int leccionesHoy) {
+    if (_currentUser != null) {
+      _currentUser = _currentUser!.copyWith(todayProgress: leccionesHoy);
+    }
   }
 
   Future<bool> updateProfile(UserProfile profile) async {
@@ -264,5 +283,111 @@ class AuthService {
     }
 
     return null;
+  }
+
+  // 🔐 GOOGLE SIGN-IN METHODS
+  
+  /// Iniciar sesión con Google
+  Future<AuthResult> signInWithGoogle() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return AuthResult(
+          isSuccess: false,
+          errorMessage: 'Inicio de sesión con Google cancelado',
+        );
+      }
+
+      // Preparar datos para registro/login
+      final email = googleUser.email;
+      final displayName = googleUser.displayName ?? 'Usuario Google';
+      final photoUrl = googleUser.photoUrl;
+
+      // Intentar registrar o sincronizar con la API
+      try {
+        final result = await _apiService.registerWithGoogle(
+          email: email,
+          displayName: displayName,
+          photoUrl: photoUrl,
+        );
+
+        if (result.isSuccess && result.userProfile != null) {
+          _currentUser = result.userProfile;
+          await _saveUserData(
+            result.token,
+            result.userProfile!,
+            usuarioID: result.usuarioID,
+          );
+          await _storageService.setSecure('google_email', email);
+          await _storageService.setSecure('login_method', 'google');
+          if (result.isNewUser) {
+            await _storageService.setSecure(AppConstants.keyIsNewUser, 'true');
+          }
+
+          return result;
+        } else {
+          return AuthResult(
+            isSuccess: false,
+            errorMessage: result.errorMessage.isNotEmpty
+                ? result.errorMessage
+                : 'Error al registrarse con Google',
+          );
+        }
+      } catch (e) {
+        return AuthResult(
+          isSuccess: false,
+          errorMessage: 'Error de conexión: ${e.toString()}',
+        );
+      }
+    } catch (e) {
+      return AuthResult(
+        isSuccess: false,
+        errorMessage: 'Error en Google Sign-In: ${e.toString()}',
+      );
+    }
+  }
+
+  /// Sincronizar cuenta existente con Google
+  Future<bool> syncWithGoogle(String usuarioID) async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return false;
+
+      // Enviar sincronización a la API
+      final response = await _apiService.syncGoogleAccount(
+        usuarioID: usuarioID,
+        googleEmail: googleUser.email,
+        displayName: googleUser.displayName ?? 'Usuario',
+      );
+
+      if (response) {
+        await _storageService.setSecure('google_email', googleUser.email);
+        await _storageService.setSecure('synced_with_google', 'true');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Cerrar sesión de Google
+  Future<void> signOutGoogle() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (e) {
+      // Ignorar errores al desconectar
+    }
+  }
+
+  /// Obtener el usuario de Google actualmente conectado
+  Future<GoogleSignInAccount?> getGoogleUser() async {
+    return await _googleSignIn.signInSilently();
+  }
+
+  /// Verificar si está sincronizado con Google
+  Future<bool> isGoogleSynced() async {
+    final synced = await _storageService.getSecure('synced_with_google');
+    return synced == 'true';
   }
 }

@@ -34,10 +34,28 @@ class _LessonScreenState extends State<LessonScreen> {
   final List<String> _selectedLetters = []; // Letras seleccionadas en orden
   List<String> _keyboardLetters = []; // Orden fijo del teclado (no cambia durante el ejercicio)
 
+  // Caché de Futures para evitar que FutureBuilder recargue GIFs en cada setState
+  Future<Map<String, String>>? _gestureGifsFuture;
+  Future<Map<String, String>>? _alphabetGifsFuture;
+
   @override
   void initState() {
     super.initState();
     _loadLesson();
+  }
+
+  // Inicializa los Futures de GIFs una sola vez por ejercicio
+  void _initGifFutures() {
+    if (_currentLesson == null ||
+        _currentExerciseIndex >= _currentLesson!.exercises.length) return;
+    final exercise = _currentLesson!.exercises[_currentExerciseIndex];
+    if ((widget.lessonId >= 59 && widget.lessonId <= 68) ||
+        exercise.type == ExerciseType.matching) {
+      _gestureGifsFuture = _loadGestureGifs(exercise.options);
+    }
+    if (exercise.type == ExerciseType.wordBuilder) {
+      _alphabetGifsFuture = _loadAlphabetGifs(exercise.options);
+    }
   }
 
   Future<void> _loadLesson() async {
@@ -47,6 +65,7 @@ class _LessonScreenState extends State<LessonScreen> {
         _currentLesson = lesson;
         _isLoading = false;
       });
+      _initGifFutures();
 
       if (lesson == null) {
         _showAlert('Error', 'No se pudo cargar la lección');
@@ -133,14 +152,15 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   void _resetExerciseState() {
+    _initGifFutures(); // Renueva el Future solo cuando cambia el ejercicio
     setState(() {
       _selectedAnswer = null;
       _answerVerified = false;
       _isCorrect = false;
       _showHint = false;
-      _selectedGestures.clear(); // Para lección 59
-      _selectedLetters.clear(); // Para lecciones 69-78
-      _keyboardLetters.clear(); // Limpiar el orden del teclado para regenerarlo
+      _selectedGestures.clear();
+      _selectedLetters.clear();
+      _keyboardLetters.clear();
     });
   }
 
@@ -852,11 +872,14 @@ class _LessonScreenState extends State<LessonScreen> {
             border: Border.all(color: AppColors.border),
           ),
           child: exercise.imageBase64.isNotEmpty
-              ? MediaDisplay(
-                  base64Content: exercise.imageBase64,
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.contain,
+              ? RepaintBoundary(
+                  child: MediaDisplay(
+                    key: ValueKey(exercise.imageBase64.hashCode),
+                    base64Content: exercise.imageBase64,
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.contain,
+                  ),
                 )
               : Text(
                   exercise.imageUrl,
@@ -993,11 +1016,14 @@ class _LessonScreenState extends State<LessonScreen> {
             border: Border.all(color: AppColors.border),
           ),
           child: exercise.imageBase64.isNotEmpty
-              ? MediaDisplay(
-                  base64Content: exercise.imageBase64,
-                  width: 200,
-                  height: 200,
-                  fit: BoxFit.contain,
+              ? RepaintBoundary(
+                  child: MediaDisplay(
+                    key: ValueKey(exercise.imageBase64.hashCode),
+                    base64Content: exercise.imageBase64,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ),
                 )
               : Text(
                   exercise.imageUrl,
@@ -1055,11 +1081,14 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
               SizedBox(height: 15),
               exercise.imageBase64.isNotEmpty
-                  ? MediaDisplay(
-                      base64Content: exercise.imageBase64,
-                      width: 150,
-                      height: 150,
-                      fit: BoxFit.contain,
+                  ? RepaintBoundary(
+                      child: MediaDisplay(
+                        key: ValueKey(exercise.imageBase64.hashCode),
+                        base64Content: exercise.imageBase64,
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.contain,
+                      ),
                     )
                   : Text(
                       exercise.imageUrl,
@@ -1195,7 +1224,7 @@ class _LessonScreenState extends State<LessonScreen> {
   // Método especial para lección 59: Constructor de Frases
   Widget _buildGestureSelectionExercise(Exercise exercise) {
     return FutureBuilder<Map<String, String>>(
-      future: _loadGestureGifs(exercise.options),
+      future: _gestureGifsFuture ??= _loadGestureGifs(exercise.options),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -1426,11 +1455,14 @@ class _LessonScreenState extends State<LessonScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: gifBase64.isNotEmpty
-                      ? MediaDisplay(
-                          base64Content: gifBase64,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
+                      ? RepaintBoundary(
+                          child: MediaDisplay(
+                            key: ValueKey('gesture_$gestureName'),
+                            base64Content: gifBase64,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         )
                       : Center(
                           child: Icon(
@@ -1550,7 +1582,7 @@ class _LessonScreenState extends State<LessonScreen> {
   // Método para construir el ejercicio de Armar Palabras (lecciones 69-78)
   Widget _buildWordBuilderExercise(Exercise exercise) {
     return FutureBuilder<Map<String, String>>(
-      future: _loadAlphabetGifs(exercise.options),
+      future: _alphabetGifsFuture ??= _loadAlphabetGifs(exercise.options),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -1687,11 +1719,14 @@ class _LessonScreenState extends State<LessonScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: gifBase64.isNotEmpty
-                                ? MediaDisplay(
-                                    base64Content: gifBase64,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
+                                ? RepaintBoundary(
+                                    child: MediaDisplay(
+                                      key: ValueKey('sel_${letter}_${_selectedLetters.indexOf(letter)}'),
+                                      base64Content: gifBase64,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
                                   )
                                 : Center(
                                     child: Text(
@@ -1822,11 +1857,14 @@ class _LessonScreenState extends State<LessonScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: gifBase64.isNotEmpty
-                  ? MediaDisplay(
-                      base64Content: gifBase64,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
+                  ? RepaintBoundary(
+                      child: MediaDisplay(
+                        key: ValueKey('key_$letter'),
+                        base64Content: gifBase64,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   : Center(
                       child: Icon(

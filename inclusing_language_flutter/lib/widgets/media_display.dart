@@ -34,11 +34,25 @@ class _MediaDisplayState extends State<MediaDisplay> {
   bool _isVideo = false;
   bool _isInitialized = false;
   bool _hasError = false;
+  Uint8List? _imageBytes;
 
   @override
   void initState() {
     super.initState();
     _detectAndInitialize();
+  }
+
+  @override
+  void didUpdateWidget(MediaDisplay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.base64Content != widget.base64Content) {
+      _imageBytes = null;
+      _isInitialized = false;
+      _hasError = false;
+      _controller?.dispose();
+      _controller = null;
+      _detectAndInitialize();
+    }
   }
 
   Future<void> _detectAndInitialize() async {
@@ -54,6 +68,7 @@ class _MediaDisplayState extends State<MediaDisplay> {
         await _initializeVideo(bytes);
       } else {
         setState(() {
+          _imageBytes = bytes;
           _isInitialized = true;
         });
       }
@@ -158,12 +173,13 @@ class _MediaDisplayState extends State<MediaDisplay> {
       );
     }
 
-    // Mostrar imagen
+    // Mostrar imagen (bytes ya decodificados en initState, no se re-decodifican)
     return Image.memory(
-      base64Decode(widget.base64Content),
+      _imageBytes!,
       width: widget.width,
       height: widget.height,
       fit: widget.fit,
+      gaplessPlayback: true,
     );
   }
 }
